@@ -1,0 +1,39 @@
+.footer {
+    padding: 40px 0;
+    opacity: 0.5;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.footer-inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    max-width: 100%;
+    width: 760px;
+}
+
+.footer-copyright {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 1.6rem;
+}
+
+.date {
+    margin-right: 10px;
+}
+
+.name {
+    margin-left: 10px;
+    text-transform: uppercase;
+    text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+    .footer-copyright {
+        flex-direction: column;
+    }
+}

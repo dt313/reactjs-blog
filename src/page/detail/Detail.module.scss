@@ -1,0 +1,150 @@
+.wrapper {
+    margin-top: 32px;
+    display: flex;
+    max-width: var(--default-layout-width);
+    width: 100%;
+    flex-direction: column;
+    margin-bottom: 50px;
+    color: var(--text-color);
+}
+
+.content {
+    display: flex;
+}
+
+// Tool
+.article-tools {
+    position: fixed;
+}
+
+.info {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    position: fixed;
+    padding: 12px;
+}
+
+.author {
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+    padding: 8px;
+    border-bottom: 1px solid #39353533;
+    font-weight: 600;
+    font-size: var(--font-family);
+}
+
+.blog-statistical {
+    margin: 24px 0;
+    padding: 24px 0;
+    justify-content: start;
+
+    .like,
+    .comment {
+        padding: 0 16px;
+        font-size: 1.8rem;
+    }
+
+    .like {
+        // border-right: 2px solid var(--border-color);
+    }
+}
+
+.md-editor {
+    width: 100%;
+    margin-left: 150px;
+    overflow: auto;
+    .title {
+        max-width: 100%;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+        word-wrap: break-word;
+        line-height: 1.6;
+    }
+    h2,
+    h3 {
+        border-bottom: 0;
+        // margin-bottom: 0;
+    }
+}
+
+.preview {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin-bottom: 48px;
+
+    font-size: 1.1rem;
+
+    blockquote {
+        border-left-color: var(--primary-color);
+        color: #333;
+    }
+}
+
+.topics {
+    margin: 24px 0;
+    padding: 24px 0;
+    // border-top: 3px solid var(--primary-color);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    // background-color: #333;
+
+    .topics-title {
+        font-size: 1.4rem;
+        margin-right: 12px;
+        margin-bottom: 8px;
+    }
+
+    .topic {
+        padding: 4px 12px;
+        border-radius: 4px;
+        margin: 0 8px;
+        margin-bottom: 8px;
+        font-size: 1.3rem;
+        color: var(--accent);
+        background-color: var(--black-hover);
+        cursor: pointer;
+        font-family: var(--font-family);
+        &:hover {
+            background-color: var(--accent-hover);
+            color: var(--black);
+        }
+    }
+
+    // margin-top: -200px;
+}
+
+.suggestion {
+    margin-left: 150px;
+}
+
+@media (max-width: 684px) {
+    .content {
+        align-items: center;
+    }
+
+    .content {
+        flex-direction: column-reverse;
+    }
+
+    .tools .article-tools {
+        height: 80px;
+        max-width: 300px;
+        width: 100%;
+        flex-direction: row;
+        position: relative;
+    }
+
+    .md-editor {
+        margin-left: 0;
+    }
+
+    .suggestion {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 480px) {
+}

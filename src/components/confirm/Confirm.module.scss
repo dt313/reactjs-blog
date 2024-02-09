@@ -1,0 +1,40 @@
+.wrapper {
+    width: 300px;
+    height: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    border: 2px solid #fff;
+    background-image: var(--background-repeat);
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.title {
+    flex: 1;
+    font-size: 1.4rem;
+    font-family: var(--font-family);
+    text-align: center;
+    margin-top: 12px;
+    margin-bottom: 24px;
+}
+
+.btn-block {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+}
+
+.btn {
+    background-color: var(--color);
+
+    &:hover {
+        background-color: var(--color);
+        opacity: 0.8;
+    }
+}

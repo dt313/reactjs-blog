@@ -1,0 +1,113 @@
+.header {
+    display: flex;
+    flex-direction: column;
+    max-width: var(--default-layout-width);
+    width: 100%;
+    --font-family: 'Fira Code', Monaco, Consolas, 'Ubuntu Mono', monospace;
+    position: relative;
+}
+
+.header-inner {
+    display: flex;
+}
+
+.header-logo {
+    display: flex;
+    flex: 1;
+    font-size: 1.7rem;
+}
+
+.header-logo::after {
+    content: '';
+    background: repeating-linear-gradient(90deg, var(--accent), var(--accent) 2px, transparent 0, transparent 10px);
+    display: block;
+    width: 100%;
+    right: 10px;
+}
+
+.logo-a {
+    height: 100%;
+}
+
+.logo {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    background: #78e2a0;
+    background: var(--accent);
+    color: #000;
+    padding: 5px 10px;
+    font-variant-ligatures: contextual;
+    font-feature-settings: 'liga', 'tnum', 'case', 'calt', 'zero', 'ss01', 'locl', 'calt';
+    font-family: var(--font-family);
+}
+
+.header .menu-trigger {
+    color: var(--accent);
+    border: 2px solid;
+    margin-left: 8px;
+    height: 100%;
+    padding: 3px 8px;
+    position: relative;
+    font-family: var(--font-family);
+    cursor: pointer;
+    display: none;
+}
+
+.header-menu {
+    margin: 20px 0;
+}
+
+.menu-iner {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+        flex: 0 0 auto;
+        margin-bottom: 10px;
+    }
+
+    a {
+        padding-right: 20px;
+        padding-bottom: 10px;
+        text-decoration: underline;
+        font-size: 1.5rem;
+        font-family: var(--font-family);
+        opacity: 0.88;
+    }
+    a.active {
+        opacity: 1;
+        color: var(--accent);
+    }
+}
+
+@media (max-width: 684px) {
+    .header .menu-trigger {
+        display: block;
+    }
+
+    .header-menu {
+        margin-top: 20px;
+        position: absolute;
+        right: 0;
+        top: 30px;
+        padding: 20px;
+        border: 2px solid var(--color);
+        z-index: 9;
+        background-color: var(--background-color);
+        li {
+            margin-bottom: 20px;
+        }
+    }
+
+    .hindden {
+        display: none;
+    }
+    .header .menu-iner {
+        flex-direction: column;
+    }
+}

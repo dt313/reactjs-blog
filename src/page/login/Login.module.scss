@@ -1,0 +1,56 @@
+.wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 96px;
+}
+
+.content {
+    max-width: 500px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.title {
+    font-size: 2rem;
+    font-family: var(--font-family);
+    text-transform: uppercase;
+    font-size: 2.2rem;
+    letter-spacing: 1px;
+    color: var(--color);
+    line-height: 2.5rem;
+    font-weight: bold;
+
+    .logo {
+        color: var(--accent);
+    }
+}
+
+.login-box {
+    margin-top: 24px;
+    width: 300px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .btn {
+        flex: 1;
+        width: 100%;
+        margin: 4px 0;
+        align-items: center;
+    }
+
+    .icon {
+        font-size: 1.7rem;
+        margin-top: 4px;
+    }
+}
+
+.back {
+    margin-top: 40px;
+    text-decoration: underline;
+}

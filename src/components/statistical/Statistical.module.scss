@@ -1,0 +1,39 @@
+.wrapper {
+    margin: 20px 0;
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0 4px;
+}
+
+.like,
+.comment {
+    display: flex;
+    align-items: center;
+    color: var(--text-color);
+    margin-right: 24px;
+    margin-left: 8px;
+    font-size: 1.5rem;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.around {
+    padding: 4px 8px;
+    margin-right: 8px;
+    background-color: var(--black-hover);
+    border-radius: 4px;
+}
+
+.active-like-icon {
+    color: red;
+}
+
+.icon {
+    font-size: 1.7rem;
+    margin-right: 8px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+        'Open Sans', 'Helvetica Neue', sans-serif;
+}

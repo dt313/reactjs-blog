@@ -1,0 +1,39 @@
+.tool {
+    padding: 20px;
+    height: 300px;
+    width: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid var(--accent);
+
+    .icon-block {
+        display: inline-block;
+        padding: 12px 0;
+        width: 50px;
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        margin: 8px;
+        border-radius: 9999px;
+        transition: background-color 0.15s linear;
+
+        &:hover {
+            background-color: var(--accent);
+            color: var(--black);
+        }
+    }
+
+    .icon {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .tool {
+        padding: 12px;
+    }
+}
