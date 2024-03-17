@@ -28,6 +28,15 @@ function Home() {
                                 {categories.subcategories.map((category, index) => {
                                     return (
                                         <tr key={index}>
+                                            {category.map((item, index) => {
+                                                return <td key={index}>{item || '-'}</td>;
+                                            })}
+                                        </tr>
+                                    );
+                                })}
+                                {/* {categories.subcategories.map((category, index) => {
+                                    return (
+                                        <tr key={index}>
                                             <td>{category.NS.name === '' ? '-' : category.NS.name}</td>
                                             <td>{category.DBMS.name === '' ? '-' : category.DBMS.name}</td>
                                             <td>{category.WEB.name === '' ? '-' : category.WEB.name}</td>
@@ -35,7 +44,7 @@ function Home() {
                                             <td>{category.CLOUD.name === '' ? '-' : category.CLOUD.name}</td>
                                         </tr>
                                     );
-                                })}
+                                })} */}
                             </tbody>
                         </table>
                     </div>

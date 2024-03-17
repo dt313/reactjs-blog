@@ -4,12 +4,12 @@ import { FaHeart, FaComment } from 'react-icons/fa6';
 import { GoCommentDiscussion } from 'react-icons/go';
 const cx = classNames.bind(styles);
 
-function Statistical({ like = 0, comment = 0, className, around }) {
+function Statistical({ like = 0, comment = 0, className, around, isLiked }) {
     const classes = cx('wrapper', { [className]: className });
     return (
         <div className={classes}>
             <div className={cx('like', around && 'around')}>
-                <FaHeart className={cx('icon', 'like-icon')} />
+                <FaHeart className={cx('icon', 'like-icon', isLiked && 'liked')} />
                 <span>{like}</span>
             </div>
             <div className={cx('comment', around && 'around')}>

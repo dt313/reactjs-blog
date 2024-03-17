@@ -6,99 +6,17 @@ import ArticleHeader from '~/components/article/ArticleHeader';
 import Statistical from '~/components/statistical';
 import CommentInput from '~/components/commentInput';
 import Comments from '~/components/comments';
+import { comments } from '~/config/comments';
 import { useState } from 'react';
 const markdown = `Here is some JavaScript code:
 > Hello nclude popular icons in your React projects easily with react-icons, which utilizes ES6 imports that allows you to include only the icons that your project is using.
 
 
-~~~js
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-
+~~~c
+int a = 1;
 ~~~
 `;
 
-const comments = [
-    {
-        avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-        content: 'Hello World',
-        time: '4 days ago',
-        reply: [
-            {
-                avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-                content: 'Hello World',
-                time: '4 days ago',
-                reply: [
-                    {
-                        avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-                        content: 'Hello World',
-                        time: '4 days ago',
-                    },
-                    {
-                        avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-                        content: 'Hello World',
-                        time: '4 days ago',
-                    },
-                    {
-                        avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-                        content: 'Hello World',
-                        time: '4 days ago',
-                    },
-                ],
-            },
-            {
-                avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-                content: 'Hello World',
-                time: '4 days ago',
-            },
-            {
-                avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-                content: 'Hello World',
-                time: '4 days ago',
-                reply: [
-                    {
-                        avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-                        content: 'Hello World',
-                        time: '4 days ago',
-                    },
-                    {
-                        avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-                        content: 'Hello World',
-                        time: '4 days ago',
-                    },
-                ],
-            },
-        ],
-    },
-    {
-        avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-        content: 'Hello World',
-        time: '4 days ago',
-    },
-    {
-        avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-        content: 'Hello World',
-        time: '4 days ago',
-    },
-    {
-        avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-        content: 'Hello World',
-        time: '4 days ago',
-    },
-];
 const cx = classNames.bind(styles);
 function AskBox() {
     const [isInput, setIsInput] = useState(false);

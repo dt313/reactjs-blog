@@ -16,6 +16,10 @@
     border: 1px solid var(--border-color);
     padding: 8px 12px;
     border-radius: 8px;
+    min-width: 100px;
+    max-width: 100%;
+    width: 100%;
+    overflow: hidden;
 }
 
 .name {
@@ -31,11 +35,16 @@
     color: var(--color);
     opacity: var(--opacity);
     margin-top: 8px;
+    white-space: normal;
+    word-break: break-word;
+    word-wrap: break-word;
+    max-width: 100%;
 }
 
 .tool-box {
     margin-top: 8px;
     display: flex;
+    flex-wrap: wrap;
 }
 
 .tool {
