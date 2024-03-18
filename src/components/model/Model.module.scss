@@ -29,9 +29,19 @@
 }
 
 .close-icon {
-    font-size: 2.4rem;
+    z-index: 99999;
+    font-size: 3rem;
     color: var(--two-night-color);
 }
 
 .body {
+}
+
+@media (max-width: 480px) {
+    .close {
+        top: 12px;
+        right: 12px;
+    }
+    .close-icon {
+    }
 }

@@ -1,15 +1,40 @@
 import classNames from 'classnames/bind';
 import Button from '~/components/button';
 import styles from './Write.module.scss';
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { IoIosClose } from 'react-icons/io';
 
 const cx = classNames.bind(styles);
-function Export({ topics, setTopics, thumbnail, onThumbnail, onSubmit }) {
+function Export({ topics, setTopics, thumbnail, setThumbnail, onSubmit }) {
     const [input, setInput] = useState('');
     const [isDuplicate, setIsDuplicate] = useState(false);
     const inputRef = useRef(null);
+    const fileRef = useRef(null);
 
+    const handleClickDes = () => {
+        fileRef.current.click();
+    };
+
+    const handleImageUpload = (e) => {
+        setThumbnail(URL.createObjectURL(e.target.files[0]));
+    };
+
+    const handleDrag = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        console.log(e.type);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            setThumbnail(URL.createObjectURL(e.dataTransfer.files[0]));
+        }
+    };
+
+    // handle topic
     useEffect(() => {
         console.log(topics);
         const input = inputRef.current;
@@ -40,29 +65,55 @@ function Export({ topics, setTopics, thumbnail, onThumbnail, onSubmit }) {
         const newTags = topics.filter((t) => t !== name);
         setTopics(newTags);
     };
+
     return (
         <div className={cx('export')}>
             <div className={cx('export-wrapper')}>
                 <div className={cx('left')}>
                     <h4>Preview</h4>
                     <div className={cx('upload')}>
-                        <p className={cx('description')}>
-                            Thêm một ảnh đại diện hấp dẫn sẽ giúp bài viết của bạn cuốn hút hơn với độc giả.
-                        </p>
-
-                        <span className={cx('upload-text')}>Kéo thả ảnh vào đây, hoặc bấm để chọn ảnh</span>
-                        <input type="file" hidden></input>
+                        {!thumbnail ? (
+                            <div
+                                className={cx('upload-box')}
+                                onDragEnter={(e) => handleDrag(e)}
+                                onDragOver={(e) => handleDrag(e)}
+                                onDrop={(e) => handleDrop(e)}
+                            >
+                                <p className={cx('description')}>
+                                    Thêm một ảnh đại diện hấp dẫn sẽ giúp bài viết của bạn cuốn hút hơn với độc giả.
+                                </p>
+                                <span className={cx('upload-text')} onClick={handleClickDes}>
+                                    Kéo thả ảnh vào đây, hoặc bấm để chọn ảnh
+                                </span>
+                            </div>
+                        ) : (
+                            <div
+                                className={cx('preview')}
+                                onClick={handleClickDes}
+                                onDragEnter={(e) => handleDrag(e)}
+                                onDragOver={(e) => handleDrag(e)}
+                                onDrop={(e) => handleDrop(e)}
+                            >
+                                <img className={cx('preview-img')} src={thumbnail} />
+                            </div>
+                        )}
+                        <input
+                            type="file"
+                            ref={fileRef}
+                            hidden
+                            onChange={(e) => handleImageUpload(e)}
+                            accept="image/*"
+                        ></input>
                     </div>
 
-                    <h4>Or</h4>
-                    <div className={cx('link-file')}>
-                        {/* <span className={cx('label')}>Image Link</span> */}
-                        <input
-                            className={cx('link-input')}
-                            placeholder="Copy link image in here"
-                            value={thumbnail}
-                            onChange={(e) => onThumbnail(e)}
-                        />
+                    <div className={cx('display')}>
+                        <input className={cx('display-title')} />
+                        <input className={cx('display-des')} placeholder="Mô tả sẽ được hiển thị ở đây..." />
+                        <p className={cx('note')}>
+                            <strong className={cx('note-title')}>Lưu ý: </strong>Chỉnh sửa tại đây sẽ thay đổi cách bài
+                            viết được hiển thị tại trang chủ, tin nổi bật - Chứ không ảnh hưởng tới nội dung bài viết
+                            của bạn.
+                        </p>
                     </div>
                 </div>
                 <div className={cx('right')}>

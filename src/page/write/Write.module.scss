@@ -62,9 +62,9 @@
 // EXPORT
 .export {
     width: 100%;
+    height: 100%;
     position: absolute;
     top: 50%;
-
     transform: translateY(-50%);
     display: flex;
     align-items: center;
@@ -75,6 +75,7 @@
 
 .export-wrapper {
     max-width: 1224px;
+    height: 100%;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -96,16 +97,13 @@
 }
 
 .upload {
+    width: 100%;
+    height: 100%;
     height: 172px;
     border-radius: 4px;
     background-color: var(--black-hover);
     color: var(--color);
-    padding: 24px;
-    font-size: 1.4rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
+    overflow: hidden;
 }
 
 .description {
@@ -114,14 +112,76 @@
     text-align: center;
 }
 
+.upload-box {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 24px;
+    font-size: 1.4rem;
+    border-radius: 4px;
+    background-color: var(--black-hover);
+    color: var(--color);
+}
+
 .upload-text {
     margin-top: 12px;
     color: var(--accent);
     text-align: center;
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+.preview {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+
+    &:hover {
+        &::before {
+            display: flex;
+        }
+    }
+    &::before {
+        content: 'Choose another image';
+        background-color: transparent;
+        position: absolute;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        padding: 12px 20px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #ffffff99;
+        color: black;
+        font-size: 1.4rem;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+            'Open Sans', 'Helvetica Neue', sans-serif;
+        text-align: center;
+        text-decoration: underline;
+
+        border-radius: 12px;
+        cursor: pointer;
+    }
 }
 
-.link-file {
+.preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.display {
     padding: 0 8px;
+    margin-top: 12px;
 }
 
 // .label {
@@ -131,14 +191,30 @@
 //     display: block;
 // }
 
-.link-input {
+.display-title,
+.display-des {
     background-color: transparent;
     width: 100%;
     padding: 8px 4px;
     color: var(--color);
     font-family: var(--system-ui);
+    font-size: 1.8rem;
+    font-weight: bold;
     border-bottom: 1px solid var(--accent);
+    margin-bottom: 12px;
+}
+
+.display-des {
+    margin-top: 0;
     font-size: 1.4rem;
+    font-weight: 400;
+}
+
+.note {
+    margin-top: 12px;
+    font-size: 1.4rem;
+    color: #b3b3b1;
+    font-family: var(--system-ui);
 }
 
 .right {
@@ -146,7 +222,6 @@
     align-items: flex-start;
     justify-content: flex-start;
     flex-direction: column;
-    width: 550px;
 }
 
 .tags-block {
@@ -231,8 +306,10 @@
     font-weight: normal;
 }
 
-@media (max-width: 684px) {
+@media (max-width: 768px) {
     .export-wrapper {
+        margin-top: 100px;
+        flex-wrap: nowrap;
         flex-direction: column;
     }
 

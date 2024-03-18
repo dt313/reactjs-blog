@@ -11,7 +11,7 @@ const cx = classNames.bind(styles);
 
 function App() {
     const [isRing, setIsRing] = useState(false);
-    const [isShow, setIsShow] = useState(true);
+    const [isShow, setIsShow] = useState(false);
     const handleClickOutside = () => {
         if (notiRef.current) {
             setIsShow(false);

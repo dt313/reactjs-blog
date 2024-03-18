@@ -84,9 +84,6 @@ function Write() {
     };
 
     // Export
-    const handleChangeThumbnail = useCallback((e) => {
-        setThumbnail(e.target.value);
-    }, []);
 
     const handleSubmit = () => {
         setModel(true);
@@ -148,7 +145,7 @@ function Write() {
                         topics={topics}
                         setTopics={setTopics}
                         thumbnail={thumbnail}
-                        onThumbnail={handleChangeThumbnail}
+                        setThumbnail={setThumbnail}
                         onSubmit={handleSubmit}
                     />
                 </Model>
