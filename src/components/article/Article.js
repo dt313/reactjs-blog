@@ -10,13 +10,9 @@ function Article({ classes, article }) {
     console.log(article);
 
     const navigate = useNavigate();
+
     return (
-        <div
-            className={cx('wrapper', classes)}
-            onClick={() => {
-                navigate('/article');
-            }}
-        >
+        <div className={cx('wrapper', classes)}>
             <ArticleHeader avatar={article?.avatar} author={article?.author} />
             <div className={cx('body')}>
                 <div className={cx('info')}>

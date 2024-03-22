@@ -1,2 +1,2 @@
-export { default as categories } from './categories';
+export { default as categories } from './uiConfig';
 export { default as routes } from './routes';

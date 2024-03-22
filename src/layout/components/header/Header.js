@@ -3,37 +3,9 @@ import classNames from 'classnames/bind';
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import useOutsideClick from '~/hook/useOutsideClick';
+import { MENU } from '~/config/uiConfig';
 const cx = classNames.bind(styles);
-const MENU = [
-    {
-        path: '/about',
-        title: 'about',
-    },
-    {
-        path: '/search',
-        title: 'search',
-    },
-    {
-        path: '/ask',
-        title: 'ask',
-    },
-    {
-        path: '/',
-        title: 'home',
-    },
-    {
-        path: '/write',
-        title: 'write',
-    },
-    {
-        path: '/login',
-        title: 'login',
-    },
-    {
-        path: '/profile',
-        title: 'profile',
-    },
-];
+
 function Header() {
     const [isShowMenu, setIsShowMenu] = useState(false);
     const handleClickOutside = () => {
@@ -64,9 +36,8 @@ function Header() {
                 <ul className={cx('menu-iner')}>
                     {MENU.map((item) => {
                         return (
-                            <li>
+                            <li key={item.path}>
                                 <NavLink
-                                    key={item.path}
                                     to={item.path}
                                     onClick={() => setIsShowMenu(false)}
                                     className={({ isActive }) => (isActive ? cx('active') : '')}

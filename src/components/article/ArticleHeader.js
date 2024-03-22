@@ -2,14 +2,17 @@ import styles from './Article.module.scss';
 import classNames from 'classnames/bind';
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import { BsBookmark, BsBookmarkFill } from 'react-icons/bs';
-import Image from '~/components/image';
 import Avatar from '../avatar/Avatar';
+import HeadlessTippy from '~/components/headless/HeadlessTippy';
+import MenuTippy from '~/components/menuTippy';
 const cx = classNames.bind(styles);
 function ArticleHeader({ author, avatar, className, isBookmarked, large = false, time = false }) {
     const classes = cx('header', {
         [className]: className,
         large,
     });
+
+    const menuList = ['Chia sẻ lên Facebbok', 'Sao chép liên kết', 'Báo cáo bài viết'];
     return (
         <div className={classes}>
             <div className={cx('user')}>
@@ -28,10 +31,16 @@ function ArticleHeader({ author, avatar, className, isBookmarked, large = false,
                         <BsBookmark className={cx('icon')} />
                     )}
                 </span>
-
-                <span className={cx('icon-wrap')}>
-                    <BiDotsHorizontalRounded className={cx('icon')} />
-                </span>
+                <HeadlessTippy
+                    interactive
+                    trigger="click"
+                    offset={[-90, -120]}
+                    menu={<MenuTippy width={200} list={menuList} />}
+                >
+                    <span className={cx('icon-wrap')}>
+                        <BiDotsHorizontalRounded className={cx('icon')} />
+                    </span>
+                </HeadlessTippy>
             </div>
         </div>
     );

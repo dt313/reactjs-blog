@@ -1,0 +1,20 @@
+.menu-list {
+    width: 80px;
+    height: auto;
+    background-color: #fff;
+    color: #333;
+    border-radius: 4px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+
+    .menu-item {
+        width: 100%;
+        padding: 6px;
+        font-size: 1.3rem;
+        text-align: center;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+    .menu-item:hover {
+        background-color: var(--accent);
+    }
+}
