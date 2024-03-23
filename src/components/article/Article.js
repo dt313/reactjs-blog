@@ -4,17 +4,21 @@ import Image from '~/components/image';
 import { useNavigate } from 'react-router-dom';
 import ArticleHeader from './ArticleHeader';
 import { BiSolidLike, BiSolidComment } from 'react-icons/bi';
+import { useState } from 'react';
 
 const cx = classNames.bind(styles);
 function Article({ classes, article }) {
-    console.log(article);
-
     const navigate = useNavigate();
+
+    // handle click article
+    const handleClickArticle = () => {
+        navigate(`/article/${article.aid}`);
+    };
 
     return (
         <div className={cx('wrapper', classes)}>
-            <ArticleHeader avatar={article?.avatar} author={article?.author} />
-            <div className={cx('body')}>
+            <ArticleHeader username={article?.username} avatar={article?.avatar} author={article?.author} />
+            <div className={cx('body')} onClick={handleClickArticle}>
                 <div className={cx('info')}>
                     <h2 className={cx('title')}>{article?.title}</h2>
                     <div className={cx('description')}>{article?.description}</div>

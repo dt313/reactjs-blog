@@ -5,17 +5,35 @@ import { BsBookmark, BsBookmarkFill } from 'react-icons/bs';
 import Avatar from '../avatar/Avatar';
 import HeadlessTippy from '~/components/headless/HeadlessTippy';
 import MenuTippy from '~/components/menuTippy';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+
 const cx = classNames.bind(styles);
-function ArticleHeader({ author, avatar, className, isBookmarked, large = false, time = false }) {
+function ArticleHeader({ author, username, avatar, className, large = false, time = false }) {
+    const [isBookmarked, setIsBookmarked] = useState(false);
+    const navigate = useNavigate();
+
     const classes = cx('header', {
         [className]: className,
         large,
     });
 
+    // menu tippy
     const menuList = ['Chia sẻ lên Facebbok', 'Sao chép liên kết', 'Báo cáo bài viết'];
+
+    // handle click user
+    const handleClickUser = () => {
+        navigate(`/profile/@${username}`);
+    };
+
+    // handle bookmark
+    const handleBookmark = () => {
+        setIsBookmarked(!isBookmarked);
+    };
+
     return (
         <div className={classes}>
-            <div className={cx('user')}>
+            <div className={cx('user')} onClick={handleClickUser}>
                 <Avatar className={cx('avatar')} src={avatar} alt="name" />
                 <div className={cx('blog-info')}>
                     <span className={cx('author')}>{author}</span>
@@ -26,9 +44,9 @@ function ArticleHeader({ author, avatar, className, isBookmarked, large = false,
             <div className={cx('icon-box')}>
                 <span className={cx('icon-wrap')}>
                     {isBookmarked ? (
-                        <BsBookmarkFill className={cx('icon', 'active')} />
+                        <BsBookmarkFill className={cx('icon', 'active')} onClick={handleBookmark} />
                     ) : (
-                        <BsBookmark className={cx('icon')} />
+                        <BsBookmark className={cx('icon')} onClick={handleBookmark} />
                     )}
                 </span>
                 <HeadlessTippy

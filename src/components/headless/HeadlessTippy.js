@@ -7,7 +7,7 @@ function HeadlessTippy({ children, menu, ...props }) {
         <Tippy
             {...props}
             render={(attrs) => (
-                <div className="box" tabIndex="-1" {...attrs}>
+                <div className={cx('box')} tabIndex="-1" {...attrs}>
                     <div className={cx('container')}>{menu}</div>
                 </div>
             )}

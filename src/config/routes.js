@@ -6,8 +6,8 @@ const routes = {
     ask: '/ask',
     write: '/write',
     about: '/about',
-    profile: '/profile',
-    article: '/article',
+    profile: '/profile/:username',
+    article: '/article/:id',
     error: '/*',
 };
 

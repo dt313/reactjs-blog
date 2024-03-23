@@ -28,7 +28,7 @@ const results = [
         type: 'artical',
     },
 ];
-function Search({ value, setValue }) {
+function Search({ value, onChangeInput, onClearInput }) {
     const inputRef = useRef();
     const [loading, setLoading] = useState(false);
 
@@ -40,13 +40,8 @@ function Search({ value, setValue }) {
 
     const boxRef = useOutsideClick(handleClickOutside);
 
-    const handleInput = (e) => {
-        setValue(e.target.value);
-    };
-
     const handleClear = () => {
-        setValue('');
-        //  setResults([]);
+        onClearInput();
         inputRef.current.focus();
     };
     return (
@@ -58,7 +53,7 @@ function Search({ value, setValue }) {
                 className={cx('search-input')}
                 placeholder="Tìm kiếm ..."
                 value={value}
-                onChange={handleInput}
+                onChange={onChangeInput}
             />
             {!!value && (
                 <span className={cx('icon-block')} onClick={handleClear}>

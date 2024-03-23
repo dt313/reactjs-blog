@@ -10,46 +10,17 @@ import Comments from '~/components/comments';
 import { comments } from '~/config/comments';
 import { useState } from 'react';
 import { MdClose } from 'react-icons/md';
-
+import { markdownEX } from '~/config/uiConfig';
+import { useNavigate } from 'react-router-dom';
 const cx = classNames.bind(styles);
-const markdown = `Here is some JavaScript code:
-> Hello nclude popular icons in your React projects easily with react-icons, which utilizes ES6 imports that allows you to include only the icons that your project is using.
 
-
-~~~js
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-~~~
-`;
 const article = {
     author: 'Honnh Jonh',
     avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
     thumbnail: 'https://fullstack.edu.vn/static/media/f8-icon.18cd71cfcfa33566a22b.png',
     title: 'What is Lorem Ipsum?',
-    description: markdown,
+    description: markdownEX,
+    username: 'danh3',
     like: 10,
     comment: 20,
     topic: ['hello', 'world'],
@@ -58,7 +29,12 @@ const article = {
 function Detail() {
     const [isInput, setIsInput] = useState(false);
     const [isShowCommentsBox, setIsShowCommentsBox] = useState(false);
+    const navigate = useNavigate();
 
+    // handle click topik
+    const handleClickTopic = (topic) => {
+        navigate(`/search?topic=${topic}`);
+    };
     return (
         <div className={cx('wrapper')}>
             <div className={cx('content')}>
@@ -72,6 +48,8 @@ function Detail() {
                     <h1 className={cx('title')}>{article?.title}</h1>
                     <div className={cx('article-header')}>
                         <ArticleHeader
+                            time={true}
+                            username={article?.username}
                             className={cx('header')}
                             large
                             author={article?.author}
@@ -89,7 +67,7 @@ function Detail() {
 
                         {article?.topic?.map((topic, index) => {
                             return (
-                                <span key={index} className={cx('topic')}>
+                                <span key={index} className={cx('topic')} onClick={() => handleClickTopic(topic)}>
                                     {topic}
                                 </span>
                             );
