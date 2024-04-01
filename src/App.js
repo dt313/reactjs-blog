@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { publicRoutes } from './routes/routes';
 import DefaultLayout from './layout/DefaultLayout';
@@ -7,6 +7,7 @@ import styles from './App.module.scss';
 import { PiBellDuotone, PiBellRingingDuotone } from 'react-icons/pi';
 import Avatar from './components/avatar';
 import useOutsideClick from './hook/useOutsideClick';
+import axios from 'axios';
 const cx = classNames.bind(styles);
 
 function App() {
