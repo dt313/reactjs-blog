@@ -16,9 +16,9 @@
     border: 1px solid var(--border-color);
     padding: 8px 12px;
     border-radius: 8px;
-    min-width: 100px;
+    min-width: 240px;
     max-width: 100%;
-    width: 100%;
+    width: fit-content;
     overflow: hidden;
 }
 
@@ -132,6 +132,19 @@
 }
 
 @media (max-width: 768px) {
+    .comments {
+        margin-left: 0;
+    }
+
+    .label {
+        margin-left: 48px;
+    }
+}
+
+@media (max-width: 480px) {
+    .text-box {
+        min-width: 100px;
+    }
     .comments {
         margin-left: 0;
     }

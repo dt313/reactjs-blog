@@ -58,7 +58,6 @@ function Button({
         rounded,
     });
 
-    console.log(leftIcon);
     return (
         <Comp className={classes} {...props}>
             {leftIcon && <span className={cx('icon')}>{leftIcon}</span>}

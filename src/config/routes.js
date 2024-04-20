@@ -1,6 +1,7 @@
 const routes = {
     home: '/',
     login: '/login',
+    register: '/register',
     search: '/search',
     ask_slug: '/ask/:slug',
     ask: '/ask',

@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import Button from '~/components/button/Button';
-import styles from './Login.module.scss';
-import classNames from 'classnames/bind';
 import { ImGithub, ImGoogle3, ImFacebook, ImMail } from 'react-icons/im';
+import styles from './Register.module.scss';
+import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
 
-function Login() {
+function Register() {
     const [isLoginWithEmail, setIsLoginWithEmail] = useState(false);
+
     const [info, setInfo] = useState({
         email: '',
         pwd: '',
+        cfpwd: '',
     });
 
     const handleChange = (e) => {
@@ -30,7 +32,7 @@ function Login() {
     return (
         <div className={cx('wrapper')}>
             <h3 className={cx('title')}>
-                Đăng nhập vào <span className={cx('logo')}>question.?</span>
+                Đăng Kí vào <span className={cx('logo')}>question.?</span>
             </h3>
             {isLoginWithEmail ? (
                 <form className={cx('login-form')} onSubmit={(e) => handleSubmit(e)}>
@@ -55,21 +57,32 @@ function Login() {
                         value={info.pwd}
                         onChange={(e) => handleChange(e)}
                     />
+                    <label htmlFor="cfpwd" className={cx('login-label')}>
+                        Confirm password
+                    </label>
+                    <input
+                        type="password"
+                        placeholder="Abc12345@"
+                        className={cx('login-input')}
+                        name="cfpwd"
+                        value={info.cfpwd}
+                        onChange={(e) => handleChange(e)}
+                    />
                     <Button secondary className={cx('login-btn')}>
-                        Đăng nhập
+                        Đăng kí
                     </Button>
                 </form>
             ) : (
                 <div className={cx('content')}>
                     <div className={cx('login-box')}>
                         <Button secondary className={cx('btn')} leftIcon={<ImGoogle3 className={cx('icon')} />}>
-                            Đăng nhập với Google
+                            Đăng kí với Google
                         </Button>
                         <Button secondary className={cx('btn')} leftIcon={<ImGithub className={cx('icon')} />}>
-                            Đăng nhập với Github
+                            Đăng kí với Github
                         </Button>
                         <Button secondary className={cx('btn')} leftIcon={<ImFacebook className={cx('icon')} />}>
-                            Đăng nhập với Facebook
+                            Đăng kí với Facebook
                         </Button>
                         <Button
                             secondary
@@ -77,7 +90,7 @@ function Login() {
                             leftIcon={<ImMail className={cx('icon')} />}
                             onClick={() => setIsLoginWithEmail(true)}
                         >
-                            Đăng nhập với Email
+                            Đăng kí với Email
                         </Button>
                     </div>
                 </div>
@@ -87,12 +100,12 @@ function Login() {
                 <Button text className={cx('back')} to={'/'}>
                     Quay về trang chủ
                 </Button>
-                <Button text className={cx('back')} to={'/register'}>
-                    Đăng kí
+                <Button text className={cx('back')} to={'/login'}>
+                    Đăng nhập
                 </Button>
             </div>
         </div>
     );
 }
 
-export default Login;
+export default Register;

@@ -10,10 +10,12 @@ import Write from '~/page/write';
 import AskBox from '~/page/askBox';
 import About from '~/page/about';
 import Profile from '~/page/profile';
+import Register from '~/page/register/Register';
 
 const publicRoutes = [
     { path: routes.home, component: Home, layout: DefaultLayout },
     { path: routes.login, component: Login, layout: OtherLayout },
+    { path: routes.register, component: Register, layout: OtherLayout },
     { path: routes.ask, component: AskInput, layout: DefaultLayout },
     { path: routes.write, component: Write, layout: DefaultLayout },
     { path: routes.about, component: About, layout: DefaultLayout },
