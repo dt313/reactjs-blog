@@ -3,10 +3,13 @@ import Button from '~/components/button/Button';
 import { ImGithub, ImGoogle3, ImFacebook, ImMail } from 'react-icons/im';
 import styles from './Register.module.scss';
 import classNames from 'classnames/bind';
+import { logout } from '~/redux/actions/authAction';
+import { useDispatch } from 'react-redux';
 const cx = classNames.bind(styles);
 
 function Register() {
-    const [isLoginWithEmail, setIsLoginWithEmail] = useState(false);
+    const dispatch = useDispatch();
+    const [isLoginWithEmail, setIsLoginWithEmail] = useState(true);
 
     const [info, setInfo] = useState({
         email: '',
@@ -24,9 +27,11 @@ function Register() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(info);
+        // console.log(info);
 
         // send data to server
+        // test logout
+        dispatch(logout());
     };
 
     return (

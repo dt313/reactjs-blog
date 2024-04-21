@@ -1,13 +1,14 @@
 import { Fragment, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { publicRoutes } from './routes/routes';
+import { protectedRoutes, publicRoutes } from './routes/routes';
 import DefaultLayout from './layout/DefaultLayout';
 import classNames from 'classnames/bind';
 import styles from './App.module.scss';
 import { PiBellDuotone, PiBellRingingDuotone } from 'react-icons/pi';
 import Avatar from './components/avatar';
 import useOutsideClick from './hook/useOutsideClick';
-import axios from 'axios';
+import { useSelector } from 'react-redux';
+import ProtecedRoute from './routes/ProtectedRoute';
 const cx = classNames.bind(styles);
 
 function App() {
@@ -18,6 +19,9 @@ function App() {
             setIsShow(false);
         }
     };
+
+    const auth = useSelector((state) => state.auth);
+    console.log(auth);
 
     const notiRef = useOutsideClick(handleClickOutside);
     return (
@@ -40,6 +44,30 @@ function App() {
                                 element={
                                     <Layout>
                                         <Page />
+                                    </Layout>
+                                }
+                            />
+                        );
+                    })}
+
+                    {protectedRoutes.map((route, index) => {
+                        let Layout = DefaultLayout;
+
+                        if (route.layout) {
+                            Layout = route.layout;
+                        } else if (route.layout === null) {
+                            Layout = Fragment;
+                        }
+                        let Page = route.component;
+                        return (
+                            <Route
+                                key={index}
+                                path={route.path}
+                                element={
+                                    <Layout>
+                                        <ProtecedRoute>
+                                            <Page />
+                                        </ProtecedRoute>
                                     </Layout>
                                 }
                             />

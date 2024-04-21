@@ -3,10 +3,21 @@ import Button from '~/components/button/Button';
 import styles from './Login.module.scss';
 import classNames from 'classnames/bind';
 import { ImGithub, ImGoogle3, ImFacebook, ImMail } from 'react-icons/im';
+import { useDispatch } from 'react-redux';
+import { login } from '~/redux/actions/authAction';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 const cx = classNames.bind(styles);
 
 function Login() {
-    const [isLoginWithEmail, setIsLoginWithEmail] = useState(false);
+    const dispath = useDispatch();
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    let prePath = '';
+    if (searchParams.size > 0) {
+        prePath = searchParams.get('continue');
+    }
+
+    const [isLoginWithEmail, setIsLoginWithEmail] = useState(true);
     const [info, setInfo] = useState({
         email: '',
         pwd: '',
@@ -22,9 +33,22 @@ function Login() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(info);
+        // fetch api to recveive token
+        // store token to session
+        dispath(
+            login({
+                accessToken:
+                    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkRhbmggVHVhbiIsImFnZSI6MTIsInVzZXJpZCI6IjEiLCJhdmF0YXIiOiJpbWciLCJpYXQiOjE1MTYyMzkwMjJ9.5z2JFMWsUrBYPlUiGyP-dyivkfIJHmn13vJJVvSuAUE',
+                refreshToken:
+                    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkRhbmggVHVhbiIsImFnZSI6MTIsInVzZXJpZCI6IjEiLCJhdmF0YXIiOiJpbWciLCJpYXQiOjE1MTYyMzkwMjJ9.5z2JFMWsUrBYPlUiGyP-dyivkfIJHmn13vJJVvSuAUE',
+                data: {
+                    username: 'Danh Tuan',
+                    id: '2',
+                },
+            }),
+        );
 
-        // send data to server
+        navigate(prePath);
     };
 
     return (

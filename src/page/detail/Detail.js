@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { MdClose } from 'react-icons/md';
 import { markdownEX } from '~/config/uiConfig';
 import { useNavigate } from 'react-router-dom';
+
 const cx = classNames.bind(styles);
 
 const article = {
@@ -35,6 +36,9 @@ function Detail() {
     const handleClickTopic = (topic) => {
         navigate(`/search?topic=${topic}`);
     };
+
+    // TEST
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('content')}>

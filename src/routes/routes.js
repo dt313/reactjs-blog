@@ -17,14 +17,15 @@ const publicRoutes = [
     { path: routes.login, component: Login, layout: OtherLayout },
     { path: routes.register, component: Register, layout: OtherLayout },
     { path: routes.ask, component: AskInput, layout: DefaultLayout },
-    { path: routes.write, component: Write, layout: DefaultLayout },
     { path: routes.about, component: About, layout: DefaultLayout },
-    { path: routes.profile, component: Profile, layout: DefaultLayout },
     { path: routes.search, component: SearchPage, layout: DefaultLayout },
     { path: routes.article, component: Detail, layout: DefaultLayout },
     { path: routes.ask_slug, component: AskBox, layout: DefaultLayout },
 ];
-const protectedRoutes = [];
+const protectedRoutes = [
+    { path: routes.profile, component: Profile, layout: DefaultLayout },
+    { path: routes.write, component: Write, layout: DefaultLayout },
+];
 const privateRoutes = [];
 
 export { publicRoutes, privateRoutes, protectedRoutes };
