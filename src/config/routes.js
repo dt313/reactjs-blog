@@ -9,6 +9,7 @@ const routes = {
     about: '/about',
     profile: '/profile/:username',
     article: '/article/:id',
+    notfound: '/404',
     error: '/*',
 };
 

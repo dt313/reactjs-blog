@@ -11,18 +11,20 @@ import AskBox from '~/page/askBox';
 import About from '~/page/about';
 import Profile from '~/page/profile';
 import Register from '~/page/register/Register';
+import NotFound from '~/page/404';
 
 const publicRoutes = [
     { path: routes.home, component: Home, layout: DefaultLayout },
     { path: routes.login, component: Login, layout: OtherLayout },
     { path: routes.register, component: Register, layout: OtherLayout },
-    { path: routes.ask, component: AskInput, layout: DefaultLayout },
     { path: routes.about, component: About, layout: DefaultLayout },
     { path: routes.search, component: SearchPage, layout: DefaultLayout },
     { path: routes.article, component: Detail, layout: DefaultLayout },
     { path: routes.ask_slug, component: AskBox, layout: DefaultLayout },
+    { path: routes.notfound, component: NotFound, layout: OtherLayout },
 ];
 const protectedRoutes = [
+    { path: routes.ask, component: AskInput, layout: DefaultLayout },
     { path: routes.profile, component: Profile, layout: DefaultLayout },
     { path: routes.write, component: Write, layout: DefaultLayout },
 ];

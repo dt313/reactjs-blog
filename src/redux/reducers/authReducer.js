@@ -1,9 +1,14 @@
 import { LOGIN, LOGOUT } from '../actions/authAction';
 
+import { token } from '~/utils';
+
 const initialState = {
-    isAuthtication: !!localStorage.getItem('accessToken'),
+    isAuthtication: !!token.getAccessToken(),
     user: {},
 };
+
+console.log('init :', token.getAccessToken());
+
 const authReducer = (state = initialState, action) => {
     switch (action.type) {
         case LOGIN:

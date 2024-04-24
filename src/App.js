@@ -1,14 +1,15 @@
 import { Fragment, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { protectedRoutes, publicRoutes } from './routes/routes';
+import { PiBellDuotone, PiBellRingingDuotone } from 'react-icons/pi';
 import DefaultLayout from './layout/DefaultLayout';
 import classNames from 'classnames/bind';
 import styles from './App.module.scss';
-import { PiBellDuotone, PiBellRingingDuotone } from 'react-icons/pi';
+import { protectedRoutes, publicRoutes } from './routes/routes';
 import Avatar from './components/avatar';
 import useOutsideClick from './hook/useOutsideClick';
 import { useSelector } from 'react-redux';
 import ProtecedRoute from './routes/ProtectedRoute';
+import { userService } from './services';
 const cx = classNames.bind(styles);
 
 function App() {
@@ -20,10 +21,19 @@ function App() {
         }
     };
 
-    const auth = useSelector((state) => state.auth);
-    console.log(auth);
+    useEffect(() => {
+        // test
+        const fetchAPI = async () => {
+            const result = await userService.getAllUsers();
+            console.log(result);
+        };
+        fetchAPI();
+    }, []);
+
+    const isAuthentication = useSelector((state) => state.auth.isAuthtication);
 
     const notiRef = useOutsideClick(handleClickOutside);
+
     return (
         <Router>
             <div className="App">
@@ -75,40 +85,44 @@ function App() {
                     })}
                 </Routes>
 
-                <div className={cx(isShow ? 'container' : 'bell')} ref={notiRef}>
-                    {isShow && (
-                        <div className={cx('header')}>
-                            <h3 className={cx('title')}>Thông báo</h3>
-                            <p className={cx('read-all')}>Đánh dấu đã đọc</p>
-                        </div>
-                    )}
+                {isAuthentication && (
+                    <div className={cx(isShow ? 'container' : 'bell')} ref={notiRef}>
+                        {isShow && (
+                            <div className={cx('header')}>
+                                <h3 className={cx('title')}>Thông báo</h3>
+                                <p className={cx('read-all')}>Đánh dấu đã đọc</p>
+                            </div>
+                        )}
 
-                    <div className={cx('noti-list')}>
-                        {isShow &&
-                            [1, 2, 3, 4, 5, 6, 7].map((val, index) => {
-                                return (
-                                    <div className={cx('noti-item')} key={val}>
-                                        <Avatar className={cx('avatar')} />
-                                        <div className={cx('text-box')}>
-                                            <p className={cx('content')}>Wuu. đã nhắc tới bạn trong một bình luận</p>
-                                            <span className={cx('time')}>4 year ago</span>
+                        <div className={cx('noti-list')}>
+                            {isShow &&
+                                [1, 2, 3, 4, 5, 6, 7].map((val, index) => {
+                                    return (
+                                        <div className={cx('noti-item')} key={val}>
+                                            <Avatar className={cx('avatar')} />
+                                            <div className={cx('text-box')}>
+                                                <p className={cx('content')}>
+                                                    Wuu. đã nhắc tới bạn trong một bình luận
+                                                </p>
+                                                <span className={cx('time')}>4 year ago</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                );
-                            })}
-                    </div>
+                                    );
+                                })}
+                        </div>
 
-                    {isRing ? (
-                        <PiBellRingingDuotone
-                            className={cx('icon')}
-                            onClick={(e) => {
-                                setIsShow(!isShow);
-                            }}
-                        />
-                    ) : (
-                        <PiBellDuotone className={cx('icon')} onClick={() => setIsShow(!isShow)} />
-                    )}
-                </div>
+                        {isRing ? (
+                            <PiBellRingingDuotone
+                                className={cx('icon')}
+                                onClick={(e) => {
+                                    setIsShow(!isShow);
+                                }}
+                            />
+                        ) : (
+                            <PiBellDuotone className={cx('icon')} onClick={() => setIsShow(!isShow)} />
+                        )}
+                    </div>
+                )}
             </div>
         </Router>
     );

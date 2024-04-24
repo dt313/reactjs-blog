@@ -1,3 +1,5 @@
+import { token } from '~/utils';
+
 const categories = {
     header: ['NS', 'DBMS', 'WEB', 'APP', 'CLOUD'],
     subcategories: [
@@ -7,39 +9,6 @@ const categories = {
         ['IP', 'Relation', 'Cor', 'Web-app', ''],
     ],
 };
-
-export const MENU = [
-    {
-        path: '/',
-        title: 'home',
-    },
-    {
-        path: '/search',
-        title: 'search',
-    },
-
-    {
-        path: '/ask',
-        title: 'ask',
-    },
-
-    {
-        path: '/write',
-        title: 'write',
-    },
-    {
-        path: '/login',
-        title: 'login',
-    },
-    {
-        path: '/about',
-        title: 'about',
-    },
-    {
-        path: '/profile',
-        title: 'profile',
-    },
-];
 
 export const profileTag = [
     {

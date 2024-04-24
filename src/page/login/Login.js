@@ -48,7 +48,7 @@ function Login() {
             }),
         );
 
-        navigate(prePath);
+        navigate(prePath || '/');
     };
 
     return (
