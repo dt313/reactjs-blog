@@ -10,19 +10,20 @@ const findArray = (length) => {
     }
     return MAX_ARRAY.slice(0, length);
 };
-function Pagination({ value, setValue }) {
+function Pagination({ value, handleChangePage }) {
     const realArray = findArray(4);
+
     // console.log(realArray);
     return (
         <div className={cx('wrapper')}>
-            <button className={cx('page')} onClick={() => setValue(value > 1 ? value - 1 : 1)}>
+            <button className={cx('page')} onClick={() => handleChangePage(value > 1 ? value - 1 : 1)}>
                 &laquo;
             </button>
             {realArray.map((_value, index) => (
                 <button
                     className={cx('page', { active: _value == value })}
                     key={index}
-                    onClick={() => setValue(_value)}
+                    onClick={() => handleChangePage(_value)}
                 >
                     {_value}
                 </button>
@@ -30,7 +31,7 @@ function Pagination({ value, setValue }) {
 
             <button
                 className={cx('page')}
-                onClick={() => setValue(value < realArray.length ? value + 1 : realArray.length)}
+                onClick={() => handleChangePage(value < realArray.length ? value + 1 : realArray.length)}
             >
                 &raquo;
             </button>

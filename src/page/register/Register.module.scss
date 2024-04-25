@@ -65,7 +65,7 @@
 
 // Login Form
 
-.login-form {
+.register-form {
     max-width: 400px;
     width: 100%;
     height: auto;
@@ -75,14 +75,14 @@
     align-items: center;
 }
 
-.login-label {
+.register-label {
     align-self: flex-start;
     margin-bottom: 8px;
     font-size: 1.6rem;
     font-family: var(--font-family);
 }
 
-.login-input {
+.register-input {
     min-width: 250px;
     width: 100%;
     height: 44px;
@@ -94,9 +94,16 @@
     border: 1px solid var(--accent);
 }
 
-.login-input {
+.register-input {
 }
 
-.login-btn {
+.register-btn {
     margin-top: 12px;
+}
+
+.register-error {
+    font-size: 1.1rem;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+        'Open Sans', 'Helvetica Neue', sans-serif;
+    color: red;
 }

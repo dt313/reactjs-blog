@@ -22,7 +22,7 @@ function Header() {
     };
 
     const handleClick = (e, item) => {
-        if (item.title == 'logout') {
+        if (item.title === 'logout') {
             e.preventDefault();
             item.action();
             window.location.href = '/login';
@@ -47,7 +47,7 @@ function Header() {
             title: 'write',
         },
         {
-            path: '/profile/1',
+            path: '/profile/@me',
             title: 'profile',
         },
         {

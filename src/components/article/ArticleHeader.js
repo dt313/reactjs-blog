@@ -13,13 +13,17 @@ function ArticleHeader({ author, username, avatar, className, large = false, tim
     const [isBookmarked, setIsBookmarked] = useState(false);
     const navigate = useNavigate();
 
-    const classes = cx('header', {
-        [className]: className,
-        large,
-    });
+    const [visible, setVisible] = useState(false);
+
+    const show = () => {
+        setVisible(true);
+    };
+    const hide = () => {
+        setVisible(false);
+    };
 
     // menu tippy
-    const menuList = ['Chia sẻ lên Facebbok', 'Sao chép liên kết', 'Báo cáo bài viết'];
+    const menuList = [{ title: 'Chia sẻ lên Facebbok' }, { title: 'Sao chép liên kết' }, { title: 'Báo cáo bài viết' }];
 
     // handle click user
     const handleClickUser = () => {
@@ -31,6 +35,10 @@ function ArticleHeader({ author, username, avatar, className, large = false, tim
         setIsBookmarked(!isBookmarked);
     };
 
+    const classes = cx('header', {
+        [className]: className,
+        large,
+    });
     return (
         <div className={classes}>
             <div className={cx('user')} onClick={handleClickUser}>
@@ -51,11 +59,12 @@ function ArticleHeader({ author, username, avatar, className, large = false, tim
                 </span>
                 <HeadlessTippy
                     interactive
-                    trigger="click"
-                    offset={[-90, -120]}
-                    menu={<MenuTippy width={200} list={menuList} />}
+                    visible={visible}
+                    offset={[-90, -150]}
+                    onClickOutside={hide}
+                    menu={<MenuTippy width={200} list={menuList} hide={hide} />}
                 >
-                    <span className={cx('icon-wrap')}>
+                    <span className={cx('icon-wrap')} onClick={show}>
                         <BiDotsHorizontalRounded className={cx('icon')} />
                     </span>
                 </HeadlessTippy>

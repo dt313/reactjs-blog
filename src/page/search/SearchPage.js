@@ -8,19 +8,21 @@ import Pagination from '~/components/pagination';
 import { cards, searchTag } from '~/config/uiConfig';
 import { useSearchParams } from 'react-router-dom';
 import { MdClose } from 'react-icons/md';
+import useTitle from '~/hook/useTitle';
 
 const cx = classNames.bind(styles);
 
 function SearchPage() {
+    useTitle('Search');
     const [searchParams, setSearchParams] = useSearchParams();
+    const [loading, setLoading] = useState(false);
     const [searchValue, setSearchValue] = useState(searchParams.get('q') || '');
     const [page, setPage] = useState(1);
-    const [loading, setLoading] = useState(false);
     const [tag, setTag] = useState(searchTag[0].tag || '');
     const [topic, setTopic] = useState(searchParams.get('topic') || '');
     let params = {};
 
-    const setParams = ({ tag, topic, q }) => {
+    const setParams = ({ tag, topic, q, page }) => {
         let params = {};
         if (tag !== '' && tag !== undefined) {
             params.tag = tag;
@@ -31,12 +33,16 @@ function SearchPage() {
         if (q !== '' && q !== undefined) {
             params.q = q;
         }
+        if (page !== '' && page !== undefined) {
+            params.page = page;
+        }
         setSearchParams(params);
     };
     useEffect(() => {
         params.tag = searchTag[0].tag;
         params.topic = topic;
         params.q = searchValue;
+        params.page = page;
         setParams(params);
     }, []);
 
@@ -47,7 +53,7 @@ function SearchPage() {
             params.tag = searchTag[idx].tag;
             params.q = searchValue;
             params.topic = topic;
-            console.log(params);
+            params.page = page;
             setParams(params);
         },
         [tag, searchParams],
@@ -59,6 +65,7 @@ function SearchPage() {
         params.tag = searchTag[idx].tag;
         params.q = e.target.value;
         params.topic = topic;
+        params.page = page;
         setParams(params);
         setSearchValue(e.target.value);
     };
@@ -70,6 +77,7 @@ function SearchPage() {
         params.tag = searchTag[idx].tag;
         params.q = '';
         params.topic = topic;
+        params.page = page;
         setParams(params);
     };
 
@@ -79,8 +87,19 @@ function SearchPage() {
         params.tag = searchTag[idx].tag;
         params.q = searchValue;
         params.topic = '';
+        params.page = page;
         setParams(params);
         setTopic('');
+    };
+
+    const handleChangePage = (page) => {
+        const idx = searchTag.findIndex((item) => item.tag === tag);
+        setPage(page);
+        params.tag = searchTag[idx].tag;
+        params.q = searchValue;
+        params.topic = topic;
+        params.page = page;
+        setParams(params);
     };
 
     return (
@@ -136,7 +155,7 @@ function SearchPage() {
                 </div>
 
                 <div className={cx('pagination')}>
-                    <Pagination value={page} setValue={setPage} />
+                    <Pagination value={page} setValue={setPage} handleChangePage={handleChangePage} />
                 </div>
             </div>
         </div>

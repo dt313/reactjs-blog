@@ -9,10 +9,12 @@
     border-radius: 12px;
     border: 2px solid #fff;
     background-image: var(--background-repeat);
+    background-color: var(--background-color);
     position: fixed;
     top: 20%;
     left: 50%;
     transform: translate(-50%, -50%);
+    z-index: 3;
 }
 
 .title {

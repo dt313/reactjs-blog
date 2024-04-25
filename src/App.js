@@ -10,6 +10,8 @@ import useOutsideClick from './hook/useOutsideClick';
 import { useSelector } from 'react-redux';
 import ProtecedRoute from './routes/ProtectedRoute';
 import { userService } from './services';
+import Toast from './components/toast/Toast';
+
 const cx = classNames.bind(styles);
 
 function App() {
@@ -124,6 +126,8 @@ function App() {
                     </div>
                 )}
             </div>
+
+            <Toast placement="top left" duration={5000} />
         </Router>
     );
 }

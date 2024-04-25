@@ -7,10 +7,12 @@ import 'react-markdown-editor-lite/lib/index.css';
 import Button from '~/components/button/Button';
 import Model from '~/components/model';
 import Export from './Export';
+import useTitle from '~/hook/useTitle';
 const MAX_TITLE_LENGTH = 200;
 const cx = classNames.bind(styles);
 
 function Write() {
+    useTitle('Write');
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [model, setModel] = useState(false);

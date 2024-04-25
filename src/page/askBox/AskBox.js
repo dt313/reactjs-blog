@@ -8,6 +8,7 @@ import CommentInput from '~/components/commentInput';
 import Comments from '~/components/comments';
 import { comments } from '~/config/comments';
 import { useState } from 'react';
+import useTitle from '~/hook/useTitle';
 const markdown = `Here is some JavaScript code:
 > Hello nclude popular icons in your React projects easily with react-icons, which utilizes ES6 imports that allows you to include only the icons that your project is using.
 
@@ -19,6 +20,7 @@ int a = 1;
 
 const cx = classNames.bind(styles);
 function AskBox() {
+    useTitle('Question');
     const [isInput, setIsInput] = useState(false);
     return (
         <div className={cx('wrapper')}>

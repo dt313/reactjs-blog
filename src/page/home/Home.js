@@ -1,9 +1,11 @@
 import styles from './Home.module.scss';
 import classNames from 'classnames/bind';
 import { categories } from '~/config';
+import useTitle from '~/hook/useTitle';
 const cx = classNames.bind(styles);
 
 function Home() {
+    useTitle('Home');
     return (
         <div className={cx('wrapper')}>
             <div className={cx('content')}>

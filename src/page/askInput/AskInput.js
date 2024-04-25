@@ -4,9 +4,11 @@ import classNames from 'classnames/bind';
 import MarkDown from '~/components/MarkDown';
 import Button from '~/components/button';
 import Input from '~/components/input';
+import useTitle from '~/hook/useTitle';
 
 const cx = classNames.bind(styles);
 function AskInput() {
+    useTitle('Ask');
     const [content, setContent] = useState('');
 
     function handleEditorChange({ text }) {

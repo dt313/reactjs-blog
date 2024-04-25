@@ -1,24 +1,66 @@
+import { useNavigate, useSearchParams, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+
 import Avatar from '~/components/avatar';
 import styles from './Profile.module.scss';
 import classNames from 'classnames/bind';
 import TopicItem from '../search/TopicItem';
-import { useSearchParams } from 'react-router-dom';
 import { profileTag } from '~/config/uiConfig';
-import { BiDotsHorizontalRounded } from 'react-icons/bi';
-import HeadlessTippy from '~/components/headless/HeadlessTippy';
-import MenuTippy from '~/components/menuTippy';
-import { useEffect } from 'react';
+import useTitle from '~/hook/useTitle';
+import Confirm from '~/components/confirm';
+import Card from './Card';
+import { useDispatch } from 'react-redux';
+import { addToast, createToast } from '~/redux/actions/toastAction';
 
 const cx = classNames.bind(styles);
 
 function Profile() {
+    let { username } = useParams();
+    useTitle(`Profile | ${username.slice(1).toUpperCase()}`);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
+    const [isShowConfirm, setIsShowConfirm] = useState(false);
+
+    // For Confirm Box
+    const handleCancle = () => {
+        setIsShowConfirm(false);
+    };
+
+    const handleOK = () => {
+        console.log('Confirm OK');
+        setIsShowConfirm(false);
+        dispatch(
+            addToast(
+                createToast({
+                    type: 'success',
+                    content: 'Bạn đã xóa thành công bài viết' + uuidv4().toString(),
+                }),
+            ),
+        );
+    };
+
+    // For Tipppy
+    const handleEdit = () => {
+        navigate(`/write/`);
+    };
 
     useEffect(() => {
         setSearchParams({ tag: profileTag[0].tag });
     }, []);
-
-    const menuList = ['Xóa', 'Sửa'];
+    const menuList = [
+        {
+            title: 'Xoá',
+            fn: () => {
+                setIsShowConfirm(true);
+            },
+        },
+        {
+            title: 'Sửa',
+            fn: handleEdit,
+        },
+    ];
 
     return (
         <div className={cx('wrapper')}>
@@ -49,29 +91,18 @@ function Profile() {
                     </div>
                     <div className={cx('content')}>
                         {[1, 2, 3, 4, 5, 6, 6, 7, 8].map((content, index) => {
-                            return (
-                                <div className={cx('card')} key={index}>
-                                    <div className={cx('card-header')}>
-                                        <p className={cx('card-title')}>Hello anh em</p>
-                                        <HeadlessTippy
-                                            interactive
-                                            trigger="mouseenter focus"
-                                            offset={[-40, -80]}
-                                            menu={<MenuTippy list={menuList} />}
-                                        >
-                                            <span className={cx('card-menu')}>
-                                                <BiDotsHorizontalRounded className={cx('menu-icon')} />
-                                            </span>
-                                        </HeadlessTippy>
-                                    </div>
-
-                                    <span className={cx('card-type')}>question</span>
-                                </div>
-                            );
+                            return <Card key={index} content={content} tippyMenu={menuList} />;
                         })}
                     </div>
                 </div>
             </div>
+            {isShowConfirm && (
+                <Confirm
+                    title="Bạn có chắc chắn muốn xóa bài viết nay không ?"
+                    handleOK={handleOK}
+                    handleCancle={handleCancle}
+                />
+            )}
         </div>
     );
 }

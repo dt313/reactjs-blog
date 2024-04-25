@@ -7,8 +7,6 @@ const initialState = {
     user: {},
 };
 
-console.log('init :', token.getAccessToken());
-
 const authReducer = (state = initialState, action) => {
     switch (action.type) {
         case LOGIN:

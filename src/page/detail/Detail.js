@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { MdClose } from 'react-icons/md';
 import { markdownEX } from '~/config/uiConfig';
 import { useNavigate } from 'react-router-dom';
+import useTitle from '~/hook/useTitle';
 
 const cx = classNames.bind(styles);
 
@@ -28,6 +29,7 @@ const article = {
 };
 
 function Detail() {
+    useTitle(article.title);
     const [isInput, setIsInput] = useState(false);
     const [isShowCommentsBox, setIsShowCommentsBox] = useState(false);
     const navigate = useNavigate();
