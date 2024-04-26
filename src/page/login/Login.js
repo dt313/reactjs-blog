@@ -63,19 +63,19 @@ function Login() {
             console.log('Submit');
             // // fetch api to recveive token
             // // store token to session
-            // dispath(
-            //     login({
-            //         accessToken:
-            //             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkRhbmggVHVhbiIsImFnZSI6MTIsInVzZXJpZCI6IjEiLCJhdmF0YXIiOiJpbWciLCJpYXQiOjE1MTYyMzkwMjJ9.5z2JFMWsUrBYPlUiGyP-dyivkfIJHmn13vJJVvSuAUE',
-            //         refreshToken:
-            //             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkRhbmggVHVhbiIsImFnZSI6MTIsInVzZXJpZCI6IjEiLCJhdmF0YXIiOiJpbWciLCJpYXQiOjE1MTYyMzkwMjJ9.5z2JFMWsUrBYPlUiGyP-dyivkfIJHmn13vJJVvSuAUE',
-            //         data: {
-            //             username: 'Danh Tuan',
-            //             id: '2',
-            //         },
-            //     }),
-            // );
-            // navigate(prePath || '/');
+            dispath(
+                login({
+                    accessToken:
+                        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkRhbmggVHVhbiIsImFnZSI6MTIsInVzZXJpZCI6IjEiLCJhdmF0YXIiOiJpbWciLCJpYXQiOjE1MTYyMzkwMjJ9.5z2JFMWsUrBYPlUiGyP-dyivkfIJHmn13vJJVvSuAUE',
+                    refreshToken:
+                        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkRhbmggVHVhbiIsImFnZSI6MTIsInVzZXJpZCI6IjEiLCJhdmF0YXIiOiJpbWciLCJpYXQiOjE1MTYyMzkwMjJ9.5z2JFMWsUrBYPlUiGyP-dyivkfIJHmn13vJJVvSuAUE',
+                    data: {
+                        username: 'Danh Tuan',
+                        id: '2',
+                    },
+                }),
+            );
+            navigate(prePath || '/');
         } else {
             setError({ email: email, pwd: pwd });
         }

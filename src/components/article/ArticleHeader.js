@@ -7,10 +7,13 @@ import HeadlessTippy from '~/components/headless/HeadlessTippy';
 import MenuTippy from '~/components/menuTippy';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { addToast, createToast } from '~/redux/actions/toastAction';
 
 const cx = classNames.bind(styles);
 function ArticleHeader({ author, username, avatar, className, large = false, time = false }) {
     const [isBookmarked, setIsBookmarked] = useState(false);
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const [visible, setVisible] = useState(false);
@@ -32,6 +35,16 @@ function ArticleHeader({ author, username, avatar, className, large = false, tim
 
     // handle bookmark
     const handleBookmark = () => {
+        // fetchAPI to server
+
+        dispatch(
+            addToast(
+                createToast({
+                    type: 'success',
+                    content: !isBookmarked ? 'Đã lưu bài viết thành công' : 'Đã bỏ lưu bài viết thành công',
+                }),
+            ),
+        );
         setIsBookmarked(!isBookmarked);
     };
 

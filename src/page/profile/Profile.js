@@ -29,13 +29,12 @@ function Profile() {
     };
 
     const handleOK = () => {
-        console.log('Confirm OK');
         setIsShowConfirm(false);
         dispatch(
             addToast(
                 createToast({
                     type: 'success',
-                    content: 'Bạn đã xóa thành công bài viết' + uuidv4().toString(),
+                    content: 'Bạn đã xóa thành công bài viết Toast is used to display messages in an overlay.',
                 }),
             ),
         );

@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, Suspense, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { PiBellDuotone, PiBellRingingDuotone } from 'react-icons/pi';
 import DefaultLayout from './layout/DefaultLayout';
@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 import ProtecedRoute from './routes/ProtectedRoute';
 import { userService } from './services';
 import Toast from './components/toast/Toast';
+import ContinueLoader from './components/loading/Loading';
 
 const cx = classNames.bind(styles);
 
@@ -55,7 +56,9 @@ function App() {
                                 path={route.path}
                                 element={
                                     <Layout>
-                                        <Page />
+                                        <Suspense fallback={<ContinueLoader />}>
+                                            <Page />
+                                        </Suspense>
                                     </Layout>
                                 }
                             />
@@ -78,7 +81,9 @@ function App() {
                                 element={
                                     <Layout>
                                         <ProtecedRoute>
-                                            <Page />
+                                            <Suspense fallback={<ContinueLoader />}>
+                                                <Page />
+                                            </Suspense>
                                         </ProtecedRoute>
                                     </Layout>
                                 }

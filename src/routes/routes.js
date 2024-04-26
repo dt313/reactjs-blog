@@ -1,17 +1,20 @@
+import { lazy } from 'react';
 import routes from '~/config/routes';
-import Detail from '~/page/detail/Detail';
+
 import DefaultLayout from '~/layout/DefaultLayout';
 import OtherLayout from '~/layout/OtherLayout';
-import AskInput from '~/page/askInput';
-import Home from '~/page/home';
-import Login from '~/page/login';
-import SearchPage from '~/page/search';
-import Write from '~/page/write';
-import AskBox from '~/page/askBox';
-import About from '~/page/about';
-import Profile from '~/page/profile';
-import Register from '~/page/register/Register';
-import NotFound from '~/page/404';
+
+const Detail = lazy(() => import('~/page/detail/Detail'));
+const AskInput = lazy(() => import('~/page/askInput'));
+const Login = lazy(() => import('~/page/login'));
+const SearchPage = lazy(() => import('~/page/search'));
+const Write = lazy(() => import('~/page/write'));
+const AskBox = lazy(() => import('~/page/askBox'));
+const About = lazy(() => import('~/page/about'));
+const Profile = lazy(() => import('~/page/profile'));
+const Register = lazy(() => import('~/page/register/Register'));
+const NotFound = lazy(() => import('~/page/404'));
+const Home = lazy(() => import('~/page/home'));
 
 const publicRoutes = [
     { path: routes.home, component: Home, layout: DefaultLayout },

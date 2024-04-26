@@ -1,6 +1,5 @@
 import styles from './Input.module.scss';
 import classNames from 'classnames/bind';
-import MarkDown from '~/components/MarkDown';
 import MdEditor from 'react-markdown-editor-lite';
 import 'react-markdown-editor-lite/lib/index.css';
 const cx = classNames.bind(styles);

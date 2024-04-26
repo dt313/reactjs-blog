@@ -4,7 +4,6 @@ import Image from '~/components/image';
 import { useNavigate } from 'react-router-dom';
 import ArticleHeader from './ArticleHeader';
 import { BiSolidLike, BiSolidComment } from 'react-icons/bi';
-import { useState } from 'react';
 
 const cx = classNames.bind(styles);
 function Article({ classes, article }) {

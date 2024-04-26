@@ -127,7 +127,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #fbfbfb11;
+    background-color: #51505022;
     cursor: pointer;
     z-index: 11;
     overscroll-behavior: contain;
@@ -140,8 +140,8 @@
     padding: 18px;
     background-color: var(--background-color);
     float: right;
-    box-shadow: #fcfcfc 0px 3px 6px, #f9f8f8 0px 3px 6px;
     position: relative;
+    border-left: 1px solid #fff;
 }
 
 .comments-detail {

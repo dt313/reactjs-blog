@@ -7,6 +7,7 @@ export const createToast = ({ type = 'info', content = '' }) => {
         id: uuidv4(),
         type,
         content,
+        isOpen: true,
     };
 };
 

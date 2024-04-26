@@ -29,11 +29,11 @@
     color: var(--color);
 }
 
-.text {
-    font-family: var(--font-family);
+.text * {
     font-size: 1.3rem;
     color: var(--color);
-    opacity: var(--opacity);
+    font-family: var(--font-family);
+    opacity: 0.9;
     margin-top: 8px;
     white-space: normal;
     word-break: break-word;

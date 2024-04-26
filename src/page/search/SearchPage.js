@@ -9,6 +9,7 @@ import { cards, searchTag } from '~/config/uiConfig';
 import { useSearchParams } from 'react-router-dom';
 import { MdClose } from 'react-icons/md';
 import useTitle from '~/hook/useTitle';
+import { SpinnerLoader } from '~/components/loading/Loading';
 
 const cx = classNames.bind(styles);
 
@@ -150,7 +151,7 @@ function SearchPage() {
                             <p>No posts</p>
                         )
                     ) : (
-                        <div className={cx('loading')}>{/* <Loading /> */} Loading...</div>
+                        <SpinnerLoader />
                     )}
                 </div>
 

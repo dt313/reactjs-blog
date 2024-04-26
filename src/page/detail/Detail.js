@@ -13,6 +13,9 @@ import { MdClose } from 'react-icons/md';
 import { markdownEX } from '~/config/uiConfig';
 import { useNavigate } from 'react-router-dom';
 import useTitle from '~/hook/useTitle';
+import { useDispatch } from 'react-redux';
+import { addToast, createToast } from '~/redux/actions/toastAction';
+import { SpinnerLoader } from '~/components/loading/Loading';
 
 const cx = classNames.bind(styles);
 
@@ -30,6 +33,7 @@ const article = {
 
 function Detail() {
     useTitle(article.title);
+    const dispatch = useDispatch();
     const [isInput, setIsInput] = useState(false);
     const [isShowCommentsBox, setIsShowCommentsBox] = useState(false);
     const navigate = useNavigate();
@@ -37,6 +41,24 @@ function Detail() {
     // handle click topik
     const handleClickTopic = (topic) => {
         navigate(`/search?topic=${topic}`);
+    };
+
+    const handleClickHeart = () => {};
+    const handleClickShare = () => {};
+    const handleClickLink = () => {
+        // copyclipboad
+        dispatch(
+            addToast(
+                createToast({
+                    type: 'success',
+                    content: 'Đã copy link bài viết thành công',
+                }),
+            ),
+        );
+    };
+
+    const handleClickComment = () => {
+        setIsShowCommentsBox(!isShowCommentsBox);
     };
 
     // TEST
@@ -47,7 +69,10 @@ function Detail() {
                 <div className={cx('tools')}>
                     <Tools
                         className={cx('article-tools')}
-                        onClickComment={() => setIsShowCommentsBox(!isShowCommentsBox)}
+                        onClickComment={handleClickComment}
+                        onClickHeart={handleClickHeart}
+                        onClickShare={handleClickShare}
+                        onClickLink={handleClickLink}
                     />
                 </div>
                 <div className={cx('md-editor')}>
@@ -95,7 +120,7 @@ function Detail() {
 
                             <div className={cx('comments-detail')}>
                                 <div className={cx('comments-count')}>
-                                    4 Comments
+                                    {<SpinnerLoader small /> && '4 Comments'}
                                     <p className={cx('comments-des')}>
                                         (Nếu thấy bình luận spam, các bạn bấm report giúp admin nhé)
                                     </p>

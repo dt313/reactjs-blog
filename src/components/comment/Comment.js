@@ -5,6 +5,8 @@ import { BiChevronDown, BiChevronUp } from 'react-icons/bi';
 import Comments from '~/components/comments';
 import { useState } from 'react';
 import CommentInput from '../commentInput';
+import { SpinnerLoader } from '../loading/Loading';
+import MarkDown from '../MarkDown';
 const cx = classNames.bind(styles);
 
 function Comment({ comment, className }) {
@@ -25,7 +27,7 @@ function Comment({ comment, className }) {
                 <div className={cx('comment')}>
                     <div className={cx('text-box')}>
                         <span className={cx('name')}>{comment?.name || 'Nguyen van A'}</span>
-                        <p className={cx('text')}>{comment?.content}</p>
+                        <MarkDown className={cx('text')} text={comment?.content}></MarkDown>
                     </div>
                     <div className={cx('tool-box')}>
                         <p className={cx('tool', liked && 'liked')} onClick={() => setLiked(!liked)}>
@@ -64,6 +66,7 @@ function Comment({ comment, className }) {
                         )}
                     </div>
                 )}
+
                 {seeMore && <Comments list={comment?.reply} className={cx('list-reply')} />}
             </div>
         </div>

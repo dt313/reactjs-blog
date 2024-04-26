@@ -51,7 +51,12 @@ function CommentInput({
     return (
         <div className={cx('wrapper', [reply])}>
             {!reply && isShow == false && (
-                <div className={cx('label')} onClick={() => setIsShow(true)}>
+                <div
+                    className={cx('label')}
+                    onClick={() => {
+                        setIsShow(true);
+                    }}
+                >
                     {placeholder}
                 </div>
             )}
@@ -66,6 +71,7 @@ function CommentInput({
                                 renderHTML={renderHTML}
                                 placeholder={placeholder}
                                 className={cx('input')}
+                                autoFocus={true}
                             />
                         </div>
                     </div>
