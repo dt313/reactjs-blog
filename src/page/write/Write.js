@@ -8,6 +8,8 @@ import Button from '~/components/button/Button';
 import Model from '~/components/model';
 import Export from './Export';
 import useTitle from '~/hook/useTitle';
+import Editor from 'react-markdown-editor-lite';
+import { uploadService } from '~/services';
 const MAX_TITLE_LENGTH = 200;
 const cx = classNames.bind(styles);
 
@@ -18,6 +20,7 @@ function Write() {
     const [model, setModel] = useState(false);
     const [thumbnail, setThumbnail] = useState('');
     const [topics, setTopics] = useState([]);
+    const fileRef = useRef();
 
     const inputRef = useRef(null);
 
@@ -94,6 +97,15 @@ function Write() {
     const handleCloseModel = useCallback(() => {
         setModel(false);
     }, []);
+    const url = process.env.REACT_APP_API_URL;
+
+    const handleImageUpload = (file) => {
+        return new Promise(async (resolve) => {
+            const image = await uploadService.uploadImage(file);
+            console.log(image);
+            resolve(`${url}/image/${image.data}`);
+        });
+    };
 
     return (
         <div className={cx('wrapper')}>
@@ -116,6 +128,7 @@ function Write() {
                         renderHTML={renderHTML}
                         onChange={handleEditorChange}
                         placeholder="Giải thích ở đây"
+                        onImageUpload={handleImageUpload}
                         config={{
                             view: {
                                 menu: true,
@@ -130,6 +143,8 @@ function Write() {
                                 maxCol: 6,
                             },
                             underline: false,
+                            imageUrl: 'https://octodex.github.com/images/minion.png',
+                            syncScrollMode: ['leftFollowRight', 'rightFollowLeft'],
                         }}
                     />
                 </div>

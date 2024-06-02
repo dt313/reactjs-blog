@@ -1,100 +1,65 @@
 export const comments = [
     {
-        avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-        content: `Here is some JavaScript code:
-> Hello nclude popular icons in your React projects easily with react-icons, which utilizes ES6 imports that allows you to include only the icons that your project is using.
-
-
-~~~js
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-~~~
-`,
-        time: '4 days ago',
-        reply: [
-            {
-                avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-                content:
-                    'Hello World https://blog1203.netlify.app/images/avatar/avatar_56.png https://blog1203.netlify.app/images/avatar/avatar_56.png',
-                time: '4 days ago',
-                reply: [
-                    {
-                        avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-                        content: 'Hello World',
-                        time: '4 days ago',
-                    },
-                    {
-                        avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-                        content: 'Hello World',
-                        time: '4 days ago',
-                    },
-                    {
-                        avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-                        content: 'Hello World',
-                        time: '4 days ago',
-                    },
-                ],
-            },
-            {
-                avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-                content: 'Hello World',
-                time: '4 days ago',
-            },
-            {
-                avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-                content: 'Hello World',
-                time: '4 days ago',
-                reply: [
-                    {
-                        avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-                        content: 'Hello World',
-                        time: '4 days ago',
-                    },
-                    {
-                        avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-                        content: 'Hello World',
-                        time: '4 days ago',
-                    },
-                ],
-            },
-        ],
+        id: '1',
+        user_id: '328193ybdhad',
+        commentable_type: 'POST',
+        commentable_id: 1,
+        content: 'Hello anh em',
+        created_at: '10 ngay truoc',
+        created_at: '10 ngay truoc',
     },
     {
-        avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-        content: 'Hello World',
-        time: '4 days ago',
+        id: '2',
+        user_id: '328193ybdhad',
+        commentable_type: 'POST',
+        commentable_id: 1,
+        content: 'Chao ban',
+        created_at: '10 ngay truoc',
+        created_at: '10 ngay truoc',
     },
     {
-        avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-        content: 'Hello World',
-        time: '4 days ago',
+        id: '3',
+        user_id: '328193ybdhad',
+        commentable_type: 'POST',
+        commentable_id: 1,
+        content: 'Hello',
+        created_at: '10 ngay truoc',
+        created_at: '10 ngay truoc',
     },
     {
-        avatar: 'https://blog1203.netlify.app/images/avatar/avatar_56.png',
-        content: 'Hello World',
-        time: '4 days ago',
+        id: '4',
+        user_id: '328193ybdhad',
+        commentable_type: 'COMMENT',
+        commentable_id: 1,
+        content: 'TOI DAY',
+        created_at: '10 ngay truoc',
+        created_at: '10 ngay truoc',
+    },
+    {
+        id: '5',
+        user_id: '328193ybdhad',
+        commentable_type: 'COMMENT',
+        commentable_id: 4,
+        content: 'UM',
+        created_at: '10 ngay truoc',
+        created_at: '10 ngay truoc',
+    },
+    {
+        id: '6',
+        user_id: '328193ybdhad',
+        commentable_type: 'COMMENT',
+        commentable_id: 4,
+        content: 'UM',
+        created_at: '10 ngay truoc',
+        created_at: '10 ngay truoc',
+    },
+    {
+        id: '7',
+        user_id: '328193ybdhad',
+        commentable_type: 'COMMENT',
+        commentable_id: 6,
+        content: 'CHHAHA',
+        created_at: '10 ngay truoc',
+        created_at: '10 ngay truoc',
     },
 ];

@@ -8,7 +8,7 @@ import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const cx = classNames.bind(styles);
 function MarkDown({ text = '', className }) {
-    console.log(text);
+    // console.log(text);
     return (
         <MarkDownR
             remarkPlugins={[remarkGfm]}

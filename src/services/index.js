@@ -5,5 +5,15 @@ import * as likeService from './likeService';
 import * as commentService from './commentService';
 import * as bookmarkService from './bookmarkService';
 import * as notificationService from './notificationService';
+import * as uploadService from './uploadService';
 
-export { authService, userService, articleService, likeService, commentService, bookmarkService, notificationService };
+export {
+    authService,
+    userService,
+    articleService,
+    likeService,
+    commentService,
+    bookmarkService,
+    notificationService,
+    uploadService,
+};

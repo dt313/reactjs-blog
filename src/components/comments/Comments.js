@@ -1,7 +1,6 @@
 import classNames from 'classnames/bind';
 import styles from './Comments.module.scss';
 import Comment from '~/components/comment';
-import Confirm from '~/components/confirm';
 const cx = classNames.bind(styles);
 
 function Comments({ list = [], title, className }) {

@@ -1,6 +1,6 @@
 import { useNavigate, useSearchParams, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 
 import Avatar from '~/components/avatar';
 import styles from './Profile.module.scss';
@@ -12,6 +12,7 @@ import Confirm from '~/components/confirm';
 import Card from './Card';
 import { useDispatch } from 'react-redux';
 import { addToast, createToast } from '~/redux/actions/toastAction';
+import Button from '~/components/button/Button';
 
 const cx = classNames.bind(styles);
 
@@ -45,6 +46,8 @@ function Profile() {
         navigate(`/write/`);
     };
 
+    const handleCickSetting = () => {};
+
     useEffect(() => {
         setSearchParams({ tag: profileTag[0].tag });
     }, []);
@@ -68,6 +71,10 @@ function Profile() {
                     <Avatar className={cx('avatar')} />
                     <h3 className={cx('name')}>DANH TUAN</h3>
                     <span className={cx('special-name')}>danhtuan3103</span>
+                    <Button secondary onClick={handleCickSetting}>
+                        {' '}
+                        Setting
+                    </Button>
                 </div>
                 <div className={cx('body')}>
                     <div className={cx('nav')}>

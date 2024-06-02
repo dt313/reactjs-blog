@@ -8,7 +8,7 @@ import Statistical from '~/components/statistical';
 import CommentInput from '~/components/commentInput';
 import Comments from '~/components/comments';
 import { comments } from '~/config/comments';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MdClose } from 'react-icons/md';
 import { markdownEX } from '~/config/uiConfig';
 import { useNavigate } from 'react-router-dom';
@@ -16,7 +16,7 @@ import useTitle from '~/hook/useTitle';
 import { useDispatch } from 'react-redux';
 import { addToast, createToast } from '~/redux/actions/toastAction';
 import { SpinnerLoader } from '~/components/loading/Loading';
-
+import { v4 as uuidv4 } from 'uuid';
 const cx = classNames.bind(styles);
 
 const article = {
@@ -36,8 +36,10 @@ function Detail() {
     const dispatch = useDispatch();
     const [isInput, setIsInput] = useState(false);
     const [isShowCommentsBox, setIsShowCommentsBox] = useState(false);
+    const [commentOfArticle, setCommentOfArticle] = useState([]);
     const navigate = useNavigate();
 
+    // console.log(commentOfArticle);
     // handle click topik
     const handleClickTopic = (topic) => {
         navigate(`/search?topic=${topic}`);
@@ -57,9 +59,35 @@ function Detail() {
         );
     };
 
-    const handleClickComment = () => {
+    const handeComment = (content) => {
+        console.log('Handle comment : ', content);
+        setCommentOfArticle((pre) => [
+            ...pre,
+            {
+                id: uuidv4(),
+                user_id: '328193ybdhad',
+                commentable_type: 'POST',
+                commentable_id: 1,
+                content: content,
+                created_at: '10 ngay truoc',
+                created_at: '10 ngay truoc',
+            },
+        ]);
+    };
+    const handleClickCommentButton = () => {
         setIsShowCommentsBox(!isShowCommentsBox);
     };
+
+    const handleCloseCommenBox = () => {
+        setIsShowCommentsBox(false);
+        setIsInput(false);
+    };
+
+    useEffect(() => {
+        const cmtsOfPost = comments.filter((c) => c.commentable_type === 'POST' && c.commentable_id === 1);
+        // console.log('REPLY : ', cmtsOfPost);
+        setCommentOfArticle(cmtsOfPost);
+    }, []);
 
     // TEST
 
@@ -69,7 +97,7 @@ function Detail() {
                 <div className={cx('tools')}>
                     <Tools
                         className={cx('article-tools')}
-                        onClickComment={handleClickComment}
+                        onClickComment={handleClickCommentButton}
                         onClickHeart={handleClickHeart}
                         onClickShare={handleClickShare}
                         onClickLink={handleClickLink}
@@ -107,7 +135,7 @@ function Detail() {
                 </div>
 
                 {isShowCommentsBox && (
-                    <div className={cx('overlay')} onClick={(e) => setIsShowCommentsBox(false)}>
+                    <div className={cx('overlay')} onClick={handleCloseCommenBox}>
                         <div
                             className={cx('comments-wrapper')}
                             onClick={(e) => {
@@ -115,7 +143,7 @@ function Detail() {
                             }}
                         >
                             <span className={cx('close')}>
-                                <MdClose className={cx('close-icon')} onClick={(e) => setIsShowCommentsBox(false)} />
+                                <MdClose className={cx('close-icon')} onClick={handleCloseCommenBox} />
                             </span>
 
                             <div className={cx('comments-detail')}>
@@ -132,10 +160,11 @@ function Detail() {
                                             placeholder="Viết bình luận của bạn..."
                                             isShow={isInput}
                                             setIsShow={setIsInput}
+                                            onComment={handeComment}
                                         />
                                     </div>
                                     <div className={cx('comment-list')}>
-                                        <Comments list={comments} />
+                                        <Comments list={commentOfArticle} />
                                     </div>
                                 </div>
                             </div>

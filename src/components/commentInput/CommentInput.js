@@ -13,44 +13,51 @@ const defaultFn = () => {};
 function CommentInput({
     reply = false,
     defaultValue = '',
-    onSubmit = defaultFn,
+    onComment = defaultFn,
     placeholder = '',
     isShow = false,
     setIsShow,
 }) {
     const [value, setValue] = useState(defaultValue);
-    const [disabled, setDisabled] = useState(false);
+    const [disabled, setDisabled] = useState(true);
     const ref = useRef();
 
     function handleEditorChange({ text }) {
         setValue(text);
-    }
-
-    const handleOnChange = (e) => {
-        setValue(e.target.value);
-        if (e.target.value.trim() !== '') {
+        if (text.trim() !== '') {
             setDisabled(false);
         } else {
             setDisabled(true);
         }
-    };
-
-    const handleSubmit = (value) => {
-        onSubmit(value);
-        setValue('');
-    };
-
-    function handleEditorChange({ text }) {
-        setValue(text);
     }
 
+    const handleSubmit = () => {
+        setIsShow(false);
+        setValue('');
+        onComment(value);
+    };
+
+    const handleCancle = () => {
+        let result = false;
+        console.log(value);
+        if (value.trim().length > 0) {
+            result = window.confirm(value);
+        }
+        if (result || value.trim().length === 0) {
+            setIsShow(false);
+            setValue('');
+            setDisabled(true);
+        } else {
+            return;
+        }
+    };
     const renderHTML = (text) => {
         return <MarkDown text={text} />;
     };
 
     return (
         <div className={cx('wrapper', [reply])}>
-            {!reply && isShow == false && (
+            {!reply && isShow === false && (
                 <div
                     className={cx('label')}
                     onClick={() => {
@@ -67,6 +74,7 @@ function CommentInput({
                         <Avatar src="https://blog1203.netlify.app/images/avatar/avatar_56.png" />
                         <div className={cx('text-input')}>
                             <Input
+                                content={value}
                                 handleEditorChange={handleEditorChange}
                                 renderHTML={renderHTML}
                                 placeholder={placeholder}
@@ -76,10 +84,10 @@ function CommentInput({
                         </div>
                     </div>
                     <div className={cx('btn-box')}>
-                        <Button text onClick={() => setIsShow(false)}>
+                        <Button text onClick={handleCancle}>
                             Hủy
                         </Button>
-                        <Button disabled={disabled} primary onClick={() => handleSubmit(value)}>
+                        <Button disabled={disabled} primary onClick={handleSubmit}>
                             {reply ? 'Tra loi' : 'Bình luận'}
                         </Button>
                     </div>

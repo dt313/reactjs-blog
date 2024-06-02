@@ -1,8 +1,8 @@
-import styles from './Input.module.scss';
-import classNames from 'classnames/bind';
+// import styles from './Input.module.scss';
+// import classNames from 'classnames/bind';
 import MdEditor from 'react-markdown-editor-lite';
 import 'react-markdown-editor-lite/lib/index.css';
-const cx = classNames.bind(styles);
+// const cx = classNames.bind(styles);
 
 const PLUGINS = [
     'header',
@@ -26,9 +26,10 @@ const PLUGINS = [
     'divider',
     'full-screen',
 ];
-function Input({ renderHTML, handleEditorChange, className, placeholder = '' }) {
+function Input({ renderHTML, handleEditorChange, className, placeholder = '', content }) {
     return (
         <MdEditor
+            value={content}
             plugins={PLUGINS}
             className={className}
             renderHTML={renderHTML}

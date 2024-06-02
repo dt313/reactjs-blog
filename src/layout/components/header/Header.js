@@ -5,6 +5,7 @@ import { NavLink } from 'react-router-dom';
 import useOutsideClick from '~/hook/useOutsideClick';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '~/redux/actions/authAction';
+import images from '~/assets/images';
 const cx = classNames.bind(styles);
 
 function Header() {
@@ -66,7 +67,10 @@ function Header() {
             <div className={cx('header-inner')}>
                 <div className={cx('header-logo')}>
                     <a href="/" className={cx('logo-a')}>
-                        <div className={cx('logo')}>question.?</div>
+                        <div className={cx('logo')}>
+                            {/* <img className={cx('logo-img')} src={images.logo} /> */}
+                            <span>bagoftech</span>
+                        </div>
                     </a>
                 </div>
                 <div
