@@ -36,6 +36,9 @@
     height: 500px;
 }
 
+.footer {
+    float: right;
+}
 @media (max-width: 684px) {
     .wrapper {
         margin-top: 32px;
@@ -43,5 +46,18 @@
 
     .title {
         font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .submit-btn {
+        width: 100%;
     }
 }

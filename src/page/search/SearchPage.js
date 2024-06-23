@@ -10,7 +10,9 @@ import { useSearchParams } from 'react-router-dom';
 import { MdClose } from 'react-icons/md';
 import useTitle from '~/hook/useTitle';
 import { SpinnerLoader } from '~/components/loading/Loading';
-
+import { articleService, questionService } from '~/services';
+import { ARTICLE_PAGE_SIZE } from '~/config/uiConfig';
+import useDebounce from '~/hook/useDebounce';
 const cx = classNames.bind(styles);
 
 function SearchPage() {
@@ -18,89 +20,113 @@ function SearchPage() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [loading, setLoading] = useState(false);
     const [searchValue, setSearchValue] = useState(searchParams.get('q') || '');
-    const [page, setPage] = useState(1);
-    const [tag, setTag] = useState(searchTag[0].tag || '');
+    const [page, setPage] = useState(searchParams.get('page') || 1);
+    const [tag, setTag] = useState(searchParams.get('tag') || searchTag[0].tag);
     const [topic, setTopic] = useState(searchParams.get('topic') || '');
-    let params = {};
+    const [articles, setArticles] = useState([]);
+    const [length, setLength] = useState(0);
+    const debounceValue = useDebounce(searchValue, 1300);
 
-    const setParams = ({ tag, topic, q, page }) => {
-        let params = {};
-        if (tag !== '' && tag !== undefined) {
-            params.tag = tag;
-        }
-        if (topic !== '' && topic !== undefined) {
-            params.topic = topic;
-        }
-        if (q !== '' && q !== undefined) {
-            params.q = q;
-        }
-        if (page !== '' && page !== undefined) {
-            params.page = page;
-        }
-        setSearchParams(params);
-    };
+    console.log(length);
     useEffect(() => {
-        params.tag = searchTag[0].tag;
-        params.topic = topic;
-        params.q = searchValue;
-        params.page = page;
-        setParams(params);
-    }, []);
+        const fetchAPI = async () => {
+            const data = { searchValue, topic, pageNumber: page, pageSize: ARTICLE_PAGE_SIZE };
+            setLoading(true);
+            let result;
+            if (tag === 'article') {
+                result = await articleService.searchFor(data);
+            } else if (tag === 'question') {
+                result = await questionService.searchFor(data);
+            }
+            setArticles(result);
+            setLoading(false);
+        };
+        fetchAPI();
+    }, [page, debounceValue, tag, topic]);
+
+    useEffect(() => {
+        const fetchAPI = async () => {
+            const data = { searchValue, topic };
+            let length = 0;
+            if (tag === 'article') {
+                length = await articleService.getLength(data);
+            } else if (tag === 'question') {
+                length = await questionService.getLength(data);
+            }
+            setLength(length);
+        };
+        fetchAPI();
+    }, [debounceValue, tag, topic]);
+    const setParams = (tag, topic, q, page) => {
+        console.log(tag, topic, q, page);
+        let newParams = {};
+        if (!!tag && !!topic && !!q && !!page) {
+            console.log('ALL EMPTY');
+        }
+        if (!!tag) {
+            newParams.tag = tag;
+        }
+        if (!!topic) {
+            newParams.topic = topic;
+        }
+        if (!!q) {
+            newParams.q = q;
+        }
+        if (!!page) {
+            newParams.page = page;
+        }
+        setSearchParams(newParams);
+    };
+
+    useEffect(() => {
+        setParams(searchParams.get('tag') || searchTag[0].tag, topic, searchValue, page);
+    }, [searchParams]);
 
     const handleClickTag = useCallback(
         (nav) => {
-            const idx = searchTag.findIndex((item) => item.tag === nav.tag);
+            const idx = findIndexTag(nav.tag);
             setTag(searchTag[idx].tag);
-            params.tag = searchTag[idx].tag;
-            params.q = searchValue;
-            params.topic = topic;
-            params.page = page;
-            setParams(params);
+            setPage(1);
+            setParams(searchTag[idx].tag, topic, searchValue, 1);
         },
         [tag, searchParams],
     );
 
+    // find index of tag
+    const findIndexTag = (tag) => {
+        return searchTag.findIndex((item) => item.tag === tag);
+    };
+
     // change input
     const handleChangeSearchValue = (e) => {
-        const idx = searchTag.findIndex((item) => item.tag === tag);
-        params.tag = searchTag[idx].tag;
-        params.q = e.target.value;
-        params.topic = topic;
-        params.page = page;
-        setParams(params);
+        const idx = findIndexTag(tag);
+        setPage(1);
+        setParams(searchTag[idx].tag, topic, e.target.value, 1);
         setSearchValue(e.target.value);
+
+        if (!!topic) {
+            handleRemoveTopic();
+        }
     };
 
     // clear input
     const handleClearInput = () => {
         setSearchValue('');
-        const idx = searchTag.findIndex((item) => item.tag === tag);
-        params.tag = searchTag[idx].tag;
-        params.q = '';
-        params.topic = topic;
-        params.page = page;
-        setParams(params);
+        const idx = findIndexTag(tag);
+        setParams(searchTag[idx].tag, topic, '', page);
     };
 
     // handle remove topic
     const handleRemoveTopic = () => {
-        const idx = searchTag.findIndex((item) => item.tag === tag);
-        params.tag = searchTag[idx].tag;
-        params.q = searchValue;
-        params.topic = '';
-        params.page = page;
-        setParams(params);
+        const idx = findIndexTag(tag);
+        setParams(searchTag[idx].tag, '', searchValue, page);
         setTopic('');
     };
 
     const handleChangePage = (page) => {
-        const idx = searchTag.findIndex((item) => item.tag === tag);
+        const idx = findIndexTag(tag);
         setPage(page);
-        params.tag = searchTag[idx].tag;
-        params.q = searchValue;
-        params.topic = topic;
-        params.page = page;
-        setParams(params);
+        setParams(searchTag[idx].tag, topic, searchValue, page);
     };
 
     return (
@@ -143,20 +169,22 @@ function SearchPage() {
 
                 <div className={cx('list')}>
                     {!loading ? (
-                        cards.length > 0 ? (
-                            cards.map((card, index) => {
-                                return <Article key={index} className={cx('card')} article={card}></Article>;
+                        articles?.length > 0 ? (
+                            articles.map((art, index) => {
+                                return <Article key={index} className={cx('card')} content={art} type={tag}></Article>;
                             })
                         ) : (
-                            <p>No posts</p>
+                            <p className={cx('empty-noti')}>There are no posts</p>
                         )
                     ) : (
-                        <SpinnerLoader />
+                        <div className={cx('loader-wrapper')}>
+                            <SpinnerLoader />
+                        </div>
                     )}
                 </div>
 
                 <div className={cx('pagination')}>
-                    <Pagination value={page} setValue={setPage} handleChangePage={handleChangePage} />
+                    <Pagination value={page} setValue={setPage} handleChangePage={handleChangePage} length={length} />
                 </div>
             </div>
         </div>

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { token, handleHTTPError } from '~/utils';
+import { tokenUtils, handleHTTPError } from '~/utils';
 
 const url = process.env.REACT_APP_API_URL;
 
@@ -21,14 +21,16 @@ async function refreshToken() {
 
 instance.interceptors.request.use(
     async function (config) {
-        if (config.url.indexOf('/login') >= 0) {
+        // console.log(config);
+        // console.log(config.url.indexOf('/users'));
+        if (config.url === '/auth/login' || config.url === '/users') {
             // no Authorization
             return config;
         }
-        config.headers.Authorization = 'Bear ';
 
+        // console.log(config);
+        config.headers.Authorization = `Bearer ${tokenUtils.getAccessToken()}`;
         // handle jwt expired
-
         return config;
 
         //
@@ -36,6 +38,7 @@ instance.interceptors.request.use(
     function (error) {
         console.log(error);
         return Promise.reject(error);
+        return error;
     },
 );
 
@@ -44,7 +47,8 @@ instance.interceptors.response.use(
         return response.data;
     },
     function (error) {
-        handleHTTPError(error.code, error.message);
+        handleHTTPError(error.response.data);
+        return Promise.reject(error);
     },
 );
 

@@ -1,4 +1,4 @@
 import handleHTTPError from './handleHTTPError';
-import token from './token';
+import tokenUtils from './token';
 
-export { handleHTTPError, token };
+export { handleHTTPError, tokenUtils };

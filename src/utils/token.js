@@ -6,6 +6,14 @@ const getRefreshToken = () => {
     return localStorage.getItem('refreshToken');
 };
 
+const getUserId = () => {
+    return localStorage.getItem('userId');
+};
+
+const setUserId = (id) => {
+    return localStorage.setItem('userId', id);
+};
+
 const setAccessToken = (token) => {
     localStorage.setItem('accessToken', token);
 };
@@ -18,6 +26,12 @@ const clearToken = () => {
     localStorage.clear();
 };
 
-const token = { getAccessToken, setAccessToken, getRefreshToken, setRefreshToken, clearToken };
-
-export default token;
+export default {
+    getAccessToken,
+    setAccessToken,
+    getRefreshToken,
+    setRefreshToken,
+    getUserId,
+    setUserId,
+    clearToken,
+};

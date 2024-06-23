@@ -78,8 +78,7 @@
     background-color: var(--background-color);
     color: var(--text-color);
     margin-bottom: 48px;
-
-    font-size: 1.1rem;
+    font-size: 1.3rem;
 
     blockquote {
         border-left-color: var(--primary-color);
@@ -145,8 +144,7 @@
 }
 
 .comments-detail {
-    padding: 0 18px;
-    padding-bottom: 68px;
+    padding: 0 18px 68px 0;
     overflow-y: auto;
     overflow-x: hidden;
     max-height: 100vh;
@@ -237,9 +235,8 @@
         height: 90%;
         border-radius: 12px;
         overflow-y: hidden;
-        box-shadow: none;
-        box-shadow: rgba(255, 255, 255, 0.5) 0px 1px 1px 1px inset, rgba(50, 50, 93, 0.5) 0px 50px 100px -20px,
-            rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+        border-left-color: transparent;
+        border: 2px solid #464a4f;
     }
 
     .comments-detail {

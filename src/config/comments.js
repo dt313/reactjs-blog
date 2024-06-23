@@ -1,7 +1,8 @@
 export const comments = [
     {
-        id: '1',
+        id: 1,
         user_id: '328193ybdhad',
+        username: 'Danh Tuan',
         commentable_type: 'POST',
         commentable_id: 1,
         content: 'Hello anh em',
@@ -9,8 +10,9 @@ export const comments = [
         created_at: '10 ngay truoc',
     },
     {
-        id: '2',
+        id: 2,
         user_id: '328193ybdhad',
+        username: 'Hung Manh',
         commentable_type: 'POST',
         commentable_id: 1,
         content: 'Chao ban',
@@ -18,8 +20,9 @@ export const comments = [
         created_at: '10 ngay truoc',
     },
     {
-        id: '3',
+        id: 3,
         user_id: '328193ybdhad',
+        username: 'Tran Hau',
         commentable_type: 'POST',
         commentable_id: 1,
         content: 'Hello',
@@ -27,8 +30,9 @@ export const comments = [
         created_at: '10 ngay truoc',
     },
     {
-        id: '4',
+        id: 4,
         user_id: '328193ybdhad',
+        username: 'Tran Hau',
         commentable_type: 'COMMENT',
         commentable_id: 1,
         content: 'TOI DAY',
@@ -36,8 +40,9 @@ export const comments = [
         created_at: '10 ngay truoc',
     },
     {
-        id: '5',
+        id: 5,
         user_id: '328193ybdhad',
+        username: 'Tuan Danh',
         commentable_type: 'COMMENT',
         commentable_id: 4,
         content: 'UM',
@@ -45,8 +50,9 @@ export const comments = [
         created_at: '10 ngay truoc',
     },
     {
-        id: '6',
+        id: 6,
         user_id: '328193ybdhad',
+        username: 'Jonh P',
         commentable_type: 'COMMENT',
         commentable_id: 4,
         content: 'UM',
@@ -54,8 +60,9 @@ export const comments = [
         created_at: '10 ngay truoc',
     },
     {
-        id: '7',
+        id: 7,
         user_id: '328193ybdhad',
+        username: 'Danh Dung',
         commentable_type: 'COMMENT',
         commentable_id: 6,
         content: 'CHHAHA',

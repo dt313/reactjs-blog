@@ -4,22 +4,9 @@ import classNames from 'classnames/bind';
 import styles from './Image.module.scss';
 import images from '~/assets/images';
 
-const Image = forwardRef(({ src, alt, className, fallBack: customFallBack = images.noImage, ...props }, ref) => {
-    const [fallBack, setFallBack] = useState('');
-
-    const handleError = () => {
-        setFallBack(customFallBack);
-    };
-    return (
-        <img
-            className={classNames(styles.wrapper, className)}
-            ref={ref}
-            src={src || fallBack}
-            alt={alt}
-            {...props}
-            onError={handleError}
-        />
-    );
+const Image = forwardRef(({ src, className, fallBack = images.noImage, ...props }, ref) => {
+    console.log(src);
+    return <img className={classNames(styles.wrapper, className)} ref={ref} src={src || fallBack} {...props} />;
 });
 
 Image.propTypes = {

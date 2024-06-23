@@ -1,3 +1,4 @@
+import useOutsideClick from '~/hook/useOutsideClick';
 import Button from '../button/Button';
 import styles from './Confirm.module.scss';
 import classNames from 'classnames/bind';

@@ -7,11 +7,13 @@ import { logout } from '~/redux/actions/authAction';
 import { useDispatch } from 'react-redux';
 import useTitle from '~/hook/useTitle';
 import Validation from '~/helper/validation';
+import { userService } from '~/services';
+import { useNavigate } from 'react-router-dom';
 const cx = classNames.bind(styles);
 
 function Register() {
     useTitle('Register');
-    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [isLoginWithEmail, setIsLoginWithEmail] = useState(true);
     const [error, setError] = useState({
         email: '',
@@ -47,6 +49,16 @@ function Register() {
 
         if (email === '' && pwd === '' && cfpwd === '') {
             console.log('Submit');
+            const fetchAPI = async () => {
+                const result = await userService.createUser({ email: info.email, password: info.pwd });
+                if (result.code) {
+                    setError({ email: result.message });
+                } else {
+                    alert('Create new user successfully');
+                    navigate('/login');
+                }
+            };
+            fetchAPI();
         } else {
             setError({ email, pwd, cfpwd });
         }

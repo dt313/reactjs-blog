@@ -1,7 +1,7 @@
 import MarkDown from '~/components/MarkDown';
 import styles from './CommentInput.module.scss';
 import classNames from 'classnames/bind';
-import Input from '~/components/input';
+import Editor from '~/components/editor';
 import { useState, useRef } from 'react';
 import Button from '~/components/button';
 import Avatar from '~/components/avatar';
@@ -39,16 +39,17 @@ function CommentInput({
 
     const handleCancle = () => {
         let result = false;
-        console.log(value);
         if (value.trim().length > 0) {
             result = window.confirm(value);
-        }
-        if (result || value.trim().length === 0) {
+            if (result === true) {
+                setIsShow(false);
+                setValue('');
+                setDisabled(true);
+            } else return;
+        } else {
             setIsShow(false);
             setValue('');
             setDisabled(true);
-        } else {
-            return;
         }
     };
     const renderHTML = (text) => {
@@ -73,8 +74,9 @@ function CommentInput({
                     <div className={cx('input-box')}>
                         <Avatar src="https://blog1203.netlify.app/images/avatar/avatar_56.png" />
                         <div className={cx('text-input')}>
-                            <Input
+                            <Editor
                                 content={value}
+                                defaultValue={defaultValue}
                                 handleEditorChange={handleEditorChange}
                                 renderHTML={renderHTML}
                                 placeholder={placeholder}

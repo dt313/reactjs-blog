@@ -1,17 +1,19 @@
 import styles from './Header.module.scss';
 import classNames from 'classnames/bind';
 import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import useOutsideClick from '~/hook/useOutsideClick';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '~/redux/actions/authAction';
 import images from '~/assets/images';
+import { authService } from '~/services';
+import { tokenUtils } from '~/utils';
 const cx = classNames.bind(styles);
 
 function Header() {
     const [isShowMenu, setIsShowMenu] = useState(false);
     const isAuthtication = useSelector((state) => state.auth.isAuthtication);
-
+    const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const handleClickOutside = () => {
@@ -19,14 +21,24 @@ function Header() {
     };
 
     const handleLogout = () => {
-        dispatch(logout());
+        const accessToken = tokenUtils.getAccessToken();
+        const fetchAPI = async () => {
+            const result = await authService.logout(accessToken);
+            if (result?.code) {
+                alert(result.message);
+            } else {
+                dispatch(logout());
+                window.location.href = '/login';
+            }
+        };
+        fetchAPI();
     };
 
     const handleClick = (e, item) => {
-        if (item.title === 'logout') {
+        setIsShowMenu(false);
+        if (item.action) {
             e.preventDefault();
             item.action();
-            window.location.href = '/login';
         }
     };
 

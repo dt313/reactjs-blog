@@ -17,7 +17,7 @@
 .avatar {
     width: 200px;
     height: 200px;
-    border: 1px solid var(--border-color);
+    border: 2px solid var(--border-color);
     margin-bottom: 24px;
 }
 
@@ -141,6 +141,22 @@
     flex: 1 1 300px;
 }
 
+.card.tag-bookmark {
+    .card-title {
+        color: var(--orange);
+    }
+}
+
+.card.tag-article {
+}
+
+.card.tag-question {
+    .card-title {
+        color: #7192f7;
+        font-weight: 400;
+    }
+}
+
 .card-header {
     display: flex;
     justify-content: space-between;
@@ -160,6 +176,11 @@
     word-wrap: break-word;
     white-space: normal;
     width: 100%;
+
+    &:hover {
+        text-decoration: underline;
+        cursor: pointer;
+    }
 }
 
 // .card-mode {
@@ -179,7 +200,7 @@
 //     border-radius: 999999px;
 // }
 
-.card-type {
+.card-mode {
     font-size: 1.3rem;
     font-weight: 300;
     color: var(--text-color);

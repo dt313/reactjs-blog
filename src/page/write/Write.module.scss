@@ -17,7 +17,7 @@
 .editor {
     width: 100%;
     height: 100%;
-    border: 1px dashed var(--accent);
+    border: 1px dashed var(--text-color);
     margin-bottom: 32px;
 }
 
@@ -29,9 +29,9 @@
     font-weight: 500;
     position: relative;
     outline: none;
-
+    white-space: pre-wrap;
     padding: 20px 8px;
-    border-bottom: 1px dashed var(--accent);
+    border-bottom: 1px dashed var(--text-color);
     background-image: var(--background-repeat);
 
     &:empty::before {
@@ -63,10 +63,10 @@
 .export {
     width: 100%;
     height: 100vh;
+    padding: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 24px;
     overflow-y: auto;
     animation: fadeIn 0.5s;
 }
@@ -178,7 +178,7 @@
     object-fit: cover;
 }
 
-.display {
+.meta {
     padding: 0 8px;
     margin-top: 12px;
 }
@@ -190,23 +190,31 @@
 //     display: block;
 // }
 
-.display-title,
-.display-des {
-    background-color: transparent;
+.meta-title,
+.meta-des {
     width: 100%;
-    padding: 8px 4px;
+    padding: 4px 4px;
     color: var(--color);
+    background-color: transparent;
     font-family: var(--system-ui);
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: bold;
-    border-bottom: 1px solid var(--accent);
-    margin-bottom: 12px;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    line-height: 1.4;
+    overflow-y: hidden;
+    resize: none;
+    outline: none;
 }
 
-.display-des {
-    margin-top: 0;
+.meta-des {
+    margin-top: 12px;
     font-size: 1.4rem;
     font-weight: 400;
+}
+
+.count-length {
+    font-size: 1rem;
 }
 
 .note {
@@ -229,7 +237,7 @@
     display: flex;
     align-items: center;
     padding: 4px 8px;
-    border: 1px solid var(--accent);
+    border: 1px solid var(--text-color);
     background-color: var(--black-hover);
     min-height: 56px;
     margin-top: 12px;

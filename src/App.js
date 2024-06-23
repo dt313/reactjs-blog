@@ -9,32 +9,51 @@ import Avatar from './components/avatar';
 import useOutsideClick from './hook/useOutsideClick';
 import { useSelector } from 'react-redux';
 import ProtecedRoute from './routes/ProtectedRoute';
-import { userService } from './services';
+
 import Toast from './components/toast/Toast';
 import ContinueLoader from './components/loading/Loading';
+import { socket } from './socket';
 
 const cx = classNames.bind(styles);
 
 function App() {
     const [isRing, setIsRing] = useState(false);
     const [isShow, setIsShow] = useState(false);
+    // const [isConnected, setIsConnected] = useState(socket.connected);
+    // const [fooEvents, setFooEvents] = useState([]);
+
     const handleClickOutside = () => {
         if (notiRef.current) {
             setIsShow(false);
         }
     };
 
-    useEffect(() => {
-        // test
-        const fetchAPI = async () => {
-            const result = await userService.getAllUsers();
-            console.log(result);
-        };
-        fetchAPI();
-    }, []);
+    // useEffect(() => {
+    //     function onConnect() {
+    //         setIsConnected(true);
+    //     }
 
-    const isAuthentication = useSelector((state) => state.auth.isAuthtication);
+    //     function onDisconnect() {
+    //         setIsConnected(false);
+    //     }
 
+    //     function onFooEvent(value) {
+    //         setFooEvents((previous) => [...previous, value]);
+    //     }
+
+    //     socket.on('connect', onConnect);
+    //     socket.on('disconnect', onDisconnect);
+    //     socket.on('foo', onFooEvent);
+
+    //     return () => {
+    //         socket.off('connect', onConnect);
+    //         socket.off('disconnect', onDisconnect);
+    //         socket.off('foo', onFooEvent);
+    //     };
+    // }, []);
+
+    const isAuthentication = useSelector((state) => state.auth);
+    console.log(isAuthentication);
     const notiRef = useOutsideClick(handleClickOutside);
 
     return (

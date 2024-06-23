@@ -1,3 +1,4 @@
+import Button from '../button/Button';
 import styles from './MenuTippy.module.scss';
 import classNames from 'classnames/bind';
 
@@ -14,9 +15,9 @@ const MenuTippy = ({ list, width, hide }) => {
         <div className={cx('menu-list')} style={{ width: `${width}px` }}>
             {list.map((content, index) => {
                 return (
-                    <p className={cx('menu-item')} key={index} onClick={() => handleClick(content)}>
+                    <Button className={cx('menu-item')} key={index} onClick={() => handleClick(content)}>
                         {content?.title}
-                    </p>
+                    </Button>
                 );
             })}
         </div>

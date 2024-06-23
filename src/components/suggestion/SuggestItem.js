@@ -6,11 +6,12 @@ import { memo } from 'react';
 const cx = classNames.bind(styles);
 function SuggestItem({ article }) {
     const navigate = useNavigate();
-    // const handleClick = () => {
-    //     navigate(`/blog/${blog?._id}`);
-    // };
+    const handleClick = () => {
+        console.log('CLick');
+        window.open(`/article/${article.id}`, '_blank');
+    };
     return (
-        <div className={cx('suggest-item')}>
+        <div className={cx('suggest-item')} onClick={handleClick}>
             <Image className={cx('suggest-book')} src={article?.thumbnail} />
             <p className={cx('suggest-title')}>{article?.title}</p>
         </div>

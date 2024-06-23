@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Button from '~/components/button/Button';
 import styles from './Login.module.scss';
 import classNames from 'classnames/bind';
@@ -8,11 +8,13 @@ import { login } from '~/redux/actions/authAction';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import useTitle from '~/hook/useTitle';
 import Validation from '~/helper/validation';
+import { authService } from '~/services';
+import debounce from '~/helper/debounce';
 const cx = classNames.bind(styles);
 
 function Login() {
     useTitle('Login');
-    const dispath = useDispatch();
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const [isLoginWithEmail, setIsLoginWithEmail] = useState(true);
@@ -48,34 +50,31 @@ function Login() {
 
         const Eemail = validation.init(email).isRequire().isEmail().getResult();
         validation.clear();
-
         const Epwd = validation.init(pwd).isRequire().minLength().maxLength().getResult();
         validation.clear();
 
         return [Eemail, Epwd];
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log('SUBMIT');
         const [email, pwd] = validationLogin({ email: e.target[0].value, pwd: e.target[1].value });
 
         if (email === '' && pwd === '') {
-            console.log('Submit');
-            // // fetch api to recveive token
-            // // store token to session
-            dispath(
-                login({
-                    accessToken:
-                        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkRhbmggVHVhbiIsImFnZSI6MTIsInVzZXJpZCI6IjEiLCJhdmF0YXIiOiJpbWciLCJpYXQiOjE1MTYyMzkwMjJ9.5z2JFMWsUrBYPlUiGyP-dyivkfIJHmn13vJJVvSuAUE',
-                    refreshToken:
-                        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkRhbmggVHVhbiIsImFnZSI6MTIsInVzZXJpZCI6IjEiLCJhdmF0YXIiOiJpbWciLCJpYXQiOjE1MTYyMzkwMjJ9.5z2JFMWsUrBYPlUiGyP-dyivkfIJHmn13vJJVvSuAUE',
-                    data: {
-                        username: 'Danh Tuan',
-                        id: '2',
-                    },
-                }),
-            );
-            navigate(prePath || '/');
+            // fetch api to recveive token
+            const result = await authService.login({ email: info.email, password: info.pwd });
+            if (result?.code) {
+                setError({ email: result.message });
+            } else {
+                dispatch(
+                    login({
+                        accessToken: result.token,
+                        userId: result.userId,
+                    }),
+                );
+                navigate(prePath || '/');
+            }
         } else {
             setError({ email: email, pwd: pwd });
         }
@@ -87,7 +86,7 @@ function Login() {
                 Đăng nhập vào <span className={cx('logo')}>question.?</span>
             </h3>
             {isLoginWithEmail ? (
-                <form className={cx('login-form')} onSubmit={(e) => handleSubmit(e)}>
+                <form className={cx('login-form')} onSubmit={handleSubmit}>
                     <label htmlFor="email" className={cx('login-label')}>
                         Email
                     </label>

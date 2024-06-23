@@ -11,11 +11,12 @@ function Tools({
     onClickComment = defaultFn,
     onClickShare = defaultFn,
     onClickLink = defaultFn,
+    is_liked = true,
 }) {
     return (
         <div className={cx('tool', className)}>
             <div className={cx('icon-block')} onClick={onClickHeart}>
-                <RiHeart3Line className={cx('icon')} />
+                <RiHeart3Line className={cx('icon', is_liked && 'liked')} />
             </div>
             <div className={cx('icon-block')} onClick={onClickComment}>
                 <MdOutlineModeComment className={cx('icon')} />

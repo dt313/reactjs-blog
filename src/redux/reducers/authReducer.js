@@ -1,26 +1,26 @@
 import { LOGIN, LOGOUT } from '../actions/authAction';
 
-import { token } from '~/utils';
+import { tokenUtils } from '~/utils';
 
 const initialState = {
-    isAuthtication: !!token.getAccessToken(),
-    user: {},
+    isAuthtication: !!tokenUtils.getAccessToken(),
+    userId: tokenUtils.getUserId() || null,
 };
 
 const authReducer = (state = initialState, action) => {
     switch (action.type) {
         case LOGIN:
-            const user = action.payload;
+            const userId = action.payload;
             return {
                 ...state,
                 isAuthtication: true,
-                user: user,
+                userId: userId,
             };
         case LOGOUT:
             return {
                 ...state,
                 isAuthtication: false,
-                user: {},
+                userId: {},
             };
         default:
             return state;

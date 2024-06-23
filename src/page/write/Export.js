@@ -1,17 +1,32 @@
 import classNames from 'classnames/bind';
 import Button from '~/components/button';
 import styles from './Write.module.scss';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { IoIosClose } from 'react-icons/io';
-
+import useAutoResize from '~/hook/useAutoResize';
+import useLimitInput from '~/hook/useLimitInput';
+import { articleService } from '~/services';
+import { useNavigate, useParams } from 'react-router-dom';
+import TopicInput from '~/components/topicInput/TopicInput';
+const MAX_META_TITLE_LENGTH = 100;
+const MAX_META_DES_LENGTH = 160;
 const cx = classNames.bind(styles);
-function Export({ topics, setTopics, thumbnail, setThumbnail, onSubmit }) {
-    const [input, setInput] = useState('');
-    const [isDuplicate, setIsDuplicate] = useState(false);
-    const inputRef = useRef(null);
+function Export({ submitData, isEdit }) {
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const [thumbnail, setThumbnail] = useState('');
+    const [topics, setTopics] = useState([]);
+    const [meta, setMeta] = useState({
+        metaTitle: submitData.title.trim(),
+        description: '',
+    });
+
+    const metaTitleRef = useAutoResize(meta.metaTitle);
+    const metaDesRef = useAutoResize(meta.description);
+
     const fileRef = useRef(null);
 
-    const handleClickDes = () => {
+    const handleClickUploadImage = () => {
         fileRef.current.click();
     };
 
@@ -22,8 +37,6 @@ function Export({ topics, setTopics, thumbnail, setThumbnail, onSubmit }) {
     const handleDrag = (e) => {
         e.preventDefault();
         e.stopPropagation();
-
-        console.log(e.type);
     };
 
     const handleDrop = (e) => {
@@ -34,37 +47,40 @@ function Export({ topics, setTopics, thumbnail, setThumbnail, onSubmit }) {
         }
     };
 
-    // handle topic
-    useEffect(() => {
-        console.log(topics);
-        const input = inputRef.current;
-        const handleKeyDown = (e) => {
-            if (e.keyCode === 13) {
-                const isValid = topics.some((t) => t === e.target.value);
-                console.log(isValid);
-                if (!isValid) {
-                    setTopics((prev) => [...prev, e.target.value.trim()]);
-                    setInput('');
-                } else {
-                    setIsDuplicate(true);
-                }
-            }
-        };
-        if (input) {
-            input.addEventListener('keydown', handleKeyDown);
-        }
-
-        return () => {
-            if (input) {
-                input.removeEventListener('keydown', handleKeyDown);
-            }
-        };
-    }, [topics]);
-
     const handleDeleteTag = (name) => {
         const newTags = topics.filter((t) => t !== name);
         setTopics(newTags);
     };
+
+    const handleChangeMeta = (e) => {
+        const { name, value } = e.target;
+        setMeta((pre) => ({ ...pre, [name]: value }));
+    };
+
+    // Submit
+    const handleSubmit = async () => {
+        const data = {
+            ...submitData,
+            ...meta,
+            thumbnail,
+            topics,
+        };
+        let result;
+        if (isEdit) {
+            result = await articleService.update(id, data);
+            console.log(result);
+        } else {
+            result = await articleService.create(data);
+        }
+        if (result?.code) {
+            alert(result.message);
+        } else {
+            navigate(`/article/${result?.id}`);
+        }
+    };
+
+    useLimitInput(metaTitleRef, MAX_META_TITLE_LENGTH, meta.metaTitle);
+    useLimitInput(metaDesRef, MAX_META_DES_LENGTH, meta.description);
 
     return (
         <div className={cx('export')}>
@@ -82,14 +98,14 @@ function Export({ topics, setTopics, thumbnail, setThumbnail, onSubmit }) {
                                 <p className={cx('description')}>
                                     Thêm một ảnh đại diện hấp dẫn sẽ giúp bài viết của bạn cuốn hút hơn với độc giả.
                                 </p>
-                                <span className={cx('upload-text')} onClick={handleClickDes}>
+                                <span className={cx('upload-text')} onClick={handleClickUploadImage}>
                                     Kéo thả ảnh vào đây, hoặc bấm để chọn ảnh
                                 </span>
                             </div>
                         ) : (
                             <div
                                 className={cx('preview')}
-                                onClick={handleClickDes}
+                                onClick={handleClickUploadImage}
                                 onDragEnter={(e) => handleDrag(e)}
                                 onDragOver={(e) => handleDrag(e)}
                                 onDrop={(e) => handleDrop(e)}
@@ -106,9 +122,30 @@ function Export({ topics, setTopics, thumbnail, setThumbnail, onSubmit }) {
                         ></input>
                     </div>
 
-                    <div className={cx('display')}>
-                        <input className={cx('display-title')} />
-                        <input className={cx('display-des')} placeholder="Mô tả sẽ được hiển thị ở đây..." />
+                    <div className={cx('meta')}>
+                        <textarea
+                            className={cx('meta-title')}
+                            rows={1}
+                            ref={metaTitleRef}
+                            name="metaTitle"
+                            value={meta.metaTitle}
+                            onChange={(e) => handleChangeMeta(e)}
+                        />
+                        {meta.metaTitle?.length > 60 && (
+                            <span className={cx('count-length')}>{`${meta.metaTitle.length}/100`}</span>
+                        )}
+                        <textarea
+                            className={cx('meta-des')}
+                            ref={metaDesRef}
+                            rows={1}
+                            name="description"
+                            value={meta.description}
+                            onChange={(e) => handleChangeMeta(e)}
+                            placeholder="Mô tả sẽ được hiển thị ở đây..."
+                        />
+                        {meta.description?.length > 80 && (
+                            <span className={cx('count-length')}>{`${meta.description?.length}/160`}</span>
+                        )}
                         <p className={cx('note')}>
                             <strong className={cx('note-title')}>Lưu ý: </strong>Chỉnh sửa tại đây sẽ thay đổi cách bài
                             viết được hiển thị tại trang chủ, tin nổi bật - Chứ không ảnh hưởng tới nội dung bài viết
@@ -117,43 +154,15 @@ function Export({ topics, setTopics, thumbnail, setThumbnail, onSubmit }) {
                     </div>
                 </div>
                 <div className={cx('right')}>
-                    <span className={cx('description')}>
-                        Thêm tối đa 5 thẻ để độc giả biết bài viết của bạn nói về điều gì
-                    </span>
-                    <div className={cx('tags-block', isDuplicate && 'dup-error')}>
-                        <div className={cx('tags')}>
-                            {topics.length > 0 &&
-                                topics.map((tag, index) => {
-                                    return (
-                                        <div className={cx('tag')} key={index}>
-                                            <span className={cx('tag-name')}>{tag}</span>
-                                            <IoIosClose
-                                                className={cx('close-icon')}
-                                                onClick={() => handleDeleteTag(tag)}
-                                            />
-                                        </div>
-                                    );
-                                })}
+                    <TopicInput
+                        title="Thêm tối đa 5 thẻ để độc giả biết bài viết của bạn nói về điều gì."
+                        topics={topics}
+                        setTopics={setTopics}
+                        handleDeleteTag={handleDeleteTag}
+                    />
 
-                            {topics.length < 5 && (
-                                <input
-                                    ref={inputRef}
-                                    className={cx('topic-input')}
-                                    placeholder={'Ví dụ : React, Nodejs, MongoDb'}
-                                    value={input}
-                                    onChange={(e) => {
-                                        setInput(e.target.value);
-                                        setIsDuplicate(false);
-                                    }}
-                                />
-                            )}
-                        </div>
-                    </div>
-
-                    {<p className={cx('error')}>{isDuplicate && 'Bạn đã thêm thẻ này'}</p>}
-
-                    <Button secondary className={cx('btn')} onClick={onSubmit}>
-                        Xuất bản ngay
+                    <Button secondary className={cx('btn')} onClick={handleSubmit}>
+                        {isEdit ? 'Sửa bài viết' : 'Xuất bản ngay'}
                     </Button>
                 </div>
             </div>

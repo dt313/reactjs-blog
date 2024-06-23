@@ -3,8 +3,9 @@
     flex-direction: column;
     max-width: var(--default-layout-width);
     width: 100%;
-    --font-family: 'Fira Code', Monaco, Consolas, 'Ubuntu Mono', monospace;
+    background-color: var(--background-color);
     position: relative;
+    --font-family: 'Fira Code', Monaco, Consolas, 'Ubuntu Mono', monospace;
 }
 
 .header-inner {

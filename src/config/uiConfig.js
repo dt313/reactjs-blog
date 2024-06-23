@@ -26,11 +26,22 @@ export const profileTag = [
     },
 ];
 
-export const searchTag = [
+export const noBookmarkProfileTag = [
     {
-        tag: 'best',
-        name: 'Nổi bật',
+        tag: 'article',
+        name: 'Bài viết',
     },
+    {
+        tag: 'question',
+        name: 'Câu hỏi',
+    },
+];
+
+export const searchTag = [
+    // {
+    //     tag: 'best',
+    //     name: 'Nổi bật',
+    // },
     {
         tag: 'article',
         name: 'Bài viết',
@@ -86,36 +97,9 @@ export const cards = [
     },
 ];
 
-export const markdownEX = `Here is some JavaScript code:
-> Hello nclude popular icons in your React projects easily with react-icons, which utilizes ES6 imports that allows you to include only the icons that your project is using.
+export const COMMENT_PAGE_SIZE = 2;
+export const ARTICLE_PAGE_SIZE = 3;
+export const COMMENT_REPLY_PAGE_SIZE = 3;
+export const COMMENT_DEPTH = 2;
 
-
-~~~js
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-<script type="module">
-  import Markdown from 'https://esm.sh/react-markdown@9?bundle/hello/hdhdh'
-</script>
-~~~
-`;
 export default categories;

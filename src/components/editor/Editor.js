@@ -26,15 +26,22 @@ const PLUGINS = [
     'divider',
     'full-screen',
 ];
-function Input({ renderHTML, handleEditorChange, className, placeholder = '', content }) {
+function Editor({ renderHTML, handleEditorChange, className, placeholder = '', content, autoFocus, defaultValue }) {
+    const handleFocus = (e) => {
+        const element = e.target;
+        element.setSelectionRange(element.value.length, element.value.length);
+    };
     return (
         <MdEditor
             value={content}
             plugins={PLUGINS}
             className={className}
+            defaultValue={defaultValue}
             renderHTML={renderHTML}
             onChange={handleEditorChange}
             placeholder={placeholder}
+            autoFocus
+            onFocus={(e) => handleFocus(e)}
             config={{
                 view: {
                     menu: true,
@@ -48,4 +55,4 @@ function Input({ renderHTML, handleEditorChange, className, placeholder = '', co
     );
 }
 
-export default Input;
+export default Editor;

@@ -27,9 +27,13 @@
     font-size: 1.5rem;
     font-family: var(--system-ui);
     color: var(--color);
+    &:hover {
+        text-decoration: underline;
+        cursor: pointer;
+    }
 }
 
-.text * {
+.text {
     font-size: 1.3rem;
     color: var(--color);
     font-family: var(--font-family);
@@ -69,7 +73,7 @@
 
 .liked {
     font-weight: bold;
-    color: var(--accent);
+    color: #f66363;
 }
 
 .no-hover {

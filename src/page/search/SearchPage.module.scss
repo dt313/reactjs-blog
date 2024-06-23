@@ -138,7 +138,18 @@
 
 .list {
     margin: 40px 0;
-    align-self: center;
+    width: 100%;
+}
+
+.empty-noti {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loader-wrapper {
+    display: flex;
+    justify-content: center;
 }
 
 //pagination
