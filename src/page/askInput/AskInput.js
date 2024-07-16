@@ -21,12 +21,12 @@ function AskInput() {
         setContent(text);
     }
     const { id } = useParams();
-    console.log(topics);
+    console.log(id);
     useEffect(() => {
         if (!!id) {
             const fetchAPI = async () => {
                 const result = await questionService.getById(id);
-                if (isConfictAuthor(result?.author.id)) {
+                if (isConfictAuthor(result?.author?.id)) {
                     alert('You are not author!');
                     navigate('/search');
                     return;
@@ -37,7 +37,11 @@ function AskInput() {
                 setTopics(resetTopics);
             };
 
-            fetchAPI();
+            try {
+                fetchAPI();
+            } catch (err) {
+                console.log(err);
+            }
         }
     }, [id]);
     const renderHTML = (text) => {

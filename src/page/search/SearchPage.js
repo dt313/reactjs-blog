@@ -27,7 +27,6 @@ function SearchPage() {
     const [length, setLength] = useState(0);
     const debounceValue = useDebounce(searchValue, 1300);
 
-    console.log(length);
     useEffect(() => {
         const fetchAPI = async () => {
             const data = { searchValue, topic, pageNumber: page, pageSize: ARTICLE_PAGE_SIZE };
@@ -41,6 +40,7 @@ function SearchPage() {
             setArticles(result);
             setLoading(false);
         };
+
         fetchAPI();
     }, [page, debounceValue, tag, topic]);
 
@@ -58,10 +58,8 @@ function SearchPage() {
         fetchAPI();
     }, [debounceValue, tag, topic]);
     const setParams = (tag, topic, q, page) => {
-        console.log(tag, topic, q, page);
         let newParams = {};
         if (!!tag && !!topic && !!q && !!page) {
-            console.log('ALL EMPTY');
         }
         if (!!tag) {
             newParams.tag = tag;
@@ -171,7 +169,7 @@ function SearchPage() {
                     {!loading ? (
                         articles?.length > 0 ? (
                             articles.map((art, index) => {
-                                return <Article key={index} className={cx('card')} content={art} type={tag}></Article>;
+                                return <Article key={art.id} className={cx('card')} content={art} type={tag}></Article>;
                             })
                         ) : (
                             <p className={cx('empty-noti')}>There are no posts</p>

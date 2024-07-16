@@ -15,8 +15,18 @@ import copyTextToClipboard from '~/helper/copyClipboard';
 import getTableType from '~/helper/getTableType';
 
 const cx = classNames.bind(styles);
-function ArticleHeader({ className, author, postId, type, onBookmark, large = false, time = '', hasShare = false }) {
-    const [isBookmarked, setIsBookmarked] = useState(false);
+function ArticleHeader({
+    className,
+    author,
+    postId,
+    type,
+    onBookmark,
+    large = false,
+    time = '',
+    hasShare = false,
+    is_bookmarked = false,
+}) {
+    const [isBookmarked, setIsBookmarked] = useState(is_bookmarked);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [visible, setVisible] = useState(false);
@@ -53,6 +63,10 @@ function ArticleHeader({ className, author, postId, type, onBookmark, large = fa
             },
         },
     ];
+
+    useEffect(() => {
+        setIsBookmarked(is_bookmarked);
+    }, [is_bookmarked]);
     // className
     const classes = cx('header', {
         [className]: className,
@@ -82,21 +96,6 @@ function ArticleHeader({ className, author, postId, type, onBookmark, large = fa
         navigate(`/profile/@${author?.username}`);
     };
 
-    useEffect(() => {
-        const fetchAPI = async () => {
-            const data = {
-                tableType: getTableType(type),
-                bookmarkTableId: postId,
-                userId: userId,
-            };
-            const result = await bookmarkService.checkBookmark(data);
-            if (result?.status === 'OK') {
-                setIsBookmarked(result.data);
-            } else console.log(result);
-        };
-
-        fetchAPI();
-    }, []);
     return (
         <div className={classes}>
             <div className={cx('user')} onClick={handleClickUser}>

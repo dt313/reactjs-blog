@@ -30,3 +30,18 @@
 .comment-input {
     margin-bottom: 24px;
 }
+
+.see-more {
+    width: 100%;
+    text-align: center;
+    font-size: 1.4rem;
+    font-family: var(--system-ui);
+    font-weight: 200;
+    text-decoration: underline;
+    transition: font-weight 0.3s;
+
+    &:hover {
+        font-weight: 500;
+        cursor: pointer;
+    }
+}

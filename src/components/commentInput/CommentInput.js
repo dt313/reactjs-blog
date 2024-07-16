@@ -16,10 +16,12 @@ function CommentInput({
     onComment = defaultFn,
     placeholder = '',
     isShow = false,
-    setIsShow,
+    onCloseInput,
+    onOpenInput,
 }) {
     const [value, setValue] = useState(defaultValue);
     const [disabled, setDisabled] = useState(true);
+
     const ref = useRef();
 
     function handleEditorChange({ text }) {
@@ -32,9 +34,9 @@ function CommentInput({
     }
 
     const handleSubmit = () => {
-        setIsShow(false);
         setValue('');
         onComment(value);
+        onCloseInput();
     };
 
     const handleCancle = () => {
@@ -42,14 +44,14 @@ function CommentInput({
         if (value.trim().length > 0) {
             result = window.confirm(value);
             if (result === true) {
-                setIsShow(false);
                 setValue('');
                 setDisabled(true);
+                onCloseInput();
             } else return;
         } else {
-            setIsShow(false);
             setValue('');
             setDisabled(true);
+            onCloseInput();
         }
     };
     const renderHTML = (text) => {
@@ -59,16 +61,10 @@ function CommentInput({
     return (
         <div className={cx('wrapper', [reply])}>
             {!reply && isShow === false && (
-                <div
-                    className={cx('label')}
-                    onClick={() => {
-                        setIsShow(true);
-                    }}
-                >
+                <div className={cx('label')} onClick={onOpenInput}>
                     {placeholder}
                 </div>
             )}
-
             {isShow && (
                 <div className={cx('comment')}>
                     <div className={cx('input-box')}>

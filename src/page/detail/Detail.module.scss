@@ -97,6 +97,7 @@
         font-size: 1.4rem;
         margin-right: 12px;
         margin-bottom: 8px;
+        transition: all 0.3s;
     }
 
     .topic {
@@ -109,13 +110,13 @@
         background-color: var(--black-hover);
         cursor: pointer;
         font-family: var(--font-family);
+        transition: all 0.3s;
+
         &:hover {
             background-color: var(--accent-hover);
             color: var(--black);
         }
     }
-
-    // margin-top: -200px;
 }
 
 // Comments

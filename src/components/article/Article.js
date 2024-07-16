@@ -57,6 +57,7 @@ function Article({ classes, content, type }) {
                 time={calculateTime(content?.updatedAt)}
                 hasShare
                 onBookmark={handleBookmark}
+                is_bookmarked={content.is_bookmarked}
             />
             <div className={cx('body')} onClick={handleClickArticle}>
                 <div className={cx('info')}>

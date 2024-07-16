@@ -10,9 +10,9 @@ export const getAllCommentByType = async ({ type, id, pageNumber, pageSize }) =>
     }
 };
 
-export const createComment = async (data) => {
+export const createComment = async ({ commentableId, publisher, commentType, content }) => {
     try {
-        const res = await axios.post(`/comments`, data);
+        const res = await axios.post(`/comments`, { commentableId, publisher, commentType, content });
         return res?.data;
     } catch (error) {
         console.log('Service', error);

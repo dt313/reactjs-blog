@@ -1,6 +1,52 @@
-import { io } from 'socket.io-client';
+import { Client } from '@stomp/stompjs';
+import token from './utils/token';
 
-// "undefined" means the URL will be computed from the `window.location` object
-const URL = 'http://localhost:8080';
+const stompClient = new Client({
+    brokerURL: 'ws://localhost:8080/api/v1/notification',
+    reconnectDelay: 5000, // 자동 재 연결
+    connectHeaders: {
+        userId: token.getUserId() || null,
+    },
 
-export const socket = io(URL);
+    onStompError: (frame) => {
+        console.error('Broker reported error: ' + frame.headers['message']);
+        console.error('Additional details: ' + frame.body);
+    },
+    onDisconnect: () => {
+        console.log('disconnect');
+    },
+});
+
+// stompClient.onConnect = () => {
+//     console.log('connect ws sucessfully');
+//     stompClient.subscribe('/ws/pong', (message) => console.log('Received : ', message.body));
+//     stompClient.publish({
+//         destination: '/app/ping',
+//         body: 'PING',
+//     });
+// };
+
+export const connect = () => {
+    // connect to server
+    try {
+        stompClient.activate();
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+export const disconnect = () => {
+    if (stompClient.current === null) {
+        return;
+    }
+    stompClient.deactivate();
+};
+
+export const sendNotification = (data) => {
+    stompClient.publish({
+        destination: '/app/notification',
+        body: JSON.stringify(data),
+    });
+};
+
+export default stompClient;

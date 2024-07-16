@@ -97,9 +97,9 @@ export const cards = [
     },
 ];
 
-export const COMMENT_PAGE_SIZE = 2;
-export const ARTICLE_PAGE_SIZE = 3;
-export const COMMENT_REPLY_PAGE_SIZE = 3;
-export const COMMENT_DEPTH = 2;
+export const COMMENT_PAGE_SIZE = 10;
+export const ARTICLE_PAGE_SIZE = 10;
+export const COMMENT_REPLY_PAGE_SIZE = 10;
+export const COMMENT_DEPTH = 3;
 
 export default categories;

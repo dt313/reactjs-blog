@@ -26,11 +26,11 @@ const PLUGINS = [
     'divider',
     'full-screen',
 ];
-function Editor({ renderHTML, handleEditorChange, className, placeholder = '', content, autoFocus, defaultValue }) {
-    const handleFocus = (e) => {
-        const element = e.target;
-        element.setSelectionRange(element.value.length, element.value.length);
-    };
+function Editor({ renderHTML, handleEditorChange, className, placeholder = '', content, defaultValue }) {
+    // const handleFocus = (e) => {
+    //     const element = e.target;
+    //     element.setSelectionRange(element.value.length, element.value.length);
+    // };
     return (
         <MdEditor
             value={content}
@@ -41,7 +41,7 @@ function Editor({ renderHTML, handleEditorChange, className, placeholder = '', c
             onChange={handleEditorChange}
             placeholder={placeholder}
             autoFocus
-            onFocus={(e) => handleFocus(e)}
+            // onFocus={(e) => handleFocus(e)}
             config={{
                 view: {
                     menu: true,

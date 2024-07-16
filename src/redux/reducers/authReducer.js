@@ -3,7 +3,7 @@ import { LOGIN, LOGOUT } from '../actions/authAction';
 import { tokenUtils } from '~/utils';
 
 const initialState = {
-    isAuthtication: !!tokenUtils.getAccessToken(),
+    isAuthentication: !!tokenUtils.getAccessToken(),
     userId: tokenUtils.getUserId() || null,
 };
 
@@ -13,14 +13,14 @@ const authReducer = (state = initialState, action) => {
             const userId = action.payload;
             return {
                 ...state,
-                isAuthtication: true,
+                isAuthentication: true,
                 userId: userId,
             };
         case LOGOUT:
             return {
                 ...state,
-                isAuthtication: false,
-                userId: {},
+                isAuthentication: false,
+                userId: null,
             };
         default:
             return state;

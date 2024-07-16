@@ -9,13 +9,15 @@ import Statistical from '~/components/statistical';
 import { useEffect, useState } from 'react';
 import { MdClose } from 'react-icons/md';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { addToast, createToast } from '~/redux/actions/toastAction';
 import { articleService, bookmarkService, reactionService } from '~/services';
+import stompClient, { disconnect, sendNotification } from '~/socket';
 import checkReaction from '~/helper/checkReaction';
 import calculateTime from '~/helper/calculateTime';
 import copyTextToClipboard from '~/helper/copyClipboard';
 import CommentBox from '~/components/commentBox';
+import { notificationType, tableType } from '~/config/types';
 
 const cx = classNames.bind(styles);
 
@@ -35,22 +37,7 @@ function Detail() {
             const result = await articleService.getArticleById(id);
             setArticle(result);
             setCountOfReaction(result?.reactionCount);
-        };
-        fetchAPI();
-    }, []);
-
-    useEffect(() => {
-        const fetchAPI = async () => {
-            const isReacted = await reactionService.checkReaction({
-                reactionTableType: 'ARTICLE',
-                reactionTableId: id,
-                userId: userId,
-            });
-            if (isReacted?.data) {
-                setIsLiked(checkReaction(isReacted?.data));
-            } else {
-                console.log(isReacted);
-            }
+            setIsLiked(result?.is_reacted);
         };
         fetchAPI();
     }, []);
@@ -69,15 +56,26 @@ function Detail() {
         };
 
         const result = await reactionService.tongleReaction(data);
-        console.log(result);
+
         if (result?.status === 'OK') {
             setIsLiked(checkReaction(result?.data));
             setCountOfReaction(checkReaction(result?.data) ? countOfReaction + 1 : countOfReaction - 1);
+            sendNotification({
+                sender: userId,
+                type: notificationType.react_article,
+                receiver: article.author.id,
+                contextType: tableType.article,
+                contextId: article.id,
+                directObjectType: tableType.article,
+                directObjectId: article.id,
+            });
         } else {
             alert(result?.message);
         }
     };
+
     const handleClickShare = () => {};
+
     const handleClickLink = () => {
         const path = window.origin + `/article/${article.id}`;
         // copyclipboad
@@ -148,6 +146,7 @@ function Detail() {
                             type="article"
                             large
                             author={article?.author}
+                            is_bookmarked={article?.is_bookmarked}
                             postId={id}
                             onBookmark={handleBookmark}
                         />
@@ -156,7 +155,7 @@ function Detail() {
                         <MarkDown className={cx('preview')} text={article?.content} />
                     </div>
                     <div className={cx('statistical')}>
-                        <Statistical like={countOfReaction} comment={article?.commentCount} isLiked={isLiked} />
+                        <Statistical like={countOfReaction} comment={article?.commentCount} liked={isLiked} />
                     </div>
                     <div className={cx('topics')}>
                         <h5 className={cx('topics-title')}>Topics : </h5>
@@ -184,7 +183,7 @@ function Detail() {
                             </span>
 
                             <div className={cx('comments-detail')}>
-                                <CommentBox commentCount={article?.commentCount} />
+                                <CommentBox commentCount={article?.commentCount} authorId={article.author.id} />
                             </div>
                         </div>
                     </div>

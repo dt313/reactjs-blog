@@ -1,4 +1,5 @@
 import { useDispatch } from 'react-redux';
+import token from './token';
 
 const redirectToNotFoundPage = () => {
     if (typeof window !== 'undefined') {
@@ -18,7 +19,8 @@ export default function handleHTTPError(error) {
     console.log(error);
     switch (error.code) {
         case 9996:
-            alert('UnAuthenticated');
+            // alert('UnAuthenticated');
+            token.clearToken();
             redirectToLoginPage();
 
         default:

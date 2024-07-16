@@ -1,26 +1,33 @@
-import { Fragment, Suspense, useEffect, useState } from 'react';
+import { Fragment, Suspense, useEffect, useState, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { PiBellDuotone, PiBellRingingDuotone } from 'react-icons/pi';
 import DefaultLayout from './layout/DefaultLayout';
 import classNames from 'classnames/bind';
 import styles from './App.module.scss';
 import { protectedRoutes, publicRoutes } from './routes/routes';
-import Avatar from './components/avatar';
 import useOutsideClick from './hook/useOutsideClick';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import ProtecedRoute from './routes/ProtectedRoute';
-
 import Toast from './components/toast/Toast';
 import ContinueLoader from './components/loading/Loading';
-import { socket } from './socket';
-
+import stompClient, { connect, disconnect } from './socket';
+import { notificationService } from './services';
+import {
+    addNotification,
+    initialNotifications,
+    readAllNotification,
+    readNotification,
+} from './redux/actions/notificationAction';
+import NotificationItem from './components/notificationItem/NotificationItem';
 const cx = classNames.bind(styles);
 
 function App() {
+    const dispatch = useDispatch();
     const [isRing, setIsRing] = useState(false);
     const [isShow, setIsShow] = useState(false);
-    // const [isConnected, setIsConnected] = useState(socket.connected);
-    // const [fooEvents, setFooEvents] = useState([]);
+
+    const { userId, isAuthentication } = useSelector((state) => state.auth);
+    const { notifications, countOfUnReaded } = useSelector((state) => state.notification);
 
     const handleClickOutside = () => {
         if (notiRef.current) {
@@ -28,33 +35,50 @@ function App() {
         }
     };
 
-    // useEffect(() => {
-    //     function onConnect() {
-    //         setIsConnected(true);
-    //     }
-
-    //     function onDisconnect() {
-    //         setIsConnected(false);
-    //     }
-
-    //     function onFooEvent(value) {
-    //         setFooEvents((previous) => [...previous, value]);
-    //     }
-
-    //     socket.on('connect', onConnect);
-    //     socket.on('disconnect', onDisconnect);
-    //     socket.on('foo', onFooEvent);
-
-    //     return () => {
-    //         socket.off('connect', onConnect);
-    //         socket.off('disconnect', onDisconnect);
-    //         socket.off('foo', onFooEvent);
-    //     };
-    // }, []);
-
-    const isAuthentication = useSelector((state) => state.auth);
-    console.log(isAuthentication);
     const notiRef = useOutsideClick(handleClickOutside);
+
+    useEffect(() => {
+        setIsRing(countOfUnReaded > 0);
+    }, [countOfUnReaded]);
+    // fetch notifications from server
+    const fetchAPI = async () => {
+        console.log('USER ID', userId);
+        const result = await notificationService.getAllNotificationsByUser({
+            id: userId,
+            pageSize: 10,
+            pageNumber: 1,
+        });
+        dispatch(initialNotifications(result));
+    };
+
+    console.log(notifications, countOfUnReaded, isRing);
+    useEffect(() => {
+        if (isAuthentication) {
+            stompClient.onConnect = () => {
+                console.log('connect server websocket ');
+                stompClient.subscribe('/user/ws/notification', (notification) => {
+                    console.log(notification);
+                    dispatch(addNotification(JSON.parse(notification.body)));
+                    setIsRing(true);
+                });
+            };
+            connect();
+            fetchAPI();
+        } else {
+            disconnect();
+        }
+        return () => {
+            disconnect();
+        };
+    }, [isAuthentication]);
+
+    const handleReadAllNotification = async () => {
+        const result = await notificationService.readAllNotificationByUser(userId);
+        if (result) {
+            dispatch(readAllNotification());
+            setIsRing(false);
+        }
+    };
 
     return (
         <Router>
@@ -116,36 +140,53 @@ function App() {
                         {isShow && (
                             <div className={cx('header')}>
                                 <h3 className={cx('title')}>Thông báo</h3>
-                                <p className={cx('read-all')}>Đánh dấu đã đọc</p>
+                                <p className={cx('read-all')} onClick={handleReadAllNotification}>
+                                    Đánh dấu đã đọc
+                                </p>
                             </div>
                         )}
 
                         <div className={cx('noti-list')}>
                             {isShow &&
-                                [1, 2, 3, 4, 5, 6, 7].map((val, index) => {
+                                notifications.map((notification, index) => {
                                     return (
-                                        <div className={cx('noti-item')} key={val}>
-                                            <Avatar className={cx('avatar')} />
-                                            <div className={cx('text-box')}>
-                                                <p className={cx('content')}>
-                                                    Wuu. đã nhắc tới bạn trong một bình luận
-                                                </p>
-                                                <span className={cx('time')}>4 year ago</span>
-                                            </div>
-                                        </div>
+                                        <NotificationItem
+                                            key={notification.id}
+                                            content={notification}
+                                            onClick={async () => {
+                                                setIsShow(false);
+                                                if (notification.is_readed === false) {
+                                                    const result = await notificationService.readNotification(
+                                                        notification.id,
+                                                    );
+                                                    dispatch(readNotification(notification.id));
+                                                }
+                                            }}
+                                        ></NotificationItem>
                                     );
                                 })}
                         </div>
 
                         {isRing ? (
-                            <PiBellRingingDuotone
-                                className={cx('icon')}
+                            <span
+                                className={cx('bell-wrap')}
                                 onClick={(e) => {
                                     setIsShow(!isShow);
                                 }}
-                            />
+                            >
+                                <PiBellRingingDuotone className={cx('icon', isRing && 'ring')} />
+                            </span>
                         ) : (
-                            <PiBellDuotone className={cx('icon')} onClick={() => setIsShow(!isShow)} />
+                            <span
+                                className={cx('bell-wrap')}
+                                onClick={() => {
+                                    // console.log('bell');
+                                    // sendMessage();
+                                    setIsShow(!isShow);
+                                }}
+                            >
+                                <PiBellDuotone className={cx('icon')} />
+                            </span>
                         )}
                     </div>
                 )}

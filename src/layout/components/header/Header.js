@@ -12,7 +12,7 @@ const cx = classNames.bind(styles);
 
 function Header() {
     const [isShowMenu, setIsShowMenu] = useState(false);
-    const isAuthtication = useSelector((state) => state.auth.isAuthtication);
+    const { isAuthentication } = useSelector((state) => state.auth);
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -69,8 +69,8 @@ function Header() {
         },
         {
             path: '/login',
-            title: !isAuthtication ? 'login' : 'logout',
-            action: isAuthtication && handleLogout,
+            title: !isAuthentication ? 'login' : 'logout',
+            action: isAuthentication && handleLogout,
         },
     ];
 

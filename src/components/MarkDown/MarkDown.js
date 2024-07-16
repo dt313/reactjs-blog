@@ -12,7 +12,6 @@ function MarkDown({ text = '', className }) {
         code: Highlighter,
         em(props) {
             const { node, ...rest } = props;
-            console.log(node);
             return <i style={{ color: 'red' }} {...rest} />;
         },
     };

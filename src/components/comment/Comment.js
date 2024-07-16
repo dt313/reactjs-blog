@@ -2,58 +2,38 @@ import classNames from 'classnames/bind';
 import styles from './Comment.module.scss';
 import Avatar from '../avatar';
 import { BiChevronDown, BiChevronUp } from 'react-icons/bi';
-import Comments from '~/components/comments';
 import { useEffect, useState } from 'react';
 import CommentInput from '../commentInput';
 import { SpinnerLoader } from '../loading/Loading';
 import MarkDown from '../MarkDown';
-import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { commentService, reactionService } from '~/services';
 import { COMMENT_DEPTH, COMMENT_REPLY_PAGE_SIZE } from '~/config/uiConfig';
 import calculateTime from '~/helper/calculateTime';
 import checkReaction from '~/helper/checkReaction';
 import Confirm from '../confirm';
+import {
+    addReplyComment,
+    deleteReplyComment,
+    initReplyComment,
+    loadMoreReplyComment,
+    reactionComment,
+} from '~/redux/actions/commentAction';
+import { sendNotification } from '~/socket';
+import { notificationType, tableType } from '~/config/types';
 
 const cx = classNames.bind(styles);
-function Comment({ comment, className, level, onAdd, onDelete }) {
+function Comment({ comment, className, level, onDelete = () => {} }) {
+    console.log(comment);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const userId = useSelector((state) => state.auth.userId);
-    const [countOfReplyComment, setCountOfReplyComment] = useState(0);
-    const [countOfReaction, setCountOfReaction] = useState(0);
-    const [commentPageNumber, setCommentPageNumber] = useState(1);
-    const [hasLoadMore, setHasLoadMore] = useState(comment?.repliesCount > commentPageNumber * COMMENT_REPLY_PAGE_SIZE);
     const [isSeeMore, setIsSeeMore] = useState(false);
-    const [reply, setReply] = useState(false);
-    const [liked, setLiked] = useState(false);
-    const [replyComments, setReplyComments] = useState([]);
-    const [isShowConfirm, setIsShowConfirm] = useState(false);
-
-    const handleSeeMore = () => {
-        setIsSeeMore(!isSeeMore);
-    };
-
-    useEffect(() => {
-        setCountOfReplyComment(comment?.repliesCount || 0);
-    }, [comment]);
-    console.log('COMMENT ', comment.id, countOfReplyComment);
-    useEffect(() => {
-        const fetchAPI = async () => {
-            const isReacted = await reactionService.checkReaction({
-                reactionTableType: 'COMMENT',
-                reactionTableId: comment.id,
-                userId: userId,
-            });
-            setLiked(checkReaction(isReacted?.data));
-        };
-        fetchAPI();
-    }, []);
-
-    const handleLoadMoreComment = () => {
-        setHasLoadMore(countOfReplyComment > (commentPageNumber + 1) * COMMENT_REPLY_PAGE_SIZE);
-        setCommentPageNumber(commentPageNumber + 1);
-    };
-
+    const [isShowReplyInput, setIsShowReplyInput] = useState(false);
+    const [pageNumber, setPageNumber] = useState(1);
+    const [countOfReaction, setCountOfReaction] = useState(comment.reactionCount);
+    const { id } = useParams();
     const handleClickLikeComment = async (type) => {
         const data = {
             reactionTableId: comment.id,
@@ -61,35 +41,23 @@ function Comment({ comment, className, level, onAdd, onDelete }) {
             type: type,
             reactedUser: userId,
         };
-
         const result = await reactionService.tongleReaction(data);
         if (result?.status === 'OK') {
-            setLiked(checkReaction(result?.data));
             setCountOfReaction(checkReaction(result?.data) ? countOfReaction + 1 : countOfReaction - 1);
+            dispatch(reactionComment(comment.id, checkReaction(result.data)));
+            sendNotification({
+                sender: userId,
+                type: notificationType.react_comment,
+                receiver: comment.publisher.id,
+                contextType: comment.commentType,
+                contextId: id,
+                directObjectType: tableType.comment,
+                directObjectId: comment.id,
+            });
         } else {
             alert(result?.message);
         }
     };
-
-    useEffect(() => {}, []);
-
-    // FETCH COMMENT
-    useEffect(() => {
-        const data = {
-            type: 'COMMENT',
-            id: comment.id,
-            pageNumber: commentPageNumber,
-            pageSize: COMMENT_REPLY_PAGE_SIZE,
-        };
-        const fetchAPI = async () => {
-            const result = await commentService.getAllCommentByType(data);
-
-            if (commentPageNumber === 1) {
-                setReplyComments(result);
-            } else setReplyComments((prev) => [...prev, ...result]);
-        };
-        fetchAPI();
-    }, [commentPageNumber, comment]);
 
     const handeComment = async (content) => {
         const data = {
@@ -98,30 +66,68 @@ function Comment({ comment, className, level, onAdd, onDelete }) {
             commentType: 'COMMENT',
             content,
         };
+
         try {
-            const result = await commentService.createComment(data);
-            if (level < COMMENT_DEPTH - 1) {
-                setReplyComments((prev) => [...prev, result]);
-            } else {
-                onAdd(result);
+            if (!comment.isSeeMore) {
+                handleClickSeeMore();
             }
-            setCountOfReplyComment(countOfReplyComment + 1);
+            const result = await commentService.createComment(data);
+            dispatch(addReplyComment(data.commentableId, result));
+            sendNotification({
+                sender: userId,
+                type: notificationType.reply_comment,
+                receiver: comment.publisher.id,
+                contextType: comment.commentType,
+                contextId: id,
+                directObjectType: tableType.comment,
+                directObjectId: result.id,
+            });
         } catch (error) {
             console.log(error);
         }
     };
 
-    const handleConfirmCancle = () => {
-        setIsShowConfirm(false);
-    };
-    const handleConfirmOk = async () => {
-        const result = await commentService.deleteComment(comment?.id);
+    const handleDelete = async (id) => {
+        const result = await commentService.deleteComment(id);
         if (result?.status === 'OK') {
-            onDelete(comment?.id);
-            setIsShowConfirm(false);
+            dispatch(deleteReplyComment(comment.id, id));
         }
     };
 
+    const handleClickSeeMore = async () => {
+        const data = {
+            type: 'COMMENT',
+            id: comment.id,
+            pageNumber,
+            pageSize: COMMENT_REPLY_PAGE_SIZE,
+        };
+        const result = await commentService.getAllCommentByType(data);
+        dispatch(initReplyComment(comment.id, result));
+    };
+
+    // const handleConfirmCancle = () => {
+    //     setIsShowConfirm(false);
+    // };
+    // const handleConfirmOk = async () => {
+    //     const result = await commentService.deleteComment(comment?.id);
+    //     if (result?.status === 'OK') {
+    //         onDelete(comment?.id);
+    //         setIsShowConfirm(false);
+    //     }
+    // };
+
+    const handleLoadMoreComment = async () => {
+        const data = {
+            type: 'COMMENT',
+            id: comment.id,
+            pageNumber: comment.page + 1,
+            pageSize: COMMENT_REPLY_PAGE_SIZE,
+        };
+        const result = await commentService.getAllCommentByType(data);
+        dispatch(loadMoreReplyComment(comment.id, result));
+    };
+
+    console.log(comment.repliesCount, comment.page, COMMENT_REPLY_PAGE_SIZE);
     return (
         <div className={cx('wrapper', className)}>
             <div className={cx('container')}>
@@ -137,66 +143,71 @@ function Comment({ comment, className, level, onAdd, onDelete }) {
                         <MarkDown className={cx('text')} text={comment?.content}></MarkDown>
                     </div>
                     <div className={cx('tool-box')}>
-                        <p className={cx('tool', liked && 'liked')} onClick={() => handleClickLikeComment('LIKE')}>
-                            {`${countOfReaction} Like`}
+                        <p
+                            className={cx('tool', comment.is_reacted && 'liked')}
+                            onClick={() => handleClickLikeComment('LIKE')}
+                        >
+                            {`${comment.reactionCount > 0 ? comment.reactionCount : ''} Like`}
                         </p>
                         <span className={cx('dot')}></span>
-                        <p className={cx('tool')} onClick={() => setReply(true)}>
-                            {`${countOfReplyComment} Replies`}
+                        <p className={cx('tool')} onClick={() => setIsShowReplyInput(true)}>
+                            {`${comment.repliesCount > 0 ? comment.repliesCount : ''} Replies`}
                         </p>
                         <span className={cx('dot')}></span>
-                        <p className={cx('tool')} onClick={() => setIsShowConfirm(true)}>
+                        <p className={cx('tool')} onClick={onDelete}>
                             Delete
                         </p>
                         <span className={cx('dot')}></span>
                         <p className={cx('tool', 'no-hover')}>{calculateTime(comment?.createdAt)}</p>
                     </div>
 
-                    {reply && (
+                    {isShowReplyInput && (
                         <div className={cx('reply-box')}>
                             <CommentInput
-                                placeholder="Reply here..."
                                 reply={true}
-                                // defaultValue={mention}
-                                isShow={reply}
-                                setIsShow={setReply}
+                                placeholder="Reply here"
+                                isShow={isShowReplyInput}
+                                onCloseInput={() => setIsShowReplyInput(false)}
+                                onOpenInput={() => setIsShowReplyInput(false)}
                                 onComment={handeComment}
                             />
                         </div>
                     )}
                 </div>
             </div>
+            {comment.repliesCount > 0 && (
+                <div className={cx('label')} onClick={handleClickSeeMore}>
+                    {!comment.isSeeMore && <span className={cx('label-text')}>Xem phản hồi</span>}
+                    {!comment.isSeeMore && <BiChevronDown className={cx('down-icon')} />}
+                </div>
+            )}
             <div className={cx('comments')}>
-                {countOfReplyComment > 0 && (
-                    <div className={cx('label')} onClick={handleSeeMore}>
-                        <span className={cx('label-text')}>{isSeeMore ? 'See less' : 'See more'}</span>
-                        {isSeeMore ? (
-                            <BiChevronUp className={cx('up-icon')} />
-                        ) : (
-                            <BiChevronDown className={cx('down-icon')} />
+                {comment.repliesCount > 0 && comment.isSeeMore && (
+                    <>
+                        {comment.replies?.map((comment) => (
+                            <Comment
+                                key={comment.id}
+                                comment={comment}
+                                level={level + 1}
+                                onDelete={() => handleDelete(comment.id)}
+                            ></Comment>
+                        ))}
+                        {comment.repliesCount > comment.page * COMMENT_REPLY_PAGE_SIZE && (
+                            <p className={cx('see-more')} onClick={handleLoadMoreComment}>
+                                Xem thêm bình luận
+                            </p>
                         )}
-                    </div>
-                )}
-
-                {countOfReplyComment > 0 && isSeeMore && (
-                    <Comments
-                        list={replyComments}
-                        setList={setReplyComments}
-                        className={cx('list-reply')}
-                        hasLoadMore={hasLoadMore}
-                        onClickLoadMore={handleLoadMoreComment}
-                        level={level + 1}
-                    />
+                    </>
                 )}
             </div>
 
-            {isShowConfirm && (
+            {/* {isShowConfirm && (
                 <Confirm
                     title="Bạn có chắc chắn muốn xóa bài viết nay không ?"
                     handleOK={handleConfirmOk}
                     handleCancle={handleConfirmCancle}
                 />
-            )}
+            )} */}
         </div>
     );
 }

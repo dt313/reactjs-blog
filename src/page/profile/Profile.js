@@ -12,31 +12,50 @@ import Card from './Card';
 import { useSelector } from 'react-redux';
 import { articleService, bookmarkService, questionService, userService } from '~/services';
 import setProfileTag from '~/helper/setProfileTag';
+import { sortBy } from 'lodash';
+import { SpinnerLoader } from '~/components/loading/Loading';
 
 const cx = classNames.bind(styles);
 
+const toCardForm = (post) => {
+    return {
+        ...post.content,
+        bookmarkId: post.id,
+        createdAt: post.createdAt,
+    };
+};
+
 function Profile() {
     let { username } = useParams();
-    const userId = useSelector((state) => state.auth.userId);
     useTitle(`Profile | ${username.slice(1).toUpperCase()}`);
+
+    const userId = useSelector((state) => state.auth.userId);
     const [searchParams, setSearchParams] = useSearchParams();
     const [infomation, setInfomation] = useState({});
     const [tag, setTag] = useState(searchParams.get('tag') || 'article');
     const [posts, setPosts] = useState([]);
     const [tags, setTags] = useState(profileTag);
+    const [loading, setLoading] = useState(false);
 
     const fetchPosts = async (id) => {
+        setLoading(true);
         let newPost = [];
         if (tag === 'article') {
             newPost = await articleService.getArticleByAuthor(id);
         } else if (tag === 'bookmark') {
             newPost = await bookmarkService.getAllBookmarkedArticleByUserId(id);
-            console.log('BOOKMARK', newPost);
+            newPost = newPost.map((post) => {
+                return toCardForm(post);
+            });
         } else if (tag === 'question') {
             newPost = await questionService.getByAuthor(id);
         }
+        setLoading(false);
+
         return newPost;
     };
+
+    console.log(posts);
 
     // Fetch Infomation
     useEffect(() => {
@@ -55,7 +74,6 @@ function Profile() {
         } else {
             const fetchAPI = async () => {
                 username = username.slice(1);
-
                 const result = await userService.getInfomationByUsername(username);
                 if (result?.code) {
                     alert(result?.message);
@@ -69,6 +87,8 @@ function Profile() {
         }
     }, [tag, username]);
 
+    console.log('rerender ', tag);
+
     const handleCickSetting = () => {};
 
     useEffect(() => {
@@ -79,6 +99,7 @@ function Profile() {
         const newPosts = posts.filter((post) => post.id !== id);
         setPosts(newPosts);
     };
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('container')}>
@@ -112,20 +133,28 @@ function Profile() {
                         </div>
                     </div>
                     <div className={cx('content')}>
-                        {posts?.length > 0 ? (
-                            posts.map((post, index) => {
-                                return (
-                                    <Card
-                                        key={index}
-                                        content={post}
-                                        type={tag}
-                                        handleDelete={handleDeletePost}
-                                        editable={infomation?.id === userId}
-                                    />
-                                );
-                            })
+                        {!loading ? (
+                            posts?.length > 0 ? (
+                                posts.map((post, index) => {
+                                    return (
+                                        <Card
+                                            key={post.bookmarkId || post.id}
+                                            title={post.metaTitle || post.title || post.content}
+                                            id={post.id}
+                                            tableType={tag}
+                                            postType={post.tableType?.toLowerCase()}
+                                            handleDelete={handleDeletePost}
+                                            editable={infomation?.id === userId}
+                                        />
+                                    );
+                                })
+                            ) : (
+                                <p className={cx('empty-noti')}>Không có bài viết nào</p>
+                            )
                         ) : (
-                            <p>no posts</p>
+                            <div className={cx('loader-wrapper')}>
+                                <SpinnerLoader small />
+                            </div>
                         )}
                     </div>
                 </div>

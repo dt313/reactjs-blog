@@ -46,6 +46,7 @@
         cursor: pointer;
         position: absolute;
         right: 12px;
+        transition: color 0.2s;
     }
 
     .close-icon:hover {
@@ -145,6 +146,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    font-weight: 200;
+    font-size: 1.4rem;
 }
 
 .loader-wrapper {

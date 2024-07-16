@@ -5,7 +5,11 @@ const cx = classNames.bind(styles);
 
 function About() {
     useTitle('About');
-    return <div className={cx('wrapper')}></div>;
+    return (
+        <div className={cx('wrapper')}>
+            <iframe className={cx('web')} src="https://dt-profile.vercel.app" title="Profile"></iframe>
+        </div>
+    );
 }
 
 export default About;

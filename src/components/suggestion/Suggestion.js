@@ -20,6 +20,7 @@ function Suggestion({ topics, author, postId, className }) {
         };
         fetchAPI();
     }, [topics, author]);
+
     return (
         <div className={cx('suggest', className)}>
             <h4 className={cx('text')}>Suggestions</h4>

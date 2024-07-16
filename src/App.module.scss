@@ -90,8 +90,9 @@
         rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
     z-index: 9999;
     &:hover {
-        transform: rotate(20deg);
-        transition: 0.6 tranform ease-in-out;
+        .icon {
+            transform: rotate(20deg);
+        }
     }
 }
 
@@ -111,8 +112,7 @@
     border-top-right-radius: 24px;
     border-bottom-right-radius: 24px;
     overflow: hidden;
-    box-shadow: rgba(255, 255, 255, 0.5) 0px 1px 1px 0px inset, rgba(50, 50, 93, 0.5) 0px 50px 100px -20px,
-        rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+    box-shadow: rgba(255, 255, 255, 0.5) 0px 1px 1px 0px inset;
     z-index: 9999;
 
     .header {
@@ -134,9 +134,10 @@
         color: var(--accent);
         cursor: pointer;
         border-radius: 4px;
+        transition: background-color 0.3s;
 
         &:hover {
-            background-color: var(--accent-hover);
+            background-color: var(--accent-hover-1);
         }
     }
 
@@ -148,34 +149,10 @@
         margin-bottom: 12px;
     }
 
-    .noti-item {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 8px;
-        margin-bottom: 8px;
-        border-radius: 8px;
-        background-color: var(--accent-hover-1);
-    }
-
-    .readed {
-        background-color: transparent;
-    }
-
-    .text-box {
-        padding: 4px;
-    }
-
-    .content {
-        font-size: 1.4rem;
-    }
-
-    .time {
-        font-size: 1.3rem;
-        color: var(--accent);
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
-            'Open Sans', 'Helvetica Neue', sans-serif;
-        font-weight: 500;
+    .bell-wrap {
+        width: auto;
+        height: auto;
+        display: block;
     }
 
     .icon {
@@ -184,11 +161,27 @@
     }
 }
 
+.bell-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
 .icon {
     font-size: 2.5rem;
+    cursor: pointer;
+    transition: transform 0.1 ease-in-out;
+
+    &:hover {
+        transform: rotate(20deg);
+    }
+}
+
+.ring {
     animation: ring 2s linear infinite;
     animation-iteration-count: 3;
-    cursor: pointer;
 }
 
 @media (max-width: 480px) {

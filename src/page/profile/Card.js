@@ -9,10 +9,11 @@ import HeadlessTippy from '~/components/headless/HeadlessTippy';
 import MenuTippy from '~/components/menuTippy';
 import Confirm from '~/components/confirm/Confirm';
 import { articleService, bookmarkService, questionService } from '~/services';
+import defaultFn from '~/utils/defaultFn';
 
 const cx = classNames.bind(styles);
 
-function Card({ content, type, handleDelete, editable }) {
+function Card({ title, id, tableType, postType, handleDelete = defaultFn, editable }) {
     const userId = useSelector((state) => state.auth.userId);
     const [visible, setVisible] = useState(false);
     const [isShowConfirm, setIsShowConfirm] = useState(false);
@@ -26,7 +27,7 @@ function Card({ content, type, handleDelete, editable }) {
 
     const handleConfirmOk = () => {
         // delete article
-        if (type === 'bookmark') {
+        if (tableType === 'bookmark') {
             removeFromBookmarkedList();
         } else {
             deletePost();
@@ -37,21 +38,21 @@ function Card({ content, type, handleDelete, editable }) {
 
     const handleEdit = () => {
         let path = '';
-        if (type === 'article') path = `/write/${content.id}`;
-        else if (type === 'question') path = `/ask/${content.id}`;
+        if (tableType === 'article') path = `/write/${id}`;
+        else if (tableType === 'question') path = `/ask/${id}`;
         navigate(path);
     };
 
     const removeFromBookmarkedList = () => {
         const data = {
-            bookmarkTableId: content?.id,
-            bookmarkTableType: 'ARTICLE',
+            bookmarkTableId: id,
+            bookmarkTableType: postType.toUpperCase(),
             bookmarkedUser: userId,
         };
         const fetchAPI = async () => {
             const result = await bookmarkService.toggleBookmark(data);
             if (result?.status === 'OK') {
-                handleDelete(content.id);
+                handleDelete(id);
                 setIsShowConfirm(false);
                 dispatch(
                     addToast(
@@ -71,14 +72,14 @@ function Card({ content, type, handleDelete, editable }) {
     const deletePost = () => {
         const fetchAPI = async () => {
             let result = null;
-            if (type === 'article') {
-                result = await articleService.deleteArt(content.id);
-            } else if (type === 'question') {
-                result = await questionService.deleteQuestion(content.id);
+            if (tableType === 'article') {
+                result = await articleService.deleteArt(id);
+            } else if (tableType === 'question') {
+                result = await questionService.deleteQuestion(id);
             }
             if (result?.data === true) {
                 setIsShowConfirm(false);
-                handleDelete(content.id);
+                handleDelete(id);
                 dispatch(
                     addToast(
                         createToast({
@@ -107,7 +108,7 @@ function Card({ content, type, handleDelete, editable }) {
         },
     ];
 
-    if (type === 'bookmark')
+    if (tableType === 'bookmark')
         menuList = [
             {
                 title: 'Bỏ lưu',
@@ -125,16 +126,16 @@ function Card({ content, type, handleDelete, editable }) {
     };
 
     return (
-        <div className={cx('card', `tag-${type}`)}>
+        <div className={cx('card', `tag-${postType}`)}>
             <div className={cx('card-header')}>
-                <p className={cx('card-title')} onClick={() => navigate(`/${type}/${content?.id}`)}>
-                    {type === 'article' ? content?.metaTitle || content.title : content.content}
+                <p className={cx('card-title')} onClick={() => navigate(`/${postType}/${id}`)}>
+                    {title}
                 </p>
                 {editable && (
                     <HeadlessTippy
                         visible={visible}
                         interactive
-                        offset={type === 'bookmark' ? [-50, -60] : [-50, -100]}
+                        offset={tableType === 'bookmark' ? [-50, -60] : [-50, -100]}
                         onClickOutside={hide}
                         menu={<MenuTippy width={120} list={menuList} hide={hide} />}
                     >

@@ -101,7 +101,7 @@ function Write() {
                     contentEditable={true}
                     onPaste={handlePaste}
                     onInput={handleTitleChange}
-                    data-empty-text="Câu hỏi của bạn là gì ? "
+                    data-empty-text="Tiêu đề"
                 ></div>
                 <div className={cx('rmel-editor')}>
                     <MdEditor
@@ -113,7 +113,7 @@ function Write() {
                         onChange={handleEditorChange}
                         name="content"
                         value={content}
-                        placeholder="Giải thích ở đây"
+                        placeholder="Nội dung ở đây"
                         onImageUpload={handleImageUpload}
                         config={{
                             view: {

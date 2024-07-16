@@ -8,8 +8,8 @@ const Detail = lazy(() => import('~/page/detail/Detail'));
 const AskInput = lazy(() => import('~/page/askInput'));
 const Login = lazy(() => import('~/page/login'));
 const SearchPage = lazy(() => import('~/page/search'));
+const Question = lazy(() => import('~/page/question'));
 const Write = lazy(() => import('~/page/write'));
-const AskBox = lazy(() => import('~/page/askBox'));
 const About = lazy(() => import('~/page/about'));
 const Profile = lazy(() => import('~/page/profile'));
 const Register = lazy(() => import('~/page/register/Register'));
@@ -23,7 +23,7 @@ const publicRoutes = [
     { path: routes.about, component: About, layout: DefaultLayout },
     { path: routes.search, component: SearchPage, layout: DefaultLayout },
     { path: routes.article, component: Detail, layout: DefaultLayout },
-    { path: routes.ask_slug, component: AskBox, layout: DefaultLayout },
+    { path: routes.question, component: Question, layout: DefaultLayout },
     { path: routes.notfound, component: NotFound, layout: OtherLayout },
     { path: routes.error, component: NotFound, layout: OtherLayout },
 ];
