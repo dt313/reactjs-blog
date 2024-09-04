@@ -1,22 +1,21 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Article.module.scss';
 import classNames from 'classnames/bind';
 import Image from '~/components/image';
 import ArticleHeader from './ArticleHeader';
 import { BiSolidLike, BiSolidComment } from 'react-icons/bi';
-import { bookmarkService, commentService, reactionService } from '~/services';
+import { bookmarkService } from '~/services';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToast, createToast } from '~/redux/actions/toastAction';
 import calculateTime from '~/helper/calculateTime';
-import getTableType from '~/helper/getTableType';
+import isConfictAuthor from '~/helper/isConflictAuthor';
 
 const cx = classNames.bind(styles);
-function Article({ classes, content, type }) {
+function Article({ className, content, primary }) {
     const navigate = useNavigate();
     // handle click content
     const handleClickArticle = () => {
-        navigate(`/${type}/${content.id}`);
+        navigate(`/article/${content.slug}`);
     };
 
     const userId = useSelector((state) => state.auth.userId);
@@ -25,57 +24,69 @@ function Article({ classes, content, type }) {
     const handleBookmark = (handleClientMore) => {
         const data = {
             bookmarkTableId: content.id,
-            bookmarkTableType: getTableType(type),
+            bookmarkTableType: 'ARTICLE',
             bookmarkedUser: userId,
         };
         // fetchAPI to server
         const fetchAPI = async () => {
-            const result = await bookmarkService.toggleBookmark(data);
-            if (result?.status === 'OK') {
+            try {
+                const result = await bookmarkService.toggleBookmark(data);
                 handleClientMore(result.data);
-            } else {
+            } catch (error) {
                 dispatch(
                     addToast(
                         createToast({
-                            type: 'warning',
-                            content: 'Bạn không thể lưu bài viết của bạn !',
+                            type: 'error',
+                            content: error.message,
                         }),
                     ),
                 );
             }
         };
 
-        fetchAPI();
+        // if same author\
+        if (isConfictAuthor(content.author.id)) {
+            fetchAPI();
+        } else {
+            dispatch(
+                addToast(
+                    createToast({
+                        type: 'warning',
+                        content: 'Bạn không thể lưu bài viết của bạn !',
+                    }),
+                ),
+            );
+        }
     };
+    const classes = cx('wrapper', { [className]: className, primary });
 
     return (
-        <div className={cx('wrapper', classes)}>
+        <div className={classes}>
             <ArticleHeader
                 author={content?.author}
-                postId={content?.id}
-                type={type}
-                time={calculateTime(content?.updatedAt)}
+                postSlug={content?.slug}
+                time={calculateTime(content?.updated_at)}
                 hasShare
                 onBookmark={handleBookmark}
                 is_bookmarked={content.is_bookmarked}
             />
             <div className={cx('body')} onClick={handleClickArticle}>
                 <div className={cx('info')}>
-                    <h2 className={cx('title')}>{content?.metaTitle || content?.title}</h2>
-                    <div className={cx('description')}>{content?.description || content?.content}</div>
+                    <h2 className={cx('title')}>{content?.meta_title || content?.title}</h2>
+                    <div className={cx('description')}>{content.description}</div>
 
                     <div className={cx('statistical')}>
                         <span className={cx('number')}>
                             <BiSolidLike className={cx('icon')} />
-                            {content?.reactionCount}
+                            {content?.reaction_count}
                         </span>
                         <span className={cx('number')}>
                             <BiSolidComment className={cx('icon')} />
-                            {content?.commentCount}
+                            {content?.comment_count}
                         </span>
                     </div>
                 </div>
-                {content?.thumbnail && <Image className={cx('blog-img')} alt="image" />}
+                {content?.thumbnail && <Image className={cx('blog-img')} alt="image" src={content.thumbnail} />}
             </div>
         </div>
     );

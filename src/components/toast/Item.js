@@ -16,7 +16,7 @@ function Item({ toast, duration }) {
             dispatch(deleteToast(toast.id));
         }, duration);
         return () => clearTimeout(timeout);
-    }, [toast]);
+    }, []);
 
     const getIcon = (type) => {
         if (type === 'info' || type === 'success') {

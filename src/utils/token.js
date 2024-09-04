@@ -6,12 +6,20 @@ const getRefreshToken = () => {
     return localStorage.getItem('refreshToken');
 };
 
-const getUserId = () => {
-    return localStorage.getItem('userId');
+const getUser = () => {
+    return JSON.parse(localStorage.getItem('user'));
 };
 
-const setUserId = (id) => {
-    return localStorage.setItem('userId', id);
+const getUserId = () => {
+    return JSON.parse(localStorage.getItem('user'))?.id;
+};
+
+const getAvatar = () => {
+    return JSON.parse(localStorage.getItem('user'))?.avatar;
+};
+
+const setUser = (user) => {
+    return localStorage.setItem('user', JSON.stringify(user));
 };
 
 const setAccessToken = (token) => {
@@ -20,6 +28,14 @@ const setAccessToken = (token) => {
 
 const setRefreshToken = (token) => {
     localStorage.setItem('resfreshToken', token);
+};
+
+const setRedirectPath = (path) => {
+    localStorage.setItem('redirect', path);
+};
+
+const getRedirectPath = () => {
+    return localStorage.getItem('redirect');
 };
 
 const clearToken = () => {
@@ -31,7 +47,11 @@ export default {
     setAccessToken,
     getRefreshToken,
     setRefreshToken,
+    getRedirectPath,
+    setRedirectPath,
+    getUser,
+    setUser,
+    getAvatar,
     getUserId,
-    setUserId,
     clearToken,
 };

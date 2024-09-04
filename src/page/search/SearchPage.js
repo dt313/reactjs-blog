@@ -1,18 +1,20 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './SearchPage.module.scss';
 import classNames from 'classnames/bind';
 import Search from '~/components/search';
 import TopicItem from './TopicItem';
 import Article from '~/components/article';
 import Pagination from '~/components/pagination';
-import { cards, searchTag } from '~/config/uiConfig';
+import { searchTag } from '~/config/uiConfig';
+import { addToast, createToast } from '~/redux/actions/toastAction';
 import { useSearchParams } from 'react-router-dom';
 import { MdClose } from 'react-icons/md';
 import useTitle from '~/hook/useTitle';
 import { SpinnerLoader } from '~/components/loading/Loading';
-import { articleService, questionService } from '~/services';
+import { articleService } from '~/services';
 import { ARTICLE_PAGE_SIZE } from '~/config/uiConfig';
 import useDebounce from '~/hook/useDebounce';
+import { useDispatch } from 'react-redux';
 const cx = classNames.bind(styles);
 
 function SearchPage() {
@@ -26,19 +28,32 @@ function SearchPage() {
     const [articles, setArticles] = useState([]);
     const [length, setLength] = useState(0);
     const debounceValue = useDebounce(searchValue, 1300);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const fetchAPI = async () => {
-            const data = { searchValue, topic, pageNumber: page, pageSize: ARTICLE_PAGE_SIZE };
-            setLoading(true);
-            let result;
-            if (tag === 'article') {
-                result = await articleService.searchFor(data);
-            } else if (tag === 'question') {
-                result = await questionService.searchFor(data);
+            try {
+                setLoading(true);
+                const data = { searchValue, topic, pageNumber: page, pageSize: ARTICLE_PAGE_SIZE };
+                let result;
+                if (tag === 'article') {
+                    result = await articleService.searchFor(data);
+                } else {
+                    result = await articleService.searchFeature(data);
+                }
+                setArticles(result);
+            } catch (error) {
+                dispatch(
+                    addToast(
+                        createToast({
+                            type: 'error',
+                            content: error.message,
+                        }),
+                    ),
+                );
+            } finally {
+                setLoading(false);
             }
-            setArticles(result);
-            setLoading(false);
         };
 
         fetchAPI();
@@ -46,17 +61,27 @@ function SearchPage() {
 
     useEffect(() => {
         const fetchAPI = async () => {
-            const data = { searchValue, topic };
-            let length = 0;
-            if (tag === 'article') {
-                length = await articleService.getLength(data);
-            } else if (tag === 'question') {
-                length = await questionService.getLength(data);
+            try {
+                const data = { searchValue, topic };
+                let length = 0;
+                if (tag === 'article') {
+                    length = await articleService.getLength(data);
+                }
+                setLength(length);
+            } catch (error) {
+                dispatch(
+                    addToast(
+                        createToast({
+                            type: 'error',
+                            content: error.message,
+                        }),
+                    ),
+                );
             }
-            setLength(length);
         };
         fetchAPI();
     }, [debounceValue, tag, topic]);
+
     const setParams = (tag, topic, q, page) => {
         let newParams = {};
         if (!!tag && !!topic && !!q && !!page) {
@@ -66,6 +91,7 @@ function SearchPage() {
         }
         if (!!topic) {
             newParams.topic = topic;
+            newParams.tag = 'article';
         }
         if (!!q) {
             newParams.q = q;
@@ -80,15 +106,16 @@ function SearchPage() {
         setParams(searchParams.get('tag') || searchTag[0].tag, topic, searchValue, page);
     }, [searchParams]);
 
-    const handleClickTag = useCallback(
-        (nav) => {
-            const idx = findIndexTag(nav.tag);
-            setTag(searchTag[idx].tag);
-            setPage(1);
-            setParams(searchTag[idx].tag, topic, searchValue, 1);
-        },
-        [tag, searchParams],
-    );
+    const handleClickTag = (nav) => {
+        const idx = findIndexTag(nav.tag);
+        setTag(searchTag[idx].tag);
+        if (searchTag[idx].tag === 'best') {
+            setTopic('');
+            setSearchValue('');
+        }
+        setPage(1);
+        setParams(searchTag[idx].tag, '', '', 1);
+    };
 
     // find index of tag
     const findIndexTag = (tag) => {
@@ -97,9 +124,9 @@ function SearchPage() {
 
     // change input
     const handleChangeSearchValue = (e) => {
-        const idx = findIndexTag(tag);
         setPage(1);
-        setParams(searchTag[idx].tag, topic, e.target.value, 1);
+        setTag('article');
+        setParams('article', topic, e.target.value, 1);
         setSearchValue(e.target.value);
 
         if (!!topic) {
@@ -110,28 +137,25 @@ function SearchPage() {
     // clear input
     const handleClearInput = () => {
         setSearchValue('');
-        const idx = findIndexTag(tag);
-        setParams(searchTag[idx].tag, topic, '', page);
+        setParams('article', topic, '', page);
     };
 
     // handle remove topic
     const handleRemoveTopic = () => {
-        const idx = findIndexTag(tag);
-        setParams(searchTag[idx].tag, '', searchValue, page);
+        setParams('article', '', searchValue, page);
         setTopic('');
     };
 
     const handleChangePage = (page) => {
-        const idx = findIndexTag(tag);
         setPage(page);
-        setParams(searchTag[idx].tag, topic, searchValue, page);
+        setParams('article', topic, searchValue, page);
     };
 
     return (
         <div className={cx('wrapper')}>
             <div className={cx('content')}>
                 <div className={cx('header')}>
-                    <h2 className={cx('title')}>Tìm kiếm câu trả lời hữu ích</h2>
+                    <h2 className={cx('title')}>Tìm kiếm câu bài viết hữu ích</h2>
                     <div className={cx('search')}>
                         <Search
                             value={searchValue}
@@ -144,7 +168,7 @@ function SearchPage() {
                 {topic && (
                     <div className={cx('topic-search')}>
                         <p className={cx('topic-text')}>
-                            Topic : <span className={cx('topic-item')}>{topic}</span>
+                            Topic : <span className={cx('topic-item')}>#{topic}</span>
                         </p>
                         <MdClose className={cx('close-icon')} onClick={handleRemoveTopic} />
                     </div>
@@ -169,7 +193,14 @@ function SearchPage() {
                     {!loading ? (
                         articles?.length > 0 ? (
                             articles.map((art, index) => {
-                                return <Article key={art.id} className={cx('card')} content={art} type={tag}></Article>;
+                                return (
+                                    <Article
+                                        primary={tag === 'best'}
+                                        key={art.id}
+                                        className={cx('card')}
+                                        content={art}
+                                    ></Article>
+                                );
                             })
                         ) : (
                             <p className={cx('empty-noti')}>There are no posts</p>
@@ -182,7 +213,14 @@ function SearchPage() {
                 </div>
 
                 <div className={cx('pagination')}>
-                    <Pagination value={page} setValue={setPage} handleChangePage={handleChangePage} length={length} />
+                    {tag !== 'best' && (
+                        <Pagination
+                            value={page}
+                            setValue={setPage}
+                            handleChangePage={handleChangePage}
+                            length={length}
+                        />
+                    )}
                 </div>
             </div>
         </div>

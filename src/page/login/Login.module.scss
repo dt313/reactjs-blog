@@ -4,7 +4,13 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    margin-top: 96px;
+    margin-top: 32px;
+}
+
+.container {
+    background-color: #242526;
+    padding: 48px 64px;
+    border-radius: 8px;
 }
 
 .content {
@@ -34,7 +40,6 @@
 
 .login-box {
     margin-top: 24px;
-    width: 300px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -42,9 +47,10 @@
     .btn {
         flex: 1;
         width: 100%;
-        min-height: 52px;
         margin: 4px 0;
+        padding: 8px 24px;
         align-items: center;
+        color: var(--text-color);
     }
 
     .icon {
@@ -83,7 +89,6 @@
 }
 
 .login-input {
-    min-width: 250px;
     width: 100%;
     height: 48px;
     padding: 4px 8px;
@@ -91,7 +96,12 @@
     font-size: 1.4rem;
     margin-bottom: 12px;
     background-color: transparent;
-    border: 2px solid var(--border-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+
+    &:focus {
+        border-color: var(--accent-hover);
+    }
 }
 
 .login-input {
@@ -99,6 +109,9 @@
 
 .login-btn {
     margin-top: 12px;
+    width: 100%;
+    height: 48px;
+    border-radius: 4px;
 }
 
 .login-error {
@@ -106,4 +119,10 @@
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
         'Open Sans', 'Helvetica Neue', sans-serif;
     color: red;
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 24px;
+    }
 }

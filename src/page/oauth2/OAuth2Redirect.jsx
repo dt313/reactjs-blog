@@ -1,0 +1,47 @@
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { tokenUtils } from '~/utils';
+import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { login } from '~/redux/actions/authAction';
+import { useEffect } from 'react';
+
+function OAuth2Redirect() {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const navigator = useNavigate();
+    const dispacth = useDispatch();
+    const fetchInfo = async () => {
+        try {
+            const result = await axios.get('http://localhost:8080/api/v1/users/me', {
+                headers: {
+                    Authorization: `Bearer ${searchParams.get('accessToken')}`, // Thay YOUR_TOKEN_HERE bằng token thực tế của bạn
+                },
+            });
+            console.log(result);
+            if (result.data.data) {
+                dispacth(
+                    login({
+                        accessToken: searchParams.get('accessToken'),
+                        user: result.data.data,
+                    }),
+                );
+            }
+        } catch (error) {
+            console.error('Error fetching user info:', error);
+        }
+    };
+
+    useEffect(() => {
+        if (searchParams.get('accessToken')) {
+            fetchInfo().then(() => {
+                const redirectPath = tokenUtils.getRedirectPath();
+                navigator(redirectPath);
+            });
+        } else {
+            navigator('/login');
+        }
+    }, []);
+
+    return <></>;
+}
+
+export default OAuth2Redirect;

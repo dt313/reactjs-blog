@@ -40,6 +40,15 @@
     }
 }
 
+.tippy {
+    background-color: #fff;
+    width: max-content;
+    color: #333;
+    padding: 4px 12px;
+    font-size: 1.3rem;
+    border-radius: 4px;
+}
+
 @media (max-width: 480px) {
     .tool {
         padding: 12px;

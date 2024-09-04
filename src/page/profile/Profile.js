@@ -21,7 +21,7 @@ const toCardForm = (post) => {
     return {
         ...post.content,
         bookmarkId: post.id,
-        createdAt: post.createdAt,
+        createdAt: post.created_at,
     };
 };
 
@@ -38,58 +38,75 @@ function Profile() {
     const [loading, setLoading] = useState(false);
 
     const fetchPosts = async (id) => {
-        setLoading(true);
-        let newPost = [];
-        if (tag === 'article') {
-            newPost = await articleService.getArticleByAuthor(id);
-        } else if (tag === 'bookmark') {
-            newPost = await bookmarkService.getAllBookmarkedArticleByUserId(id);
-            newPost = newPost.map((post) => {
-                return toCardForm(post);
-            });
-        } else if (tag === 'question') {
-            newPost = await questionService.getByAuthor(id);
+        try {
+            let newPost = [];
+            if (tag === 'article') {
+                newPost = await articleService.getArticleByAuthor(id);
+            } else if (tag === 'bookmark') {
+                newPost = await bookmarkService.getAllBookmarkedArticleByUserId(id);
+                newPost = newPost?.map((post) => {
+                    return toCardForm(post);
+                });
+            }
+            return newPost;
+        } catch (error) {
+            dispatch(
+                addToast(
+                    createToast({
+                        type: 'error',
+                        content: error,
+                    }),
+                ),
+            );
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
-
-        return newPost;
     };
-
-    console.log(posts);
 
     // Fetch Infomation
     useEffect(() => {
         if (username === '@me') {
             const fetchAPI = async () => {
-                const result = await userService.getMyInfomation();
-                if (result?.code) {
-                    alert(result.message);
-                } else {
+                try {
+                    const result = await userService.getMyInfomation();
                     setInfomation(result?.data);
                     setTags(setProfileTag(true));
                     setPosts(await fetchPosts(userId));
+                } catch (error) {
+                    dispatch(
+                        addToast(
+                            createToast({
+                                type: 'error',
+                                content: error,
+                            }),
+                        ),
+                    );
                 }
             };
             fetchAPI();
         } else {
             const fetchAPI = async () => {
-                username = username.slice(1);
-                const result = await userService.getInfomationByUsername(username);
-                if (result?.code) {
-                    alert(result?.message);
-                } else {
+                try {
+                    username = username.slice(1);
+                    const result = await userService.getInfomationByUsername(username);
+
                     setInfomation(result?.data);
                     setTags(setProfileTag(result?.data.id === userId));
                     setPosts(await fetchPosts(result?.data?.id));
+                } catch (error) {
+                    dispatch(
+                        addToast(
+                            createToast({
+                                type: 'error',
+                                content: error,
+                            }),
+                        ),
+                    );
                 }
             };
             fetchAPI();
         }
     }, [tag, username]);
-
-    console.log('rerender ', tag);
-
-    const handleCickSetting = () => {};
 
     useEffect(() => {
         setSearchParams({ tag: profileTag[0].tag });
@@ -104,7 +121,7 @@ function Profile() {
         <div className={cx('wrapper')}>
             <div className={cx('container')}>
                 <div className={cx('info')}>
-                    <Avatar className={cx('avatar')} />
+                    <Avatar className={cx('avatar')} src={infomation?.avatar} />
                     {/* <h3 className={cx('name')}>{infomation?.name || 'NO NAME'}</h3> */}
                     <span className={cx('special-name')}>{infomation?.username || 'NO USERNAME'}</span>
                     {/* <Button secondary onClick={handleCickSetting}>
@@ -124,6 +141,7 @@ function Profile() {
                                         topic={nav.name}
                                         onClickTopic={() => {
                                             const idx = profileTag.findIndex((item) => item.tag === nav.tag);
+                                            setLoading(true);
                                             setSearchParams({ tag: profileTag[idx].tag });
                                             setTag(profileTag[idx].tag);
                                         }}
@@ -141,6 +159,7 @@ function Profile() {
                                             key={post.bookmarkId || post.id}
                                             title={post.metaTitle || post.title || post.content}
                                             id={post.id}
+                                            slug={post.slug}
                                             tableType={tag}
                                             postType={post.tableType?.toLowerCase()}
                                             handleDelete={handleDeletePost}

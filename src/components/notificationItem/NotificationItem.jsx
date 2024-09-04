@@ -5,31 +5,46 @@ import calculateTime from '~/helper/calculateTime';
 import generateNotificationContent from '~/helper/generateNotificationContent';
 import { useNavigate } from 'react-router-dom';
 import defaultFn from '~/utils/defaultFn';
-import { notificationService } from '~/services';
-import { useDispatch } from 'react-redux';
-import { readNotification } from '~/redux/actions/notificationAction';
+import { tableType } from '~/config/types';
 
 const cx = classNames.bind(styles);
 
 function NotificationItem({ content, onClick = defaultFn }) {
     const navigator = useNavigate();
-    const dispatch = useDispatch();
     const handleClickNotificationItem = async () => {
-        const type = content.contextType;
-        const contextId = content.contextId;
+        const type = content.context_type;
+        const contextSlug = content.context.slug;
+        const directType = content.direct_object_type;
+        const directId = content.direct_object_id;
+        const hasParentId = content?.direct_object || null;
 
         onClick();
-        if (type === 'ARTICLE') {
-            navigator(`/article/${contextId}`);
-        } else if (type === 'QUESTION') {
-            navigator(`/question/${contextId}`);
+
+        switch (type) {
+            case tableType.article:
+                if (directType === tableType.comment) {
+                    if (hasParentId) {
+                        navigator(
+                            `/article/${contextSlug}?parent_id=${content?.direct_object.parent_id}&&direct_id=${content?.direct_object.direct_id}`,
+                        );
+                    } else {
+                        navigator(`/article/${contextSlug}?direct_id=${directId}`);
+                    }
+                } else {
+                    navigator(`/article/${contextSlug}`);
+                }
+            default:
+                break;
         }
     };
 
-    const text = generateNotificationContent(content.type, content.context);
+    const text = generateNotificationContent(content.type, content.context.title);
+
+    console.log();
+
     return (
         <div className={cx('wrapper', content.is_readed && 'readed')} onClick={handleClickNotificationItem}>
-            <Avatar className={cx('avatar')} />
+            <Avatar className={cx('avatar')} src={content.sender.avatar} />
             <div className={cx('text-box')}>
                 <p className={cx('content')}>
                     <strong
@@ -44,7 +59,7 @@ function NotificationItem({ content, onClick = defaultFn }) {
                     </strong>
                     <span dangerouslySetInnerHTML={{ __html: text }}></span>
                 </p>
-                <span className={cx('time')}>{calculateTime(content.createdAt)}</span>
+                <span className={cx('time')}>{calculateTime(content.created_at)}</span>
             </div>
         </div>
     );

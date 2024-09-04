@@ -1,11 +1,11 @@
 import classNames from 'classnames/bind';
-import styles from './Model.module.scss';
+import styles from './CloseBox.module.scss';
 import { MdClose } from 'react-icons/md';
 import { memo } from 'react';
 const cx = classNames.bind(styles);
 
 const fn = () => {};
-function Model({ children, onBack = fn }) {
+function CloseBox({ children, onBack = fn }) {
     return (
         <div className={cx('wrapper')}>
             <span className={cx('close')} onClick={onBack}>
@@ -17,4 +17,4 @@ function Model({ children, onBack = fn }) {
     );
 }
 
-export default memo(Model);
+export default memo(CloseBox);

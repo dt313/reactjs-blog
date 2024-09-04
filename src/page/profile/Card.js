@@ -6,14 +6,17 @@ import classNames from 'classnames/bind';
 import { addToast, createToast } from '~/redux/actions/toastAction';
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import HeadlessTippy from '~/components/headless/HeadlessTippy';
-import MenuTippy from '~/components/menuTippy';
 import Confirm from '~/components/confirm/Confirm';
-import { articleService, bookmarkService, questionService } from '~/services';
+import { articleService, bookmarkService } from '~/services';
 import defaultFn from '~/utils/defaultFn';
+import MenuTippyItem from '~/components/menuTippyItem';
+import ModelBox from '~/components/modelBox';
+import Overlay from '~/components/overlay';
+import { motion } from 'framer-motion';
 
 const cx = classNames.bind(styles);
 
-function Card({ title, id, tableType, postType, handleDelete = defaultFn, editable }) {
+function Card({ title, id, slug, tableType, handleDelete = defaultFn, editable }) {
     const userId = useSelector((state) => state.auth.userId);
     const [visible, setVisible] = useState(false);
     const [isShowConfirm, setIsShowConfirm] = useState(false);
@@ -34,24 +37,15 @@ function Card({ title, id, tableType, postType, handleDelete = defaultFn, editab
         }
     };
 
-    // For Tipppy
-
-    const handleEdit = () => {
-        let path = '';
-        if (tableType === 'article') path = `/write/${id}`;
-        else if (tableType === 'question') path = `/ask/${id}`;
-        navigate(path);
-    };
-
     const removeFromBookmarkedList = () => {
         const data = {
             bookmarkTableId: id,
-            bookmarkTableType: postType.toUpperCase(),
+            bookmarkTableType: 'ARTICLE',
             bookmarkedUser: userId,
         };
         const fetchAPI = async () => {
-            const result = await bookmarkService.toggleBookmark(data);
-            if (result?.status === 'OK') {
+            try {
+                const result = await bookmarkService.toggleBookmark(data);
                 handleDelete(id);
                 setIsShowConfirm(false);
                 dispatch(
@@ -62,8 +56,15 @@ function Card({ title, id, tableType, postType, handleDelete = defaultFn, editab
                         }),
                     ),
                 );
-            } else {
-                console.log(result);
+            } catch (error) {
+                dispatch(
+                    addToast(
+                        createToast({
+                            type: 'error',
+                            content: error.message,
+                        }),
+                    ),
+                );
             }
         };
         fetchAPI();
@@ -71,25 +72,34 @@ function Card({ title, id, tableType, postType, handleDelete = defaultFn, editab
 
     const deletePost = () => {
         const fetchAPI = async () => {
-            let result = null;
-            if (tableType === 'article') {
-                result = await articleService.deleteArt(id);
-            } else if (tableType === 'question') {
-                result = await questionService.deleteQuestion(id);
-            }
-            if (result?.data === true) {
-                setIsShowConfirm(false);
-                handleDelete(id);
+            try {
+                let result = null;
+                if (tableType === 'article') {
+                    result = await articleService.deleteArt(id);
+                }
+                if (result?.data === true) {
+                    setIsShowConfirm(false);
+                    handleDelete(id);
+                    dispatch(
+                        addToast(
+                            createToast({
+                                type: 'success',
+                                content: 'Bạn đã xóa thành công bài viết',
+                            }),
+                        ),
+                    );
+                } else {
+                    console.log(result);
+                }
+            } catch (error) {
                 dispatch(
                     addToast(
                         createToast({
-                            type: 'success',
-                            content: 'Bạn đã xóa thành công bài viết',
+                            type: 'error',
+                            content: error.message,
                         }),
                     ),
                 );
-            } else {
-                console.log(result);
             }
         };
 
@@ -104,7 +114,7 @@ function Card({ title, id, tableType, postType, handleDelete = defaultFn, editab
         },
         {
             title: 'Sửa',
-            fn: handleEdit,
+            fn: () => navigate(`/write/${slug}`),
         },
     ];
 
@@ -126,9 +136,9 @@ function Card({ title, id, tableType, postType, handleDelete = defaultFn, editab
     };
 
     return (
-        <div className={cx('card', `tag-${postType}`)}>
+        <div className={cx('card', `tag-${tableType}`)}>
             <div className={cx('card-header')}>
-                <p className={cx('card-title')} onClick={() => navigate(`/${postType}/${id}`)}>
+                <p className={cx('card-title')} onClick={() => navigate(`/article/${slug}`)}>
                     {title}
                 </p>
                 {editable && (
@@ -137,7 +147,7 @@ function Card({ title, id, tableType, postType, handleDelete = defaultFn, editab
                         interactive
                         offset={tableType === 'bookmark' ? [-50, -60] : [-50, -100]}
                         onClickOutside={hide}
-                        menu={<MenuTippy width={120} list={menuList} hide={hide} />}
+                        menu={<MenuTippyItem width={120} list={menuList} hide={hide} />}
                     >
                         <span className={cx('card-menu')} onClick={show}>
                             <BiDotsHorizontalRounded className={cx('menu-icon')} onClick={show} />
@@ -148,11 +158,19 @@ function Card({ title, id, tableType, postType, handleDelete = defaultFn, editab
 
             <span className={cx('card-mode')}>public</span>
             {isShowConfirm && (
-                <Confirm
-                    title="Bạn có chắc chắn muốn xóa bài viết nay không ?"
-                    handleOK={handleConfirmOk}
-                    handleCancle={handleCancle}
-                />
+                <Overlay>
+                    <ModelBox title="Xác nhận" isConfirm onClose={handleCancle} onConfirm={handleConfirmOk}>
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ ease: 'easeOut', duration: 1, delay: 1 }}
+                            className={cx('confirm-description')}
+                        >
+                            Bạn có chắc chắn muốn {tableType === 'article' ? 'xóa ' : 'bỏ lưu '} bài viết{' '}
+                            <strong onClick={() => navigate(`/article/${slug}`)}>{title}</strong>
+                        </motion.p>
+                    </ModelBox>
+                </Overlay>
             )}
         </div>
     );

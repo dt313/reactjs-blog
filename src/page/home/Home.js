@@ -36,17 +36,6 @@ function Home() {
                                         </tr>
                                     );
                                 })}
-                                {/* {categories.subcategories.map((category, index) => {
-                                    return (
-                                        <tr key={index}>
-                                            <td>{category.NS.name === '' ? '-' : category.NS.name}</td>
-                                            <td>{category.DBMS.name === '' ? '-' : category.DBMS.name}</td>
-                                            <td>{category.WEB.name === '' ? '-' : category.WEB.name}</td>
-                                            <td>{category.APP.name === '' ? '-' : category.APP.name}</td>
-                                            <td>{category.CLOUD.name === '' ? '-' : category.CLOUD.name}</td>
-                                        </tr>
-                                    );
-                                })} */}
                             </tbody>
                         </table>
                     </div>
@@ -57,21 +46,3 @@ function Home() {
 }
 
 export default Home;
-//    {
-//        categories.map((category) => {
-//            return (
-//                <div className={cx('column')} key={category.id}>
-//                    <h3 className={cx('title')}>{category.name}</h3>
-//                    <ul className={cx('sub-data')}>
-//                        {category.subcategories.map((sub) => {
-//                            return (
-//                                <li className={cx('sub-title')} key={sub.id}>
-//                                    {sub.name}
-//                                </li>
-//                            );
-//                        })}
-//                    </ul>
-//                </div>
-//            );
-//        });
-//    }

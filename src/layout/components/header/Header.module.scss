@@ -92,6 +92,18 @@
     }
 }
 
+@keyframes slideDown {
+    0% {
+        top: 10px;
+        opacity: 0;
+    }
+
+    100% {
+        top: 30px;
+        opacity: 1;
+    }
+}
+
 @media (max-width: 684px) {
     .header .menu-trigger {
         display: block;
@@ -106,6 +118,7 @@
         border: 2px solid var(--color);
         z-index: 9;
         background-color: var(--background-color);
+        animation: slideDown 0.3s;
         li {
             margin-bottom: 20px;
         }

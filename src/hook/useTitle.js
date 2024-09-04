@@ -15,7 +15,7 @@ const useTitle = (title) => {
         return () => {
             document.title = originalTitle;
         };
-    }, []);
+    }, [title]);
 };
 
 export default useTitle;

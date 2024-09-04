@@ -11,7 +11,7 @@ function Toast({ placement, duration }) {
         return (
             <div className={cx('wrapper', placement.split(' '))}>
                 {toasts.map((toast, index) => {
-                    return <Item key={index} toast={toast} duration={duration} />;
+                    return <Item key={toast.id} toast={toast} duration={duration} />;
                 })}
             </div>
         );

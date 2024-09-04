@@ -14,7 +14,7 @@ function TopicInput({ title, handleDeleteTag, topics = [], setTopics, className 
     useEffect(() => {
         const input = inputRef.current;
         const handleKeyDown = (e) => {
-            if (e.keyCode === 13) {
+            if (e.keyCode === 13 && e.target.value !== '') {
                 const isValid = topics.some((t) => t === e.target.value);
                 console.log(isValid);
                 if (!isValid) {

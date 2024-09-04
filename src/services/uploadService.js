@@ -1,20 +1,20 @@
 import axios from 'axios';
-const url = process.env.REACT_APP_API_URL;
+import { tokenUtils } from '~/utils';
 
 export const uploadImage = async (file) => {
     try {
         const res = await axios.post(
-            'http://localhost:8080/api/v1/upload-image',
+            `${process.env.REACT_APP_API_URL}/upload-image`,
             { file },
             {
                 headers: {
                     'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${tokenUtils.getAccessToken()}`,
                 },
             },
         );
         return res.data;
     } catch (error) {
-        console.log(error);
-        console.log('Something Error');
+        throw new Error(error?.message || 'Failed to upload image');
     }
 };

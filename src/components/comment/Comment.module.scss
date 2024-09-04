@@ -4,6 +4,12 @@
     margin-bottom: 12px;
 }
 
+.active {
+    .text-box:first-child {
+        border: 2px solid var(--accent);
+    }
+}
+
 .container {
     display: flex;
 }
@@ -21,6 +27,11 @@
     width: fit-content;
     overflow: hidden;
     background-color: #202020;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
 }
 
 .name {

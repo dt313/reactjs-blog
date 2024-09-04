@@ -17,8 +17,6 @@ const getLengthOfPagination = (length) => {
 };
 function Pagination({ value, handleChangePage, length }) {
     const realArray = findArray(getLengthOfPagination(length));
-
-    // console.log(realArray);
     return (
         <div className={cx('wrapper')}>
             <button className={cx('page')} onClick={() => handleChangePage(value > 1 ? value - 1 : 1)}>

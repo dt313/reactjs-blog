@@ -1,6 +1,6 @@
 import styles from './Detail.module.scss';
 import classNames from 'classnames/bind';
-import MarkDown from '~/components/MarkDown';
+import MarkDown from '~/components/markdown';
 import Tools from '~/components/tools';
 import ArticleHeader from '~/components/article/ArticleHeader';
 import Suggestion from '~/components/suggestion';
@@ -8,59 +8,78 @@ import Statistical from '~/components/statistical';
 
 import { useEffect, useState } from 'react';
 import { MdClose } from 'react-icons/md';
-import { useNavigate, useParams } from 'react-router-dom';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { addToast, createToast } from '~/redux/actions/toastAction';
 import { articleService, bookmarkService, reactionService } from '~/services';
-import stompClient, { disconnect, sendNotification } from '~/socket';
+import { sendNotificationWithCondition } from '~/socket';
 import checkReaction from '~/helper/checkReaction';
 import calculateTime from '~/helper/calculateTime';
 import copyTextToClipboard from '~/helper/copyClipboard';
 import CommentBox from '~/components/commentBox';
 import { notificationType, tableType } from '~/config/types';
+import useTitle from '~/hook/useTitle';
+import { open } from '~/redux/actions/shareBoxAction';
+import requireAuthFn from '~/helper/requireAuthFn';
+import isConfictAuthor from '~/helper/isConflictAuthor';
 
 const cx = classNames.bind(styles);
 
 function Detail() {
     const dispatch = useDispatch();
+    const { slug } = useParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [article, setArticle] = useState({});
     const [isShowCommentsBox, setIsShowCommentsBox] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
     const [countOfReaction, setCountOfReaction] = useState();
-    const { id } = useParams();
-    document.title = article?.title || '';
+    // document.title = article?.title || '';
+    useTitle(article?.title || '');
     const navigate = useNavigate();
 
-    const userId = useSelector((state) => state.auth.userId);
+    const { userId, isAuthentication } = useSelector((state) => state.auth);
+
     useEffect(() => {
         const fetchAPI = async () => {
-            const result = await articleService.getArticleById(id);
-            setArticle(result);
-            setCountOfReaction(result?.reactionCount);
-            setIsLiked(result?.is_reacted);
+            try {
+                const result = await articleService.getArticleBySlug(slug);
+                setArticle(result);
+                setCountOfReaction(result?.reaction_count);
+                setIsLiked(result?.is_reacted);
+                setIsShowCommentsBox(!!searchParams.get('direct_id'));
+            } catch (error) {
+                dispatch(
+                    addToast(
+                        createToast({
+                            type: 'error',
+                            content: error.message,
+                        }),
+                    ),
+                );
+            }
         };
+
         fetchAPI();
-    }, []);
+    }, [searchParams, slug, dispatch]);
 
     // handle click topik
     const handleClickTopic = (topic) => {
-        navigate(`/search?topic=${topic}`);
+        navigate(`/search?tag=article&&topic=${topic}`);
     };
 
     const handleClickHeart = async (type) => {
         const data = {
-            reactionTableId: id,
+            reactionTableId: article.id,
             reactionTableType: 'ARTICLE',
             type: type,
             reactedUser: userId,
         };
-
-        const result = await reactionService.tongleReaction(data);
-
-        if (result?.status === 'OK') {
+        try {
+            const result = await reactionService.tongleReaction(data);
             setIsLiked(checkReaction(result?.data));
             setCountOfReaction(checkReaction(result?.data) ? countOfReaction + 1 : countOfReaction - 1);
-            sendNotification({
+
+            sendNotificationWithCondition(isLiked === false && userId !== article.author.id, {
                 sender: userId,
                 type: notificationType.react_article,
                 receiver: article.author.id,
@@ -69,12 +88,21 @@ function Detail() {
                 directObjectType: tableType.article,
                 directObjectId: article.id,
             });
-        } else {
-            alert(result?.message);
+        } catch (error) {
+            dispatch(
+                addToast(
+                    createToast({
+                        type: 'error',
+                        content: error,
+                    }),
+                ),
+            );
         }
     };
 
-    const handleClickShare = () => {};
+    const handleClickShare = () => {
+        dispatch(open());
+    };
 
     const handleClickLink = () => {
         const path = window.origin + `/article/${article.id}`;
@@ -95,34 +123,46 @@ function Detail() {
     };
 
     const handleCloseCommenBox = () => {
+        setSearchParams('');
         setIsShowCommentsBox(false);
     };
 
     // handle bookmark
     const handleBookmark = (handleClientMore) => {
         const data = {
-            bookmarkTableId: id,
+            bookmarkTableId: article.id,
             bookmarkTableType: 'ARTICLE',
             bookmarkedUser: userId,
         };
         // fetchAPI to server
         const fetchAPI = async () => {
-            const result = await bookmarkService.toggleBookmark(data);
-            if (result?.status === 'OK') {
+            try {
+                const result = await bookmarkService.toggleBookmark(data);
                 handleClientMore(result.data);
-            } else {
+            } catch (error) {
                 dispatch(
                     addToast(
                         createToast({
-                            type: 'warning',
-                            content: 'Bạn không thể lưu bài viết của bạn !',
+                            type: 'error',
+                            content: error.message,
                         }),
                     ),
                 );
             }
         };
 
-        fetchAPI();
+        if (isConfictAuthor(article.author.id)) {
+            fetchAPI();
+        } else {
+            dispatch(
+                addToast(
+                    createToast({
+                        type: 'warning',
+                        content: 'Bạn không thể lưu bài viết của bạn !',
+                    }),
+                ),
+            );
+        }
     };
     return (
         <div className={cx('wrapper')}>
@@ -131,7 +171,23 @@ function Detail() {
                     <Tools
                         className={cx('article-tools')}
                         onClickComment={handleClickCommentButton}
-                        onClickHeart={() => handleClickHeart('LIKE')}
+                        onClickHeart={() =>
+                            requireAuthFn(
+                                isAuthentication,
+                                () => handleClickHeart('LIKE'),
+                                () => {
+                                    dispatch(
+                                        addToast(
+                                            createToast({
+                                                type: 'warning',
+                                                content: 'Bạn cần đăng nhập để thích bài viết này',
+                                            }),
+                                        ),
+                                    );
+                                    // navigate('/login?continue=');
+                                },
+                            )
+                        }
                         onClickShare={handleClickShare}
                         onClickLink={handleClickLink}
                         is_liked={isLiked}
@@ -141,13 +197,13 @@ function Detail() {
                     <h1 className={cx('title')}>{article?.title}</h1>
                     <div className={cx('article-header')}>
                         <ArticleHeader
-                            time={calculateTime(article?.updatedAt)}
+                            time={calculateTime(article?.updated_at)}
                             className={cx('header')}
                             type="article"
                             large
                             author={article?.author}
                             is_bookmarked={article?.is_bookmarked}
-                            postId={id}
+                            postSlug={article?.slug}
                             onBookmark={handleBookmark}
                         />
                     </div>
@@ -155,7 +211,7 @@ function Detail() {
                         <MarkDown className={cx('preview')} text={article?.content} />
                     </div>
                     <div className={cx('statistical')}>
-                        <Statistical like={countOfReaction} comment={article?.commentCount} liked={isLiked} />
+                        <Statistical like={countOfReaction} comment={article?.comment_count} liked={isLiked} />
                     </div>
                     <div className={cx('topics')}>
                         <h5 className={cx('topics-title')}>Topics : </h5>
@@ -183,7 +239,11 @@ function Detail() {
                             </span>
 
                             <div className={cx('comments-detail')}>
-                                <CommentBox commentCount={article?.commentCount} authorId={article.author.id} />
+                                <CommentBox
+                                    commentCount={article?.comment_count}
+                                    authorId={article.author.id}
+                                    articleId={article.id}
+                                />
                             </div>
                         </div>
                     </div>

@@ -1,9 +1,9 @@
 import Button from '../button/Button';
-import styles from './MenuTippy.module.scss';
+import styles from './MenuTippyItem.module.scss';
 import classNames from 'classnames/bind';
 
 const cx = classNames.bind(styles);
-const MenuTippy = ({ list, width, hide }) => {
+const MenuTippyItem = ({ list, width, hide }) => {
     const handleClick = (content) => {
         if (typeof content.fn === 'function') {
             content.fn();
@@ -24,4 +24,4 @@ const MenuTippy = ({ list, width, hide }) => {
     );
 };
 
-export default MenuTippy;
+export default MenuTippyItem;

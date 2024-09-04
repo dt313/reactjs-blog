@@ -3,12 +3,11 @@ import Button from '~/components/button/Button';
 import { ImGithub, ImGoogle3, ImFacebook, ImMail } from 'react-icons/im';
 import styles from './Register.module.scss';
 import classNames from 'classnames/bind';
-import { logout } from '~/redux/actions/authAction';
-import { useDispatch } from 'react-redux';
 import useTitle from '~/hook/useTitle';
 import Validation from '~/helper/validation';
 import { userService } from '~/services';
 import { useNavigate } from 'react-router-dom';
+import { GITHUB_OAUTH_URL, GOOGLE_OAUTH_URL } from '~/contants';
 const cx = classNames.bind(styles);
 
 function Register() {
@@ -48,24 +47,34 @@ function Register() {
         });
 
         if (email === '' && pwd === '' && cfpwd === '') {
-            console.log('Submit');
             const fetchAPI = async () => {
-                const result = await userService.createUser({ email: info.email, password: info.pwd });
-                if (result.code) {
-                    setError({ email: result.message });
-                } else {
-                    alert('Create new user successfully');
+                try {
+                    const result = await userService.createUser({ email: info.email, password: info.pwd });
+                    dispatch(
+                        addToast(
+                            createToast({
+                                type: 'error',
+                                content: error,
+                            }),
+                        ),
+                    );
+                    ('Create new user successfully');
                     navigate('/login');
+                } catch (error) {
+                    dispatch(
+                        addToast(
+                            createToast({
+                                type: 'error',
+                                content: error,
+                            }),
+                        ),
+                    );
                 }
             };
             fetchAPI();
         } else {
             setError({ email, pwd, cfpwd });
         }
-
-        // send data to server
-        // test logout
-        // dispatch(logout());
     };
 
     const validationLogin = ({ email, pwd, cfpwd }) => {
@@ -91,13 +100,35 @@ function Register() {
 
     return (
         <div className={cx('wrapper')}>
-            <h3 className={cx('title')}>
-                Đăng Kí vào <span className={cx('logo')}>question.?</span>
-            </h3>
-            {isLoginWithEmail ? (
+            <div className={cx('container')}>
+                <h3 className={cx('title')}>
+                    Đăng Kí vào <span className={cx('logo')}>question.?</span>
+                </h3>
+                <div className={cx('content')}>
+                    <div className={cx('register-box')}>
+                        <Button
+                            secondary
+                            className={cx('btn')}
+                            rounded
+                            href={GOOGLE_OAUTH_URL}
+                            leftIcon={<ImGoogle3 className={cx('icon')} />}
+                        >
+                            Đăng kí với Google
+                        </Button>
+                        <Button
+                            secondary
+                            className={cx('btn')}
+                            rounded
+                            href={GITHUB_OAUTH_URL}
+                            leftIcon={<ImGithub className={cx('icon')} />}
+                        >
+                            Đăng kí với Github
+                        </Button>
+                    </div>
+                </div>
                 <form className={cx('register-form')} onSubmit={(e) => handleSubmit(e)}>
                     <label htmlFor="email" className={cx('register-label')}>
-                        Email
+                        Tên đăng nhập - Email
                     </label>
                     <input
                         className={cx('register-input')}
@@ -109,7 +140,7 @@ function Register() {
                     {error.email && <p className={cx('register-error')}>{error?.email}</p>}
 
                     <label htmlFor="pwd" className={cx('register-label')}>
-                        Password
+                        Mật khẩu
                     </label>
                     <input
                         type="password"
@@ -121,7 +152,7 @@ function Register() {
                     />
                     {error.pwd && <p className={cx('register-error')}>{error?.pwd}</p>}
                     <label htmlFor="cfpwd" className={cx('register-label')}>
-                        Confirm password
+                        Nhập lại mật khẩu
                     </label>
                     <input
                         type="password"
@@ -137,37 +168,15 @@ function Register() {
                         Đăng kí
                     </Button>
                 </form>
-            ) : (
-                <div className={cx('content')}>
-                    <div className={cx('register-box')}>
-                        <Button secondary className={cx('btn')} leftIcon={<ImGoogle3 className={cx('icon')} />}>
-                            Đăng kí với Google
-                        </Button>
-                        <Button secondary className={cx('btn')} leftIcon={<ImGithub className={cx('icon')} />}>
-                            Đăng kí với Github
-                        </Button>
-                        <Button secondary className={cx('btn')} leftIcon={<ImFacebook className={cx('icon')} />}>
-                            Đăng kí với Facebook
-                        </Button>
-                        <Button
-                            secondary
-                            className={cx('btn')}
-                            leftIcon={<ImMail className={cx('icon')} />}
-                            onClick={() => setIsLoginWithEmail(true)}
-                        >
-                            Đăng kí với Email
-                        </Button>
-                    </div>
-                </div>
-            )}
 
-            <div className={cx('footer')}>
-                <Button text className={cx('back')} to={'/'}>
-                    Quay về trang chủ
-                </Button>
-                <Button text className={cx('back')} to={'/login'}>
-                    Đăng nhập
-                </Button>
+                <div className={cx('footer')}>
+                    <Button text className={cx('back')} to={'/'}>
+                        Quay về trang chủ
+                    </Button>
+                    <Button text className={cx('back')} to={'/login'}>
+                        Đăng nhập
+                    </Button>
+                </div>
             </div>
         </div>
     );

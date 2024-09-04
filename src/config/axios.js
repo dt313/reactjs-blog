@@ -1,54 +1,70 @@
 import axios from 'axios';
 import { tokenUtils, handleHTTPError } from '~/utils';
-
-const url = process.env.REACT_APP_API_URL;
+import { redirectToNotFoundPage, sendError } from '~/utils/handleHTTPError';
 
 const instance = axios.create({
-    baseURL: url,
+    baseURL: process.env.REACT_APP_API_URL,
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
-// refresh token function
-async function refreshToken() {
-    // Get Token from LocalStorage
-    const token = instance.get('/refreshToken');
-    console.log(token);
-
-    // return {accessToken, refreshToken}
-}
-
+const NO_AUTH_HEADER_URLS = ['/users', '/auth/oauth2/code/google'];
+const OPTION_AUTH_HEADER_URLS = ['/article', '/comment'];
 instance.interceptors.request.use(
     async function (config) {
-        // console.log(config);
-        // console.log(config.url.indexOf('/users'));
-        if (config.url === '/auth/login' || config.url === '/users') {
-            // no Authorization
+        if (config.url === '/users/me') {
+            config.headers.Authorization = `Bearer ${tokenUtils.getAccessToken()}`;
             return config;
         }
 
-        // console.log(config);
-        config.headers.Authorization = `Bearer ${tokenUtils.getAccessToken()}`;
-        // handle jwt expired
-        return config;
+        if (config.url === '/users' || (config.url === '/articles/suggestion' && config.method === 'post')) {
+            return config;
+        }
 
-        //
+        if (OPTION_AUTH_HEADER_URLS.some((url) => config.url.startsWith(url)) && config.method === 'get') {
+            // console.log(tokenUtils.getAccessToken());
+            if (!!tokenUtils.getAccessToken()) {
+                config.headers.Authorization = `Bearer ${tokenUtils.getAccessToken()}`;
+            }
+            return config;
+        }
+        if (NO_AUTH_HEADER_URLS.some((url) => config.url.startsWith(url)) && config.method === 'get') {
+            // Without Authentication
+            // console.log(config.url, config.method);
+            return config;
+        }
+
+        if (config.url.startsWith('/auth')) {
+            return config;
+        }
+        // With Authentication
+        config.headers.Authorization = `Bearer ${tokenUtils.getAccessToken()}`;
+        return config;
     },
+
     function (error) {
         console.log(error);
         return Promise.reject(error);
-        return error;
+        return;
     },
 );
 
 instance.interceptors.response.use(
     function (response) {
-        return response.data;
+        if (response?.data?.code === 1000) return response.data;
+        else throw new Error('Server Internal Error');
     },
     function (error) {
-        handleHTTPError(error.response.data);
-        return Promise.reject(error);
+        console.log(error);
+        if (error.code === 'ERR_NETWORK') {
+            tokenUtils.clearToken();
+            redirectToNotFoundPage();
+
+            return Promise.reject(sendError('Internal server error'));
+        }
+        const error_message = handleHTTPError(error.response.data);
+        if (error_message) return Promise.reject(error_message);
     },
 );
 

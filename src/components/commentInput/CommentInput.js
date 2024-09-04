@@ -1,10 +1,14 @@
-import MarkDown from '~/components/MarkDown';
+import MarkDown from '~/components/markdown';
 import styles from './CommentInput.module.scss';
 import classNames from 'classnames/bind';
 import Editor from '~/components/editor';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import Button from '~/components/button';
 import Avatar from '~/components/avatar';
+import requireAuthFn from '~/helper/requireAuthFn';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToast, createToast } from '~/redux/actions/toastAction';
+import tokenUtils from '~/utils/token';
 
 const cx = classNames.bind(styles);
 
@@ -21,8 +25,8 @@ function CommentInput({
 }) {
     const [value, setValue] = useState(defaultValue);
     const [disabled, setDisabled] = useState(true);
-
-    const ref = useRef();
+    const { isAuthentication } = useSelector((state) => state.auth);
+    const dispatch = useDispatch();
 
     function handleEditorChange({ text }) {
         setValue(text);
@@ -61,14 +65,28 @@ function CommentInput({
     return (
         <div className={cx('wrapper', [reply])}>
             {!reply && isShow === false && (
-                <div className={cx('label')} onClick={onOpenInput}>
+                <div
+                    className={cx('label')}
+                    onClick={() =>
+                        requireAuthFn(isAuthentication, onOpenInput, () => {
+                            dispatch(
+                                addToast(
+                                    createToast({
+                                        type: 'warning',
+                                        content: 'Bạn cần đăng nhập để bình luận bài viết này',
+                                    }),
+                                ),
+                            );
+                        })
+                    }
+                >
                     {placeholder}
                 </div>
             )}
             {isShow && (
                 <div className={cx('comment')}>
                     <div className={cx('input-box')}>
-                        <Avatar src="https://blog1203.netlify.app/images/avatar/avatar_56.png" />
+                        <Avatar src={tokenUtils.getAvatar()} />
                         <div className={cx('text-input')}>
                             <Editor
                                 content={value}

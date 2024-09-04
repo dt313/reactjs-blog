@@ -4,7 +4,6 @@ import classNames from 'classnames/bind';
 import remarkGfm from 'remark-gfm';
 
 import Highlighter from './Highlighter';
-import underlinePlugin from './Underline';
 
 const cx = classNames.bind(styles);
 function MarkDown({ text = '', className }) {

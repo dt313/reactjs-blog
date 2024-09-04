@@ -2,13 +2,14 @@ import { tokenUtils } from '~/utils';
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';
 export function login(payload) {
-    const { accessToken, refreshToken, userId } = payload;
+    console.log('LOGIN');
+
+    const { accessToken, user } = payload;
     tokenUtils.setAccessToken(accessToken);
-    tokenUtils.setRefreshToken(refreshToken);
-    tokenUtils.setUserId(userId);
+    tokenUtils.setUser(user);
     return {
         type: LOGIN,
-        payload: userId,
+        payload: user?.id,
     };
 }
 

@@ -19,15 +19,23 @@ import {
     readNotification,
 } from './redux/actions/notificationAction';
 import NotificationItem from './components/notificationItem/NotificationItem';
+import Overlay from './components/overlay';
+import ModelBox from './components/modelBox';
+import { SHARE_MENU } from './config/uiConfig';
+import ShareItem from './components/shareItem';
+import { close } from './redux/actions/shareBoxAction';
+import { addToast, createToast } from './redux/actions/toastAction';
 const cx = classNames.bind(styles);
 
 function App() {
     const dispatch = useDispatch();
+    const [hasUnreadedNotification, setHasUnreadedNotification] = useState(false);
     const [isRing, setIsRing] = useState(false);
     const [isShow, setIsShow] = useState(false);
 
     const { userId, isAuthentication } = useSelector((state) => state.auth);
     const { notifications, countOfUnReaded } = useSelector((state) => state.notification);
+    const { isOpen } = useSelector((state) => state.shareBox);
 
     const handleClickOutside = () => {
         if (notiRef.current) {
@@ -38,28 +46,43 @@ function App() {
     const notiRef = useOutsideClick(handleClickOutside);
 
     useEffect(() => {
+        setHasUnreadedNotification(countOfUnReaded > 0);
         setIsRing(countOfUnReaded > 0);
+
+        const timeout = setTimeout(() => {
+            setIsRing(false);
+        }, 5000);
+
+        return () => {
+            clearTimeout(timeout);
+        };
     }, [countOfUnReaded]);
+
     // fetch notifications from server
     const fetchAPI = async () => {
-        console.log('USER ID', userId);
-        const result = await notificationService.getAllNotificationsByUser({
-            id: userId,
-            pageSize: 10,
-            pageNumber: 1,
-        });
-        dispatch(initialNotifications(result));
+        try {
+            const result = await notificationService.getAllNotificationsByUser({
+                id: userId,
+                pageSize: 10,
+                pageNumber: 1,
+            });
+            dispatch(initialNotifications(result));
+        } catch (error) {}
     };
 
-    console.log(notifications, countOfUnReaded, isRing);
+    // socket receive notification
     useEffect(() => {
+        let timeout;
         if (isAuthentication) {
             stompClient.onConnect = () => {
-                console.log('connect server websocket ');
                 stompClient.subscribe('/user/ws/notification', (notification) => {
-                    console.log(notification);
                     dispatch(addNotification(JSON.parse(notification.body)));
+                    setHasUnreadedNotification(true);
+                    setIsShow(true);
                     setIsRing(true);
+                    timeout = setTimeout(() => {
+                        setIsRing(false);
+                    }, 5000);
                 });
             };
             connect();
@@ -69,17 +92,45 @@ function App() {
         }
         return () => {
             disconnect();
+            clearTimeout(timeout);
         };
     }, [isAuthentication]);
 
     const handleReadAllNotification = async () => {
-        const result = await notificationService.readAllNotificationByUser(userId);
-        if (result) {
+        try {
+            const result = await notificationService.readAllNotificationByUser(userId);
             dispatch(readAllNotification());
-            setIsRing(false);
+            setHasUnreadedNotification(false);
+        } catch (error) {
+            dispatch(
+                addToast(
+                    createToast({
+                        type: 'error',
+                        content: error,
+                    }),
+                ),
+            );
         }
     };
 
+    const handleReadNotification = async (is_readed, noti_id) => {
+        try {
+            setIsShow(false);
+            if (is_readed === false) {
+                const result = await notificationService.readNotification(noti_id);
+                dispatch(readNotification(noti_id));
+            }
+        } catch (error) {
+            dispatch(
+                addToast(
+                    createToast({
+                        type: 'error',
+                        content: error,
+                    }),
+                ),
+            );
+        }
+    };
     return (
         <Router>
             <div className="App">
@@ -153,21 +204,15 @@ function App() {
                                         <NotificationItem
                                             key={notification.id}
                                             content={notification}
-                                            onClick={async () => {
-                                                setIsShow(false);
-                                                if (notification.is_readed === false) {
-                                                    const result = await notificationService.readNotification(
-                                                        notification.id,
-                                                    );
-                                                    dispatch(readNotification(notification.id));
-                                                }
-                                            }}
+                                            onClick={() =>
+                                                handleReadNotification(notification.is_readed, notification.id)
+                                            }
                                         ></NotificationItem>
                                     );
                                 })}
                         </div>
 
-                        {isRing ? (
+                        {hasUnreadedNotification ? (
                             <span
                                 className={cx('bell-wrap')}
                                 onClick={(e) => {
@@ -180,8 +225,6 @@ function App() {
                             <span
                                 className={cx('bell-wrap')}
                                 onClick={() => {
-                                    // console.log('bell');
-                                    // sendMessage();
                                     setIsShow(!isShow);
                                 }}
                             >
@@ -191,8 +234,31 @@ function App() {
                     </div>
                 )}
             </div>
-
+            {isOpen && (
+                <Overlay onClick={() => dispatch(close())}>
+                    <ModelBox title="Chia sẻ" onClose={() => dispatch(close())}>
+                        <div className={cx('share-container')}>
+                            {SHARE_MENU.map((item, index) => {
+                                return (
+                                    <ShareItem
+                                        key={index}
+                                        title={item.title}
+                                        icon={item.icon}
+                                        onClick={() =>
+                                            item.fn(
+                                                'http://localhost:3000/article/7761c678-448c-41c8-9047-cde9846a4904',
+                                            )
+                                        }
+                                    />
+                                );
+                            })}
+                        </div>
+                    </ModelBox>
+                </Overlay>
+            )}
             <Toast placement="top left" duration={5000} />
+
+            {/* <ModelBox error title={'Error'}></ModelBox> */}
         </Router>
     );
 }

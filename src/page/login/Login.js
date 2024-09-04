@@ -1,15 +1,17 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from '~/components/button/Button';
 import styles from './Login.module.scss';
 import classNames from 'classnames/bind';
-import { ImGithub, ImGoogle3, ImFacebook, ImMail } from 'react-icons/im';
+import { ImGithub, ImGoogle3 } from 'react-icons/im';
 import { useDispatch } from 'react-redux';
 import { login } from '~/redux/actions/authAction';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import useTitle from '~/hook/useTitle';
 import Validation from '~/helper/validation';
 import { authService } from '~/services';
-import debounce from '~/helper/debounce';
+import { GITHUB_OAUTH_URL, GOOGLE_OAUTH_URL } from '~/contants';
+import { addToast, createToast } from '~/redux/actions/toastAction';
+import tokenUtils from '~/utils/token';
 const cx = classNames.bind(styles);
 
 function Login() {
@@ -17,7 +19,6 @@ function Login() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const [isLoginWithEmail, setIsLoginWithEmail] = useState(true);
     const [info, setInfo] = useState({
         email: '',
         pwd: '',
@@ -29,9 +30,15 @@ function Login() {
     });
 
     let prePath = '';
-    if (searchParams.size > 0) {
-        prePath = searchParams.get('continue');
-    }
+
+    useEffect(() => {
+        if (searchParams.size > 0) {
+            prePath = searchParams.get('continue');
+            tokenUtils.setRedirectPath(prePath);
+        } else {
+            tokenUtils.setRedirectPath('/');
+        }
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -58,22 +65,29 @@ function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('SUBMIT');
         const [email, pwd] = validationLogin({ email: e.target[0].value, pwd: e.target[1].value });
 
         if (email === '' && pwd === '') {
             // fetch api to recveive token
-            const result = await authService.login({ email: info.email, password: info.pwd });
-            if (result?.code) {
-                setError({ email: result.message });
-            } else {
+            try {
+                const result = await authService.login({ email: info.email, password: info.pwd });
                 dispatch(
                     login({
                         accessToken: result.token,
-                        userId: result.userId,
+                        user: result.user,
                     }),
                 );
+                tokenUtils.setRedirectPath('/');
                 navigate(prePath || '/');
+            } catch (error) {
+                dispatch(
+                    addToast(
+                        createToast({
+                            type: 'error',
+                            content: error.message,
+                        }),
+                    ),
+                );
             }
         } else {
             setError({ email: email, pwd: pwd });
@@ -82,13 +96,45 @@ function Login() {
 
     return (
         <div className={cx('wrapper')}>
-            <h3 className={cx('title')}>
-                Đăng nhập vào <span className={cx('logo')}>question.?</span>
-            </h3>
-            {isLoginWithEmail ? (
+            <div className={cx('container')}>
+                <h3 className={cx('title')}>
+                    Đăng nhập vào <span className={cx('logo')}>question.?</span>
+                </h3>
+
+                <div className={cx('content')}>
+                    <div className={cx('login-box')}>
+                        <Button
+                            secondary
+                            className={cx('btn')}
+                            rounded
+                            href={GOOGLE_OAUTH_URL}
+                            leftIcon={<ImGoogle3 className={cx('icon')} />}
+                        >
+                            Đăng nhập với Google
+                        </Button>
+                        <Button
+                            secondary
+                            className={cx('btn')}
+                            rounded
+                            href={GITHUB_OAUTH_URL}
+                            leftIcon={<ImGithub className={cx('icon')} />}
+                        >
+                            Đăng nhập với Github
+                        </Button>
+                        {/* <Button
+                            secondary
+                            className={cx('btn')}
+                            href={FACEBOOK_OAUTH_URL}
+                            leftIcon={<ImFacebook className={cx('icon')} />}
+                        >
+                            Đăng nhập với Facebook
+                        </Button> */}
+                    </div>
+                </div>
+
                 <form className={cx('login-form')} onSubmit={handleSubmit}>
                     <label htmlFor="email" className={cx('login-label')}>
-                        Email
+                        Tên đăng nhập
                     </label>
                     <input
                         className={cx('login-input')}
@@ -100,7 +146,7 @@ function Login() {
                     />
                     {error.email && <p className={cx('login-error')}>{error?.email}</p>}
                     <label htmlFor="pwd" className={cx('login-label')}>
-                        Password
+                        Mật khẩu
                     </label>
                     <input
                         type="password"
@@ -117,37 +163,14 @@ function Login() {
                         Đăng nhập
                     </Button>
                 </form>
-            ) : (
-                <div className={cx('content')}>
-                    <div className={cx('login-box')}>
-                        <Button secondary className={cx('btn')} leftIcon={<ImGoogle3 className={cx('icon')} />}>
-                            Đăng nhập với Google
-                        </Button>
-                        <Button secondary className={cx('btn')} leftIcon={<ImGithub className={cx('icon')} />}>
-                            Đăng nhập với Github
-                        </Button>
-                        <Button secondary className={cx('btn')} leftIcon={<ImFacebook className={cx('icon')} />}>
-                            Đăng nhập với Facebook
-                        </Button>
-                        <Button
-                            secondary
-                            className={cx('btn')}
-                            leftIcon={<ImMail className={cx('icon')} />}
-                            onClick={() => setIsLoginWithEmail(true)}
-                        >
-                            Đăng nhập với Email
-                        </Button>
-                    </div>
+                <div className={cx('footer')}>
+                    <Button text className={cx('back')} to={'/'}>
+                        Quay về trang chủ
+                    </Button>
+                    <Button text className={cx('back')} to={'/register'}>
+                        Đăng kí
+                    </Button>
                 </div>
-            )}
-
-            <div className={cx('footer')}>
-                <Button text className={cx('back')} to={'/'}>
-                    Quay về trang chủ
-                </Button>
-                <Button text className={cx('back')} to={'/register'}>
-                    Đăng kí
-                </Button>
             </div>
         </div>
     );

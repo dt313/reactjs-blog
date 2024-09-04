@@ -6,7 +6,6 @@ import * as commentService from './commentService';
 import * as bookmarkService from './bookmarkService';
 import * as notificationService from './notificationService';
 import * as uploadService from './uploadService';
-import * as questionService from './questionService';
 
 export {
     authService,
@@ -17,5 +16,4 @@ export {
     bookmarkService,
     notificationService,
     uploadService,
-    questionService,
 };

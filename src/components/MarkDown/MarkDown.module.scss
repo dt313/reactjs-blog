@@ -108,4 +108,11 @@
     strong {
         color: var(--accent);
     }
+
+    img {
+        width: 100%;
+        height: auto;
+        margin: 12px 0;
+        object-fit: cover;
+    }
 }

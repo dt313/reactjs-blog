@@ -4,8 +4,6 @@ import {
     INITIAL_NOTIFICATIONS,
     READ_ALL_NOTIFICATION,
     READ_NOTIFICATION,
-    SEND_NOTIFICAITON,
-    SET_STOMP_CLIENT,
 } from '../actions/notificationAction';
 
 const initialState = {
@@ -19,6 +17,7 @@ const notificationReducer = (state = initialState, action) => {
     let newNotifications = [];
     switch (action.type) {
         case ADD_NOTIFICATION:
+            console.log('action', action);
             return {
                 ...state,
                 counnoticationCountter: state.noticationCount + 1,
@@ -31,7 +30,7 @@ const notificationReducer = (state = initialState, action) => {
                 ...state,
                 notifications: action.notifications,
                 total: action.notifications?.length || 0,
-                countOfUnReaded: action.notifications.filter((n) => n.is_readed === false).length,
+                countOfUnReaded: action.notifications?.filter((n) => n.is_readed === false).length,
             };
         case READ_NOTIFICATION:
             newNotifications = state.notifications.map((noti) => {

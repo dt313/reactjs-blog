@@ -5,9 +5,11 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import useOutsideClick from '~/hook/useOutsideClick';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '~/redux/actions/authAction';
-import images from '~/assets/images';
+
 import { authService } from '~/services';
 import { tokenUtils } from '~/utils';
+import { addToast, createToast } from '~/redux/actions/toastAction';
+
 const cx = classNames.bind(styles);
 
 function Header() {
@@ -23,12 +25,19 @@ function Header() {
     const handleLogout = () => {
         const accessToken = tokenUtils.getAccessToken();
         const fetchAPI = async () => {
-            const result = await authService.logout(accessToken);
-            if (result?.code) {
-                alert(result.message);
-            } else {
+            try {
+                const result = await authService.logout(accessToken);
                 dispatch(logout());
                 window.location.href = '/login';
+            } catch (error) {
+                dispatch(
+                    addToast(
+                        createToast({
+                            type: 'error',
+                            content: error.message,
+                        }),
+                    ),
+                );
             }
         };
         fetchAPI();
@@ -50,10 +59,10 @@ function Header() {
             title: 'search',
         },
 
-        {
-            path: '/ask',
-            title: 'ask',
-        },
+        // {
+        //     path: '/ask',
+        //     title: 'ask',
+        // },
 
         {
             path: '/write',

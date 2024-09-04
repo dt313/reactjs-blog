@@ -1,24 +1,22 @@
 import classNames from 'classnames/bind';
 import styles from './Question.module.scss';
-import Tools from '~/components/tools';
-import MarkDown from '~/components/MarkDown';
+import MarkDown from '~/components/markdown';
 import ArticleHeader from '~/components/article/ArticleHeader';
 import Statistical from '~/components/statistical';
 import CommentInput from '~/components/commentInput';
 import { useEffect, useState } from 'react';
 import useTitle from '~/hook/useTitle';
-import { bookmarkService, commentService, questionService, reactionService } from '~/services';
+import { bookmarkService, commentService, reactionService } from '~/services';
 import { useNavigate, useParams } from 'react-router-dom';
 import calculateTime from '~/helper/calculateTime';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToast, createToast } from '~/redux/actions/toastAction';
-import getTableType from '~/helper/getTableType';
 import { COMMENT_PAGE_SIZE } from '~/config/uiConfig';
 import Comment from '~/components/comment';
 import { addComment, deleteComment, initCommentTree, loadMoreComment } from '~/redux/actions/commentAction';
 import checkReaction from '~/helper/checkReaction';
 import { notificationType, tableType } from '~/config/types';
-import { sendNotification } from '~/socket';
+import { sendNotificationWithCondition } from '~/socket';
 
 const cx = classNames.bind(styles);
 function Question() {
@@ -37,26 +35,26 @@ function Question() {
 
     useEffect(() => {
         const fetchAPI = async () => {
-            const result = await questionService.getById(id);
-            setQuestion(result);
-            setCountOfComments(result.commentCount);
-            setIsReacted(result.is_reacted);
-            setCountOfReaction(result.reactionCount);
-        };
-
-        fetchAPI();
-    }, [id]);
-
-    useEffect(() => {
-        const fetchAPI = async () => {
             const data = {
                 type: 'QUESTION',
                 id: id,
                 pageNumber: page,
                 pageSize: COMMENT_PAGE_SIZE,
             };
-            const result = await commentService.getAllCommentByType(data);
-            dispatch(initCommentTree(id, result));
+
+            try {
+                const result = await commentService.getAllCommentByType(data);
+                dispatch(initCommentTree(id, result));
+            } catch (error) {
+                dispatch(
+                    addToast(
+                        createToast({
+                            type: 'error',
+                            content: error.message,
+                        }),
+                    ),
+                );
+            }
         };
 
         fetchAPI();
@@ -64,17 +62,17 @@ function Question() {
 
     // handle click heart
     const handleClickHeart = async (type) => {
-        const data = {
-            reactionTableId: id,
-            reactionTableType: 'QUESTION',
-            type: type,
-            reactedUser: userId,
-        };
+        try {
+            const data = {
+                reactionTableId: id,
+                reactionTableType: 'QUESTION',
+                type: type,
+                reactedUser: userId,
+            };
 
-        const result = await reactionService.tongleReaction(data);
-        if (result?.status === 'OK') {
+            const result = await reactionService.tongleReaction(data);
             setIsReacted(checkReaction(result?.data));
-            sendNotification({
+            sendNotificationWithCondition(isReated === false && userId !== question.author.id, {
                 sender: userId,
                 type: notificationType.react_question,
                 receiver: question.author.id,
@@ -84,8 +82,15 @@ function Question() {
                 directObjectId: id,
             });
             setCountOfReaction(checkReaction(result?.data) ? countOfReaction + 1 : countOfReaction - 1);
-        } else {
-            alert(result?.message);
+        } catch (error) {
+            dispatch(
+                addToast(
+                    createToast({
+                        type: 'error',
+                        content: error,
+                    }),
+                ),
+            );
         }
     };
 
@@ -93,19 +98,19 @@ function Question() {
     const handleBookmark = async (handleClientMore) => {
         const data = {
             bookmarkTableId: id,
-            bookmarkTableType: getTableType('question'),
+            bookmarkTableType: 'QUESTION',
             bookmarkedUser: userId,
         };
 
-        const result = await bookmarkService.toggleBookmark(data);
-        if (result?.status === 'OK') {
+        try {
+            const result = await bookmarkService.toggleBookmark(data);
             handleClientMore(result.data);
-        } else {
+        } catch (error) {
             dispatch(
                 addToast(
                     createToast({
-                        type: 'warning',
-                        content: 'Bạn không thể lưu bài viết của bạn !',
+                        type: 'error',
+                        content: error,
                     }),
                 ),
             );
@@ -121,25 +126,45 @@ function Question() {
             content,
         };
 
-        const result = await commentService.createComment(data);
-        dispatch(addComment(result));
-        sendNotification({
-            sender: userId,
-            type: notificationType.comment_question,
-            receiver: question.author.id,
-            contextType: tableType.question,
-            contextId: id,
-            directObjectType: tableType.comment,
-            directObjectId: result.id,
-        });
-        setCountOfComments(countOfComments + 1);
+        try {
+            const result = await commentService.createComment(data);
+            dispatch(addComment(result));
+            sendNotificationWithCondition(userId !== question.author.id, {
+                sender: userId,
+                type: notificationType.comment_question,
+                receiver: question.author.id,
+                contextType: tableType.question,
+                contextId: id,
+                directObjectType: tableType.comment,
+                directObjectId: result.id,
+            });
+            setCountOfComments(countOfComments + 1);
+        } catch (error) {
+            dispatch(
+                addToast(
+                    createToast({
+                        type: 'error',
+                        content: error,
+                    }),
+                ),
+            );
+        }
     };
 
     const handleDeleteComment = async (id) => {
-        const result = await commentService.deleteComment(id);
-        if (result?.status === 'OK') {
+        try {
+            const result = await commentService.deleteComment(id);
             dispatch(deleteComment(id));
             setCountOfComments(countOfComments - 1);
+        } catch (error) {
+            dispatch(
+                addToast(
+                    createToast({
+                        type: 'error',
+                        content: error,
+                    }),
+                ),
+            );
         }
     };
 
@@ -150,8 +175,19 @@ function Question() {
             pageNumber: page + 1,
             pageSize: COMMENT_PAGE_SIZE,
         };
-        const result = await commentService.getAllCommentByType(data);
-        dispatch(loadMoreComment(result));
+        try {
+            const result = await commentService.getAllCommentByType(data);
+            dispatch(loadMoreComment(result));
+        } catch (error) {
+            dispatch(
+                addToast(
+                    createToast({
+                        type: 'error',
+                        content: error,
+                    }),
+                ),
+            );
+        }
     };
 
     const handleClickTopic = (topic) => {
@@ -169,7 +205,7 @@ function Question() {
                         <ArticleHeader
                             large
                             author={question?.author}
-                            time={calculateTime(question?.createdAt)}
+                            time={calculateTime(question?.created_at)}
                             postId={id}
                             type="question"
                             onBookmark={handleBookmark}
@@ -215,13 +251,14 @@ function Question() {
                                 <Comment
                                     className={cx('comment')}
                                     key={comment.id}
+                                    postType={tableType.question}
                                     comment={comment}
                                     level={0}
                                     onDelete={() => handleDeleteComment(comment.id)}
                                 ></Comment>
                             ))}
 
-                            {question.commentCount > page * COMMENT_PAGE_SIZE && (
+                            {question.comment_count > page * COMMENT_PAGE_SIZE && (
                                 <p className={cx('see-more')} onClick={handleLoadMoreComment}>
                                     Xem thêm bình luận
                                 </p>

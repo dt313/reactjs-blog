@@ -3,23 +3,20 @@ import classNames from 'classnames/bind';
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import { BsBookmark, BsBookmarkFill } from 'react-icons/bs';
 import Avatar from '../avatar/Avatar';
-import HeadlessTippy from '~/components/headless/HeadlessTippy';
-import MenuTippy from '~/components/menuTippy';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToast, createToast } from '~/redux/actions/toastAction';
-import { bookmarkService } from '~/services';
-import { IoFileTrayStackedSharp } from 'react-icons/io5';
 import copyTextToClipboard from '~/helper/copyClipboard';
-import getTableType from '~/helper/getTableType';
+import DropMenu from '../dropMenu/DropMenu';
+import { open } from '~/redux/actions/shareBoxAction';
+import requireAuthFn from '~/helper/requireAuthFn';
 
 const cx = classNames.bind(styles);
 function ArticleHeader({
     className,
     author,
-    postId,
-    type,
+    postSlug,
     onBookmark,
     large = false,
     time = '',
@@ -30,15 +27,15 @@ function ArticleHeader({
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [visible, setVisible] = useState(false);
-    const userId = useSelector((state) => state.auth.userId);
+    const { userId, isAuthentication } = useSelector((state) => state.auth);
 
-    const path = window.origin + `/${type}/${postId}`;
+    const path = window.origin + `/article/${postSlug}`;
     // menu tippy
     const menuList = [
         {
-            title: 'Chia sẻ lên Facebbok',
+            title: 'Chia sẻ',
             fn: () => {
-                window.open(`https://www.facebook.com/sharer/sharer.php?u=${path}`, '_blank');
+                dispatch(open());
             },
         },
         {
@@ -72,6 +69,7 @@ function ArticleHeader({
         [className]: className,
         large,
     });
+
     const show = () => {
         setVisible(true);
     };
@@ -109,23 +107,51 @@ function ArticleHeader({
             <div className={cx('icon-box')}>
                 <span className={cx('icon-wrap', !hasShare && 'large-icon')}>
                     {isBookmarked ? (
-                        <BsBookmarkFill className={cx('icon', 'active')} onClick={() => onBookmark(handleBookmark)} />
+                        <BsBookmarkFill
+                            className={cx('icon', 'active')}
+                            onClick={() =>
+                                requireAuthFn(
+                                    isAuthentication,
+                                    () => onBookmark(handleBookmark),
+                                    () => {
+                                        dispatch(
+                                            addToast(
+                                                createToast({
+                                                    type: 'success',
+                                                    content: 'Bạn cần đăng nhập để lưu bài viết',
+                                                }),
+                                            ),
+                                        );
+                                    },
+                                )
+                            }
+                        />
                     ) : (
-                        <BsBookmark className={cx('icon')} onClick={() => onBookmark(handleBookmark)} />
+                        <BsBookmark
+                            className={cx('icon')}
+                            onClick={() =>
+                                requireAuthFn(
+                                    isAuthentication,
+                                    () => onBookmark(handleBookmark),
+                                    () => {
+                                        dispatch(
+                                            addToast(
+                                                createToast({
+                                                    type: 'success',
+                                                    content: 'Bạn cần đăng nhập để lưu bài viết',
+                                                }),
+                                            ),
+                                        );
+                                    },
+                                )
+                            }
+                        />
                     )}
                 </span>
                 {hasShare && (
-                    <HeadlessTippy
-                        interactive
-                        visible={visible}
-                        offset={[-90, -150]}
-                        onClickOutside={hide}
-                        menu={<MenuTippy width={200} list={menuList} hide={hide} />}
-                    >
-                        <span className={cx('icon-wrap')} onClick={show}>
-                            <BiDotsHorizontalRounded className={cx('icon')} />
-                        </span>
-                    </HeadlessTippy>
+                    <DropMenu offset={[-90, -150]} menu={menuList}>
+                        <BiDotsHorizontalRounded className={cx('icon')} />
+                    </DropMenu>
                 )}
             </div>
         </div>

@@ -1,0 +1,33 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 16px;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #3a3b3c;
+    }
+
+    .icon-wrap {
+        width: 60px;
+        height: 60px;
+        border-radius: 9999px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #ffffff1a;
+        margin-bottom: 4px;
+
+        svg {
+            font-size: 2.4rem;
+        }
+    }
+
+    .title {
+        font-size: 1.4rem;
+        font-weight: 200;
+    }
+}

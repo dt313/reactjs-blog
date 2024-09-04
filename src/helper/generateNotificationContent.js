@@ -10,7 +10,7 @@ const generateNotificationContent = (type, title) => {
         case 'REACT_COMMENT':
             return ` đã thích bình luận của bạn trong bài viết <strong>${title}</strong>`;
         case 'COMMENT_ARTICLE':
-            return ` đã thích bình luận bài viết <strong>${title}</strong> của bạn`;
+            return ` đã bình luận bài viết <strong>${title}</strong> của bạn`;
         case 'COMMENT_QUESTION':
             return ` đã bình luận trong câu hỏi <strong>${title}</strong> của bạn`;
         case 'REPLY_COMMENT':

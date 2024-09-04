@@ -1,8 +1,7 @@
 import token from '~/utils/token';
-const isConfictAuthor = (author = '') => {
-    const userId = token.getUserId();
-    console.log(author, userId);
-    if (userId === author) return false;
+const isConfictAuthor = (author = 0) => {
+    const userId = parseInt(token.getUserId());
+    if (userId === parseInt(author)) return false;
     else return true;
 };
 

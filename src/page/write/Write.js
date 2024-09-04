@@ -1,27 +1,30 @@
 import styles from './Write.module.scss';
 import classNames from 'classnames/bind';
 import { useState, useRef, useEffect } from 'react';
-import MarkDown from '~/components/MarkDown';
+import MarkDown from '~/components/markdown';
+import { addToast, createToast } from '~/redux/actions/toastAction';
 import MdEditor from 'react-markdown-editor-lite';
 import 'react-markdown-editor-lite/lib/index.css';
 import Button from '~/components/button/Button';
-import Model from '~/components/model';
+import CloseBox from '~/components/closeBox';
 import Export from './Export';
 import useTitle from '~/hook/useTitle';
 import { articleService, uploadService } from '~/services';
 import useLimitInput from '~/hook/useLimitInput';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import isConfictAuthor from '~/helper/isConflictAuthor';
+import { useDispatch } from 'react-redux';
 const MAX_TITLE_LENGTH = 200;
 const cx = classNames.bind(styles);
 
 function Write() {
     useTitle('Write');
-    const { id } = useParams();
-    const navigate = useNavigate();
+    const { slug } = useParams();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [model, setModel] = useState(false);
+
+    const dispatch = useDispatch();
 
     const url = process.env.REACT_APP_API_URL;
     const inputRef = useRef(null);
@@ -29,22 +32,67 @@ function Write() {
     // limit title
     useLimitInput(inputRef, MAX_TITLE_LENGTH, title);
 
+    const fetchAPI = async () => {
+        try {
+            const result = await articleService.getArticleBySlug(slug);
+            console.log(result);
+            if (isConfictAuthor(result?.author?.id)) {
+                dispatch(
+                    addToast(
+                        createToast({
+                            type: 'error',
+                            content: 'You are not author!',
+                        }),
+                    ),
+                );
+                return;
+            }
+            inputRef.current.innerHTML = result.title;
+            setTitle(result.title);
+            setContent(result.content);
+        } catch (error) {
+            dispatch(
+                addToast(
+                    createToast({
+                        type: 'error',
+                        content: error,
+                    }),
+                ),
+            );
+        }
+    };
+
+    const handleOpenExport = () => {
+        let isValid = true;
+        if (title.length < 25 || title.length > 200) {
+            dispatch(
+                addToast(
+                    createToast({
+                        type: 'error',
+                        content: 'Title của bài viết phải từ 25 đến 200 kí tự !',
+                    }),
+                ),
+            );
+            isValid = false;
+        } else if (content.length < 100) {
+            dispatch(
+                addToast(
+                    createToast({
+                        type: 'error',
+                        content: 'Nội dung phải lớn hơn 100 kí tự',
+                    }),
+                ),
+            );
+            isValid = false;
+        }
+
+        if (isValid) {
+            setModel(true);
+        }
+    };
+
     useEffect(() => {
-        if (!!id) {
-            const fetchAPI = async () => {
-                const result = await articleService.getArticleById(id);
-                if (result?.code) {
-                    alert(result.message);
-                    navigate(`/search`);
-                } else {
-                    if (isConfictAuthor(result?.author?.id)) {
-                        alert('You are not author!');
-                        return;
-                    }
-                    inputRef.current.innerHTML = result.title;
-                    setContent(result.content);
-                }
-            };
+        if (!!slug) {
             fetchAPI();
         }
     }, []);
@@ -84,9 +132,19 @@ function Write() {
 
     const handleImageUpload = (file) => {
         return new Promise(async (resolve) => {
-            const image = await uploadService.uploadImage(file);
-            console.log(image);
-            resolve(`${url}/image/${image.data}`);
+            try {
+                const image = await uploadService.uploadImage(file);
+                resolve(`${url}/image/${image.data}`);
+            } catch (error) {
+                dispatch(
+                    addToast(
+                        createToast({
+                            type: 'error',
+                            content: error.message,
+                        }),
+                    ),
+                );
+            }
         });
     };
 
@@ -137,15 +195,15 @@ function Write() {
             </div>
 
             <div className={cx('footer')}>
-                <Button primary large className={cx('btn')} onClick={() => setModel(true)}>
+                <Button primary large className={cx('btn')} onClick={handleOpenExport}>
                     Xuất bản
                 </Button>
             </div>
 
             {model && (
-                <Model onBack={() => setModel(false)}>
-                    <Export submitData={{ title: title, content }} isEdit={!!id} />
-                </Model>
+                <CloseBox onBack={() => setModel(false)}>
+                    <Export submitData={{ title: title, content }} isEdit={!!slug} />
+                </CloseBox>
             )}
         </div>
     );

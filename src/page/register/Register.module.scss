@@ -4,7 +4,13 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    margin-top: 96px;
+    margin-top: 32px;
+}
+
+.container {
+    background-color: #242526;
+    padding: 48px 84px;
+    border-radius: 8px;
 }
 
 .content {
@@ -32,9 +38,8 @@
     }
 }
 
-.login-box {
+.register-box {
     margin-top: 24px;
-    width: 300px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -42,9 +47,10 @@
     .btn {
         flex: 1;
         width: 100%;
-        min-height: 52px;
         margin: 4px 0;
+        padding: 8px 24px;
         align-items: center;
+        color: var(--text-color);
     }
 
     .icon {
@@ -83,15 +89,18 @@
 }
 
 .register-input {
-    min-width: 250px;
     width: 100%;
     height: 48px;
     padding: 4px 8px;
-    color: #fff;
+    color: var(--text-color);
     font-size: 1.4rem;
     margin-bottom: 12px;
     background-color: transparent;
-    border: 2px solid var(--border-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    &:focus {
+        border-color: var(--accent-hover);
+    }
 }
 
 .register-input {
@@ -99,6 +108,9 @@
 
 .register-btn {
     margin-top: 12px;
+    width: 100%;
+    height: 48px;
+    border-radius: 4px;
 }
 
 .register-error {

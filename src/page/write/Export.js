@@ -1,18 +1,20 @@
 import classNames from 'classnames/bind';
 import Button from '~/components/button';
 import styles from './Write.module.scss';
-import { memo, useEffect, useRef, useState } from 'react';
-import { IoIosClose } from 'react-icons/io';
+import { memo, useRef, useState } from 'react';
 import useAutoResize from '~/hook/useAutoResize';
 import useLimitInput from '~/hook/useLimitInput';
-import { articleService } from '~/services';
+import { articleService, uploadService } from '~/services';
 import { useNavigate, useParams } from 'react-router-dom';
 import TopicInput from '~/components/topicInput/TopicInput';
+import { addToast, createToast } from '~/redux/actions/toastAction';
+import { useDispatch } from 'react-redux';
 const MAX_META_TITLE_LENGTH = 100;
 const MAX_META_DES_LENGTH = 160;
 const cx = classNames.bind(styles);
+
 function Export({ submitData, isEdit }) {
-    const { id } = useParams();
+    const { slug } = useParams();
     const navigate = useNavigate();
     const [thumbnail, setThumbnail] = useState('');
     const [topics, setTopics] = useState([]);
@@ -20,6 +22,8 @@ function Export({ submitData, isEdit }) {
         metaTitle: submitData.title.trim(),
         description: '',
     });
+
+    const dispatch = useDispatch();
 
     const metaTitleRef = useAutoResize(meta.metaTitle);
     const metaDesRef = useAutoResize(meta.description);
@@ -30,8 +34,22 @@ function Export({ submitData, isEdit }) {
         fileRef.current.click();
     };
 
-    const handleImageUpload = (e) => {
-        setThumbnail(URL.createObjectURL(e.target.files[0]));
+    const handleImageUpload = async (e) => {
+        if (e.target.files[0]) {
+            try {
+                const result = await uploadService.uploadImage(e.target.files[0]);
+                setThumbnail(`${process.env.REACT_APP_API_URL}/image/${result.data}`);
+            } catch (error) {
+                dispatch(
+                    addToast(
+                        createToast({
+                            type: 'error',
+                            content: error.message,
+                        }),
+                    ),
+                );
+            }
+        }
     };
 
     const handleDrag = (e) => {
@@ -39,11 +57,23 @@ function Export({ submitData, isEdit }) {
         e.stopPropagation();
     };
 
-    const handleDrop = (e) => {
+    const handleDrop = async (e) => {
         e.preventDefault();
         e.stopPropagation();
         if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            setThumbnail(URL.createObjectURL(e.dataTransfer.files[0]));
+            try {
+                const result = await uploadService.uploadImage(e.dataTransfer.files[0]);
+                setThumbnail(`${process.env.REACT_APP_API_URL}/image/${result.data}`);
+            } catch (error) {
+                dispatch(
+                    addToast(
+                        createToast({
+                            type: 'error',
+                            content: error.message,
+                        }),
+                    ),
+                );
+            }
         }
     };
 
@@ -59,23 +89,29 @@ function Export({ submitData, isEdit }) {
 
     // Submit
     const handleSubmit = async () => {
-        const data = {
-            ...submitData,
-            ...meta,
-            thumbnail,
-            topics,
-        };
-        let result;
-        if (isEdit) {
-            result = await articleService.update(id, data);
-            console.log(result);
-        } else {
-            result = await articleService.create(data);
-        }
-        if (result?.code) {
-            alert(result.message);
-        } else {
-            navigate(`/article/${result?.id}`);
+        try {
+            const data = {
+                ...submitData,
+                ...meta,
+                thumbnail,
+                topics,
+            };
+            let result;
+            if (isEdit) {
+                result = await articleService.update(slug, data);
+            } else {
+                result = await articleService.create(data);
+            }
+            navigate(`/article/${result?.slug}`);
+        } catch (error) {
+            dispatch(
+                addToast(
+                    createToast({
+                        type: 'error',
+                        content: error.message,
+                    }),
+                ),
+            );
         }
     };
 
@@ -110,7 +146,7 @@ function Export({ submitData, isEdit }) {
                                 onDragOver={(e) => handleDrag(e)}
                                 onDrop={(e) => handleDrop(e)}
                             >
-                                <img className={cx('preview-img')} src={thumbnail} />
+                                <img className={cx('preview-img')} src={thumbnail} alt="preview" />
                             </div>
                         )}
                         <input

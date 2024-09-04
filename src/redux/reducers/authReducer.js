@@ -4,7 +4,7 @@ import { tokenUtils } from '~/utils';
 
 const initialState = {
     isAuthentication: !!tokenUtils.getAccessToken(),
-    userId: tokenUtils.getUserId() || null,
+    userId: parseInt(tokenUtils.getUserId()) || null,
 };
 
 const authReducer = (state = initialState, action) => {
@@ -14,7 +14,7 @@ const authReducer = (state = initialState, action) => {
             return {
                 ...state,
                 isAuthentication: true,
-                userId: userId,
+                userId: parseInt(userId),
             };
         case LOGOUT:
             return {

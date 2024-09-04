@@ -2,6 +2,10 @@
 // import classNames from 'classnames/bind';
 import MdEditor from 'react-markdown-editor-lite';
 import 'react-markdown-editor-lite/lib/index.css';
+import { uploadService } from '~/services';
+import { addToast, createToast } from '~/redux/actions/toastAction';
+import { useDispatch } from 'react-redux';
+
 // const cx = classNames.bind(styles);
 
 const PLUGINS = [
@@ -31,6 +35,28 @@ function Editor({ renderHTML, handleEditorChange, className, placeholder = '', c
     //     const element = e.target;
     //     element.setSelectionRange(element.value.length, element.value.length);
     // };
+
+    const dispatch = useDispatch();
+
+    const handleImageUpload = (file) => {
+        const url = process.env.REACT_APP_API_URL;
+        return new Promise(async (resolve) => {
+            try {
+                const image = await uploadService.uploadImage(file);
+                resolve(`${url}/image/${image.data}`);
+            } catch (error) {
+                dispatch(
+                    addToast(
+                        createToast({
+                            type: 'error',
+                            content: error.message,
+                        }),
+                    ),
+                );
+            }
+        });
+    };
+
     return (
         <MdEditor
             value={content}
@@ -41,6 +67,7 @@ function Editor({ renderHTML, handleEditorChange, className, placeholder = '', c
             onChange={handleEditorChange}
             placeholder={placeholder}
             autoFocus
+            onImageUpload={handleImageUpload}
             // onFocus={(e) => handleFocus(e)}
             config={{
                 view: {

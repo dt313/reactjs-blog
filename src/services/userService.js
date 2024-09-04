@@ -5,9 +5,7 @@ export const getAllUsers = async () => {
         const res = await axios.get('/users');
         return res;
     } catch (error) {
-        console.log('Something Error');
-
-        return error.response?.data;
+        throw new Error(error?.message || 'Failed to get users');
     }
 };
 
@@ -16,8 +14,7 @@ export const createUser = async (data) => {
         const res = await axios.post('/users', data);
         return res;
     } catch (error) {
-        console.log('Something Error');
-        return error.response?.data;
+        throw new Error(error?.message || 'Failed to register');
     }
 };
 
@@ -26,8 +23,7 @@ export const getMyInfomation = async () => {
         const res = await axios.get('/users/me');
         return res;
     } catch (error) {
-        console.log('Something Error');
-        return error.response?.data;
+        throw new Error(error?.message || 'Failed to fetch infomation');
     }
 };
 
@@ -36,7 +32,6 @@ export const getInfomationByUsername = async (username) => {
         const res = await axios.get(`/users/${username}`);
         return res;
     } catch (error) {
-        console.log('Something Error');
-        return error.response?.data;
+        throw new Error(error?.message || 'Failed to fetch infomation');
     }
 };

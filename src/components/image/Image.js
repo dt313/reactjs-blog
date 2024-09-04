@@ -5,7 +5,6 @@ import styles from './Image.module.scss';
 import images from '~/assets/images';
 
 const Image = forwardRef(({ src, className, fallBack = images.noImage, ...props }, ref) => {
-    console.log(src);
     return <img className={classNames(styles.wrapper, className)} ref={ref} src={src || fallBack} {...props} />;
 });
 

@@ -13,7 +13,7 @@ const stompClient = new Client({
         console.error('Additional details: ' + frame.body);
     },
     onDisconnect: () => {
-        console.log('disconnect');
+        console.log('websocker disconnect');
     },
 });
 
@@ -42,11 +42,13 @@ export const disconnect = () => {
     stompClient.deactivate();
 };
 
-export const sendNotification = (data) => {
-    stompClient.publish({
-        destination: '/app/notification',
-        body: JSON.stringify(data),
-    });
+export const sendNotificationWithCondition = (condition, data) => {
+    if (condition) {
+        stompClient.publish({
+            destination: '/app/notification',
+            body: JSON.stringify(data),
+        });
+    }
 };
 
 export default stompClient;

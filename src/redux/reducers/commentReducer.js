@@ -65,6 +65,7 @@ const commentReducer = (state = initialState, action) => {
             };
 
             newTree = initReplies(state.childrens, action.id, action.data);
+
             return {
                 ...state,
                 childrens: newTree,
@@ -83,7 +84,7 @@ const commentReducer = (state = initialState, action) => {
                         return {
                             ...el,
                             replies: el.replies ? [...el.replies, data] : [data],
-                            repliesCount: el.repliesCount + 1,
+                            replies_count: el.replies_count + 1,
                             isSeeMore: true,
                         };
                     } else if (el.replies) {
@@ -115,7 +116,7 @@ const commentReducer = (state = initialState, action) => {
                         return {
                             ...el,
                             replies: el.replies.filter((n) => n.id !== id),
-                            repliesCount: el.repliesCount - 1,
+                            replies_count: el.replies_count - 1,
                         };
                     } else {
                         return {
@@ -133,10 +134,8 @@ const commentReducer = (state = initialState, action) => {
             };
 
         case LOAD_MORE_COMMENT:
-            console.log(action.data);
             const newChild = [...state.childrens, ...setCommentNodeList(action.data)];
             const uniqueArray = uniqBy(newChild, 'id');
-            console.log('UNIQ: ', uniqueArray);
             return {
                 ...state,
                 page: state.page + 1,
@@ -149,7 +148,7 @@ const commentReducer = (state = initialState, action) => {
                     if (el.id === id) {
                         return {
                             ...el,
-                            replies: sortBy(uniqBy([...data, ...el.replies], 'id'), (el) => el.createdAt),
+                            replies: sortBy(uniqBy([...data, ...el.replies], 'id'), (el) => el.created_at),
                             isSeeMore: true,
                             page: el.page + 1,
                         };
@@ -164,7 +163,6 @@ const commentReducer = (state = initialState, action) => {
             };
 
             newTree = loadMoreReplyComment(state.childrens, action.parentId, setCommentNodeList(action.data));
-            console.log('newTREE', newTree);
             return {
                 ...state,
                 childrens: newTree,
@@ -177,7 +175,7 @@ const commentReducer = (state = initialState, action) => {
                         return {
                             ...el,
                             is_reacted: isReacted,
-                            reactionCount: isReacted ? el.reactionCount + 1 : el.reactionCount - 1,
+                            reactionCount: isReacted ? el.reaction_count + 1 : el.reaction_count - 1,
                         };
                     } else if (el.replies) {
                         return {
