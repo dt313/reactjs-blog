@@ -1,8 +1,5 @@
 import styles from './About.module.scss';
 import classNames from 'classnames/bind';
-import ModelBox from '~/components/modelBox';
-import ShareItem from '~/components/shareItem';
-import { SHARE_MENU } from '~/config/uiConfig';
 import useTitle from '~/hook/useTitle';
 const cx = classNames.bind(styles);
 

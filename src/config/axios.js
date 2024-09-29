@@ -46,7 +46,6 @@ instance.interceptors.request.use(
     function (error) {
         console.log(error);
         return Promise.reject(error);
-        return;
     },
 );
 
@@ -56,7 +55,7 @@ instance.interceptors.response.use(
         else throw new Error('Server Internal Error');
     },
     function (error) {
-        console.log(error);
+        // console.log(error);
         if (error.code === 'ERR_NETWORK') {
             tokenUtils.clearToken();
             redirectToNotFoundPage();

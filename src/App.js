@@ -1,4 +1,4 @@
-import { Fragment, Suspense, useEffect, useState, useRef } from 'react';
+import { Fragment, Suspense, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { PiBellDuotone, PiBellRingingDuotone } from 'react-icons/pi';
 import DefaultLayout from './layout/DefaultLayout';
@@ -98,7 +98,7 @@ function App() {
 
     const handleReadAllNotification = async () => {
         try {
-            const result = await notificationService.readAllNotificationByUser(userId);
+            await notificationService.readAllNotificationByUser(userId);
             dispatch(readAllNotification());
             setHasUnreadedNotification(false);
         } catch (error) {
@@ -117,7 +117,7 @@ function App() {
         try {
             setIsShow(false);
             if (is_readed === false) {
-                const result = await notificationService.readNotification(noti_id);
+                await notificationService.readNotification(noti_id);
                 dispatch(readNotification(noti_id));
             }
         } catch (error) {
@@ -234,28 +234,25 @@ function App() {
                     </div>
                 )}
             </div>
-            {isOpen && (
-                <Overlay onClick={() => dispatch(close())}>
-                    <ModelBox title="Chia sẻ" onClose={() => dispatch(close())}>
-                        <div className={cx('share-container')}>
-                            {SHARE_MENU.map((item, index) => {
-                                return (
-                                    <ShareItem
-                                        key={index}
-                                        title={item.title}
-                                        icon={item.icon}
-                                        onClick={() =>
-                                            item.fn(
-                                                'http://localhost:3000/article/7761c678-448c-41c8-9047-cde9846a4904',
-                                            )
-                                        }
-                                    />
-                                );
-                            })}
-                        </div>
-                    </ModelBox>
-                </Overlay>
-            )}
+
+            <Overlay state={isOpen} onClick={() => dispatch(close())}>
+                <ModelBox state={isOpen} title="Chia sẻ" onClose={() => dispatch(close())}>
+                    <div className={cx('share-container')}>
+                        {SHARE_MENU.map((item, index) => {
+                            return (
+                                <ShareItem
+                                    key={index}
+                                    title={item.title}
+                                    icon={item.icon}
+                                    onClick={() =>
+                                        item.fn('http://localhost:3000/article/7761c678-448c-41c8-9047-cde9846a4904')
+                                    }
+                                />
+                            );
+                        })}
+                    </div>
+                </ModelBox>
+            </Overlay>
             <Toast placement="top left" duration={5000} />
 
             {/* <ModelBox error title={'Error'}></ModelBox> */}

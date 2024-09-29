@@ -26,8 +26,7 @@ function ArticleHeader({
     const [isBookmarked, setIsBookmarked] = useState(is_bookmarked);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [visible, setVisible] = useState(false);
-    const { userId, isAuthentication } = useSelector((state) => state.auth);
+    const { isAuthentication } = useSelector((state) => state.auth);
 
     const path = window.origin + `/article/${postSlug}`;
     // menu tippy
@@ -69,13 +68,6 @@ function ArticleHeader({
         [className]: className,
         large,
     });
-
-    const show = () => {
-        setVisible(true);
-    };
-    const hide = () => {
-        setVisible(false);
-    };
 
     const handleBookmark = (is_bookmarked) => {
         dispatch(

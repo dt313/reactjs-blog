@@ -5,9 +5,9 @@ import { memo } from 'react';
 const cx = classNames.bind(styles);
 
 const fn = () => {};
-function CloseBox({ children, onBack = fn }) {
+function CloseBox({ children, onBack = fn, state = true }) {
     return (
-        <div className={cx('wrapper')}>
+        <div className={cx('wrapper', !state && 'closing')}>
             <span className={cx('close')} onClick={onBack}>
                 <MdClose className={cx('close-icon')} />
             </span>

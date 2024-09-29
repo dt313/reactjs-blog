@@ -1,3 +1,4 @@
+import { tokenUtils } from '~/utils';
 import {
     INIT_COMMENT_TREE,
     ADD_COMMENT,
@@ -169,25 +170,51 @@ const commentReducer = (state = initialState, action) => {
             };
 
         case REACTION_COMMENT:
-            const reactionComment = (arr, id, isReacted) => {
+            const calculateReactionCount = (currentType, reactedType, count) => {
+                if (currentType === 'NULL' && reactedType !== 'NULL') {
+                    return count + 1;
+                } else if (currentType !== 'NULL' && reactedType === 'NULL') {
+                    return count - 1;
+                } else {
+                    return count;
+                }
+            };
+
+            const setReactions = (list, currentType, reactedType) => {
+                // handle reaction icons
+                let newReactions;
+                if (currentType === 'NULL' && reactedType !== 'NULL') {
+                    return [...list, action.reaction];
+                } else if (currentType !== 'NULL' && reactedType === 'NULL') {
+                    newReactions = list.filter((r) => r.reacted_user.id !== tokenUtils.getUserId());
+                    return newReactions;
+                } else {
+                    newReactions = list.filter((r) => r.id !== action.reaction.id);
+                    return [...newReactions, action.reaction];
+                }
+            };
+
+            const reactionComment = (arr, id, reactedType) => {
                 return arr.map((el) => {
                     if (el.id === id) {
                         return {
                             ...el,
-                            is_reacted: isReacted,
-                            reactionCount: isReacted ? el.reaction_count + 1 : el.reaction_count - 1,
+                            is_reacted: reactedType !== 'NULL' ? true : false,
+                            reacted_type: reactedType,
+                            reaction_count: calculateReactionCount(el.reacted_type, reactedType, el.reaction_count),
+                            reactions: setReactions(el.reactions, el.reacted_type, reactedType),
                         };
                     } else if (el.replies) {
                         return {
                             ...el,
-                            replies: reactionComment(el.replies, id, isReacted),
+                            replies: reactionComment(el.replies, id, reactedType),
                         };
                     }
                     return el;
                 });
             };
 
-            newTree = reactionComment(state.childrens, action.id, action.isReacted);
+            newTree = reactionComment(state.childrens, action.id, action.reaction?.type || 'NULL');
             return {
                 ...state,
                 childrens: newTree,

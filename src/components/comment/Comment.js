@@ -3,7 +3,7 @@ import styles from './Comment.module.scss';
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import Avatar from '../avatar';
 import { BiChevronDown } from 'react-icons/bi';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import CommentInput from '../commentInput';
 import { SpinnerLoader } from '../loading/Loading';
 import MarkDown from '../markdown';
@@ -12,7 +12,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { commentService, reactionService } from '~/services';
 import { COMMENT_DEPTH, COMMENT_REPLY_PAGE_SIZE } from '~/config/uiConfig';
 import calculateTime from '~/helper/calculateTime';
-import checkReaction from '~/helper/checkReaction';
 import { addToast, createToast } from '~/redux/actions/toastAction';
 
 import {
@@ -26,24 +25,29 @@ import { sendNotificationWithCondition } from '~/socket';
 import { notificationType, tableType } from '~/config/types';
 import DropMenu from '../dropMenu';
 import requireAuthFn from '~/helper/requireAuthFn';
+import Tippy from '@tippyjs/react/headless';
+import Reaction from '../reaction';
+import getReactionText from '~/helper/getReactionText';
+import ReactionButton from '../reactionButton';
 
 const cx = classNames.bind(styles);
 
 function Comment({ contextId, comment, className, level, onDelete = () => {} }) {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { userId, isAuthentication } = useSelector((state) => state.auth);
-    const [isShowReplyInput, setIsShowReplyInput] = useState(false);
-    const [countOfReaction, setCountOfReaction] = useState(comment.reaction_count);
-    const [loading, setLoading] = useState(false);
     const [searchParams] = useSearchParams();
     const ref = useRef(null);
+
+    const { userId, isAuthentication } = useSelector((state) => state.auth);
+    const [isShowReplyInput, setIsShowReplyInput] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [visible, setVisible] = useState(false);
+    const [isHovering, setIsHovering] = useState(false);
 
     const parent_id = parseInt(searchParams.get('parent_id')) || null;
     const direct_id = parseInt(searchParams.get('direct_id')) || null;
 
     useEffect(() => {
-        console.log('useEffect', parent_id, parent_id, comment.id);
         if (parent_id && parent_id === comment?.id && comment.isSeeMore === false) {
             handleClickSeeMore();
         }
@@ -60,39 +64,7 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
         },
     ];
 
-    const handleClickLikeComment = async (type) => {
-        const data = {
-            reactionTableId: comment.id,
-            reactionTableType: 'COMMENT',
-            type: type,
-            reactedUser: userId,
-        };
-
-        try {
-            const result = await reactionService.tongleReaction(data);
-            setCountOfReaction(checkReaction(result?.data) ? countOfReaction + 1 : countOfReaction - 1);
-            dispatch(reactionComment(comment.id, checkReaction(result.data)));
-            sendNotificationWithCondition(comment.is_reacted === false && userId !== comment.publisher.id, {
-                sender: userId,
-                type: notificationType.react_comment,
-                receiver: comment.publisher.id,
-                contextType: 'ARTICLE',
-                contextId: contextId,
-                directObjectType: tableType.comment,
-                directObjectId: comment.id,
-            });
-        } catch (error) {
-            dispatch(
-                addToast(
-                    createToast({
-                        type: 'error',
-                        content: error,
-                    }),
-                ),
-            );
-        }
-    };
-
+    // handle create comment
     const handeComment = async (content) => {
         const data = {
             commentableId: level < COMMENT_DEPTH - 1 ? comment.id : comment.comment_table_id,
@@ -128,6 +100,7 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
         }
     };
 
+    // handle delete comment
     const handleDelete = async (id) => {
         try {
             await commentService.deleteComment(id);
@@ -137,8 +110,8 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
         }
     };
 
+    // load replies comment
     const handleClickSeeMore = async () => {
-        console.log('seeee mo re');
         const data = {
             type: 'COMMENT',
             id: comment.id,
@@ -179,6 +152,75 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
         }
     };
 
+    // handle react comment
+    const handleReactComment = async (type) => {
+        const data = {
+            reactionTableId: comment.id,
+            reactionTableType: 'COMMENT',
+            type: type,
+            reactedUser: userId,
+        };
+
+        const currentReactionType = comment.reacted_type;
+        try {
+            if (type !== currentReactionType) {
+                const result = await reactionService.tongleReaction(data);
+                dispatch(reactionComment(comment.id, result?.data));
+                sendNotificationWithCondition(
+                    comment.is_reacted === false && type !== 'NULL' && userId !== comment.publisher.id,
+                    {
+                        sender: userId,
+                        type: notificationType.react_comment,
+                        receiver: comment.publisher.id,
+                        contextType: 'ARTICLE',
+                        contextId: contextId,
+                        directObjectType: tableType.comment,
+                        directObjectId: comment.id,
+                    },
+                );
+            }
+        } catch (error) {
+            dispatch(
+                addToast(
+                    createToast({
+                        type: 'error',
+                        content: error,
+                    }),
+                ),
+            );
+        }
+    };
+
+    const handleReactCommentWithCondition = (type) => {
+        requireAuthFn(
+            isAuthentication,
+            () => handleReactComment(type),
+            () => {
+                dispatch(
+                    addToast(
+                        createToast({
+                            type: 'warning',
+                            content: 'Bạn cần đăng nhập để thích bình luận này',
+                        }),
+                    ),
+                );
+            },
+        );
+        setVisible(false);
+    };
+
+    // Show/Hide reaction tooltip
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            if (isHovering) setVisible(true);
+            else setVisible(false);
+        }, 700);
+
+        return () => {
+            clearTimeout(timeout);
+        };
+    }, [isHovering]);
+
     return (
         <div id={comment.id} className={cx('wrapper', className)} ref={ref}>
             <div className={cx('container')}>
@@ -201,27 +243,36 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
                         <MarkDown className={cx('text')} text={comment?.content}></MarkDown>
                     </div>
                     <div className={cx('tool-box')}>
-                        <p
-                            className={cx('tool', comment.is_reacted && 'liked')}
-                            onClick={() =>
-                                requireAuthFn(
-                                    isAuthentication,
-                                    () => handleClickLikeComment('LIKE'),
-                                    () => {
-                                        dispatch(
-                                            addToast(
-                                                createToast({
-                                                    type: 'warning',
-                                                    content: 'Bạn cần đăng nhập để thích bình luận này',
-                                                }),
-                                            ),
-                                        );
-                                    },
-                                )
-                            }
+                        <Tippy
+                            placement="top"
+                            offset={[100, 0]}
+                            interactive
+                            visible={visible}
+                            onClickOutside={() => setVisible(false)}
+                            appendTo={'parent'}
+                            render={(attrs) => (
+                                <div
+                                    className={cx('box')}
+                                    tabIndex="1"
+                                    {...attrs}
+                                    onMouseLeave={() => setIsHovering(false)}
+                                    onMouseEnter={() => setIsHovering(true)}
+                                >
+                                    <Reaction theme="dark" onClick={handleReactCommentWithCondition} />
+                                </div>
+                            )}
                         >
-                            {`${countOfReaction > 0 ? countOfReaction : ''} Like`}
-                        </p>
+                            <p
+                                className={cx('tool', comment.reacted_type, comment.is_reacted && 'liked')}
+                                onMouseEnter={(e) => setIsHovering(true)}
+                                onMouseLeave={(e) => setIsHovering(false)}
+                                onClick={() =>
+                                    handleReactCommentWithCondition(comment.reacted_type === 'NULL' ? 'LIKE' : 'NULL')
+                                }
+                            >
+                                {getReactionText(comment.reacted_type)}
+                            </p>
+                        </Tippy>
                         <span className={cx('dot')}></span>
                         <p
                             className={cx('tool')}
@@ -242,11 +293,14 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
                                 )
                             }
                         >
-                            {`${comment.replies_count > 0 ? comment.replies_count : ''} Replies`}
+                            {`${comment.replies_count > 0 ? comment.replies_count + ' câu trả lời' : 'Trả lời'}`}
                         </p>
 
                         <span className={cx('dot')}></span>
                         <p className={cx('tool', 'no-hover')}>{calculateTime(comment?.created_at)}</p>
+                        {comment.reactions.length > 0 && (
+                            <ReactionButton className={cx('reactions-button')} list={comment.reactions} />
+                        )}
                     </div>
 
                     {isShowReplyInput && (

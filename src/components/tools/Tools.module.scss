@@ -24,6 +24,7 @@
         border-radius: 9999px;
         border: 1.5px solid #464a4f;
         transition: background-color 0.15s linear;
+        overflow: hidden;
 
         &:hover {
             background-color: #ffffff33;
@@ -31,12 +32,36 @@
         }
     }
 
+    .box {
+    }
+
     .icon {
         font-size: 2.5rem;
     }
 
-    .icon.liked {
-        color: rgb(246, 99, 99);
+    .react-icon {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .react-icon svg {
+        font-size: 2.5rem;
+        animation: reactIconAnimation 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+}
+
+@keyframes reactIconAnimation {
+    0% {
+        margin-top: 40px;
+    }
+    50% {
+        margin-top: -15px;
+    }
+    100% {
+        margin-top: 0;
     }
 }
 
@@ -44,9 +69,9 @@
     background-color: #fff;
     width: max-content;
     color: #333;
-    padding: 4px 12px;
-    font-size: 1.3rem;
-    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 1.4rem;
+    border-radius: 9999px;
 }
 
 @media (max-width: 480px) {

@@ -8,7 +8,7 @@ function useLimitInput(ref, maxLenth, value) {
             if (e.keyCode === 13) {
                 e.preventDefault();
             }
-            if (value.trim().length === maxLenth) {
+            if (value.trim().length >= maxLenth) {
                 if (e.key === 'Backspace' || e.key === 'Delete') {
                     return;
                 }
@@ -25,7 +25,7 @@ function useLimitInput(ref, maxLenth, value) {
                 input.removeEventListener('keydown', handleKeydown);
             }
         };
-    }, [value]);
+    }, [value, ref]);
 }
 
 export default useLimitInput;

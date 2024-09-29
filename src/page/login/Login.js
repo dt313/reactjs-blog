@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Button from '~/components/button/Button';
 import styles from './Login.module.scss';
 import classNames from 'classnames/bind';
@@ -29,7 +29,7 @@ function Login() {
         pwd: '',
     });
 
-    let prePath = '';
+    let prePath = useRef(null);
 
     useEffect(() => {
         if (searchParams.size > 0) {
@@ -77,7 +77,6 @@ function Login() {
                         user: result.user,
                     }),
                 );
-                tokenUtils.setRedirectPath('/');
                 navigate(prePath || '/');
             } catch (error) {
                 dispatch(

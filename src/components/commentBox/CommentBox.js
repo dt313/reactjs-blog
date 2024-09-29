@@ -27,7 +27,6 @@ function CommentBox({ commentCount, authorId, articleId }) {
     const { slug } = useParams();
     const { id } = useSelector((state) => state.comment);
 
-    console.log(tree);
     useEffect(() => {
         const fetchAPI = async () => {
             const data = {
@@ -60,18 +59,22 @@ function CommentBox({ commentCount, authorId, articleId }) {
     }, [slug]);
 
     const renderComments = () => {
-        return tree?.map((comment, index) => {
-            return (
-                <Comment
-                    className={cx('comment')}
-                    key={comment.id}
-                    comment={comment}
-                    contextId={articleId}
-                    level={0}
-                    onDelete={() => handleDeleteComment(comment.id)}
-                ></Comment>
-            );
-        });
+        if (tree.length > 0) {
+            return tree?.map((comment, index) => {
+                return (
+                    <Comment
+                        className={cx('comment')}
+                        key={comment.id}
+                        comment={comment}
+                        contextId={articleId}
+                        level={0}
+                        onDelete={() => handleDeleteComment(comment.id)}
+                    ></Comment>
+                );
+            });
+        } else {
+            return <p className={cx('no-comment')}>Chưa có bình luận</p>;
+        }
     };
 
     const handleComment = async (content) => {

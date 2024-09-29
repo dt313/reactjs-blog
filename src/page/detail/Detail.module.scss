@@ -98,6 +98,7 @@
         margin-right: 12px;
         margin-bottom: 8px;
         transition: all 0.3s;
+        text-transform: uppercase;
     }
 
     .topic {
@@ -156,7 +157,7 @@
     background-color: var(--background-color);
     float: right;
     position: relative;
-    animation: slideLeft 0.5s ease;
+    animation: slideLeft 1s ease;
     border-left: 1px solid #fff;
     scroll-behavior: smooth;
 }
@@ -167,6 +168,7 @@
     overflow-x: hidden;
     max-height: 100vh;
     margin-right: 4px;
+    overscroll-behavior: none;
 }
 .comments-count {
     margin-top: 32px;
@@ -215,6 +217,7 @@
 ////////////////////////
 
 .suggestion {
+    text-transform: uppercase;
     margin-left: 150px;
 }
 

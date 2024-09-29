@@ -1,7 +1,7 @@
 import classNames from 'classnames/bind';
 import Button from '~/components/button';
 import styles from './Write.module.scss';
-import { memo, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import useAutoResize from '~/hook/useAutoResize';
 import useLimitInput from '~/hook/useLimitInput';
 import { articleService, uploadService } from '~/services';
@@ -9,6 +9,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import TopicInput from '~/components/topicInput/TopicInput';
 import { addToast, createToast } from '~/redux/actions/toastAction';
 import { useDispatch } from 'react-redux';
+import getDateTimeLocal from '~/helper/getDateTimeLocal';
+
 const MAX_META_TITLE_LENGTH = 100;
 const MAX_META_DES_LENGTH = 160;
 const cx = classNames.bind(styles);
@@ -16,19 +18,28 @@ const cx = classNames.bind(styles);
 function Export({ submitData, isEdit }) {
     const { slug } = useParams();
     const navigate = useNavigate();
-    const [thumbnail, setThumbnail] = useState('');
-    const [topics, setTopics] = useState([]);
-    const [meta, setMeta] = useState({
-        metaTitle: submitData.title.trim(),
-        description: '',
-    });
-
+    const fileRef = useRef(null);
     const dispatch = useDispatch();
 
-    const metaTitleRef = useAutoResize(meta.metaTitle);
-    const metaDesRef = useAutoResize(meta.description);
+    const [thumbnail, setThumbnail] = useState('');
+    const [topics, setTopics] = useState([]);
+    const [isSchedule, setIsSchedule] = useState(false);
+    const [scheduleTime, setScheduleTime] = useState(getDateTimeLocal());
 
-    const fileRef = useRef(null);
+    const [meta, setMeta] = useState({
+        metaTitle: submitData.title.trim(),
+        description: submitData.content.trim(),
+    });
+
+    useEffect(() => {
+        setMeta({
+            metaTitle: submitData.title.trim(),
+            description: submitData.content.trim(),
+        });
+    }, [submitData]);
+
+    const metaTitleRef = useAutoResize(meta.metaTitle, submitData);
+    const metaDesRef = useAutoResize(meta.description, submitData);
 
     const handleClickUploadImage = () => {
         fileRef.current.click();
@@ -197,9 +208,44 @@ function Export({ submitData, isEdit }) {
                         handleDeleteTag={handleDeleteTag}
                     />
 
-                    <Button secondary className={cx('btn')} onClick={handleSubmit}>
-                        {isEdit ? 'Sửa bài viết' : 'Xuất bản ngay'}
-                    </Button>
+                    {!isSchedule && (
+                        <div className={cx('actions')}>
+                            <Button primary className={cx('btn')} onClick={handleSubmit}>
+                                {isEdit ? 'Sửa bài viết' : 'Xuất bản ngay'}
+                            </Button>
+                            <Button secondary className={cx('btn')} onClick={() => setIsSchedule(true)}>
+                                {'Lên lịch'}
+                            </Button>
+                        </div>
+                    )}
+
+                    {isSchedule && (
+                        <div className={cx('schedule-box')}>
+                            <div className={cx('label')}>Thời gian xuất bản:</div>
+                            <div className={cx('schedule-input')}>
+                                <input
+                                    className={cx('input')}
+                                    type="datetime-local"
+                                    value={scheduleTime}
+                                    onChange={(e) => setScheduleTime(e.target.value)}
+                                />
+                            </div>
+                            <div className={cx('help')}>Korean Time (GMT+0900)</div>
+
+                            <p>Bài viết này sẽ được xuất bản tự động theo thời gian đã lên lịch phía trên.</p>
+                        </div>
+                    )}
+
+                    {isSchedule && (
+                        <div className={cx('actions')}>
+                            <Button primary className={cx('btn')}>
+                                Đặt lịch
+                            </Button>
+                            <Button secondary className={cx('btn')} onClick={() => setIsSchedule(false)}>
+                                Hủy lên lịch
+                            </Button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

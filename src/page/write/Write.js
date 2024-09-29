@@ -22,7 +22,7 @@ function Write() {
     const { slug } = useParams();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [model, setModel] = useState(false);
+    const [isShowExport, setIsShowExport] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -55,7 +55,7 @@ function Write() {
                 addToast(
                     createToast({
                         type: 'error',
-                        content: error,
+                        content: error || error.message,
                     }),
                 ),
             );
@@ -87,7 +87,7 @@ function Write() {
         }
 
         if (isValid) {
-            setModel(true);
+            setIsShowExport(true);
         }
     };
 
@@ -200,11 +200,9 @@ function Write() {
                 </Button>
             </div>
 
-            {model && (
-                <CloseBox onBack={() => setModel(false)}>
-                    <Export submitData={{ title: title, content }} isEdit={!!slug} />
-                </CloseBox>
-            )}
+            <CloseBox state={isShowExport} onBack={() => setIsShowExport(false)}>
+                <Export submitData={{ title: title, content }} isEdit={!!slug} />
+            </CloseBox>
         </div>
     );
 }

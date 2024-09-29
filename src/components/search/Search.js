@@ -1,36 +1,16 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import classNames from 'classnames/bind';
 import styles from './Search.module.scss';
-import { AiOutlineLoading3Quarters } from 'react-icons/ai';
-import SearchItem from '~/components/searchItem';
-
+// import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+// import SearchItem from '~/components/searchItem';
 import { FiSearch } from 'react-icons/fi';
 import { MdClose } from 'react-icons/md';
 import useOutsideClick from '~/hook/useOutsideClick';
 const cx = classNames.bind(styles);
-const results = [
-    {
-        img: 'https://fullstack.edu.vn/static/media/f8-icon.18cd71cfcfa33566a22b.png',
-        title: 'Deploy Spring Boot cùng SQL Server lên Azure',
-        author: 'Danh Tuan',
-        type: 'artical',
-    },
-    {
-        img: 'https://fullstack.edu.vn/static/media/f8-icon.18cd71cfcfa33566a22b.png',
-        title: 'Deploy Spring Boot cùng SQL Server lên Azure',
-        author: 'Danh Tuan',
-        type: 'artical',
-    },
-    {
-        img: 'https://fullstack.edu.vn/static/media/f8-icon.18cd71cfcfa33566a22b.png',
-        title: 'Deploy Spring Boot cùng SQL Server lên Azure',
-        author: 'Danh Tuan',
-        type: 'artical',
-    },
-];
+
 function Search({ value, onChangeInput, onClearInput }) {
     const inputRef = useRef();
-    const [loading, setLoading] = useState(false);
+    // const [loading, setLoading] = useState(false);
 
     const handleClickOutside = () => {
         if (boxRef.current) {

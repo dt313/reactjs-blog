@@ -73,10 +73,10 @@ export function initReplyComment(id, replyComments) {
     };
 }
 
-export function reactionComment(id, isReacted) {
+export function reactionComment(id, reation = null) {
     return {
         type: REACTION_COMMENT,
         id: id,
-        isReacted: isReacted,
+        reaction: reation,
     };
 }

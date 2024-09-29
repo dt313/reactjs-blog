@@ -5,6 +5,29 @@
     background-color: #242526;
     border-radius: 8px;
     min-height: 200px;
+    animation: active 0.2s cubic-bezier(0, 0.56, 0.62, 0.57);
+}
+
+@keyframes active {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes close {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(0);
+    }
+}
+
+.close {
+    animation: close 0.2s cubic-bezier(0, 0.56, 0.62, 0.57);
 }
 
 .error {

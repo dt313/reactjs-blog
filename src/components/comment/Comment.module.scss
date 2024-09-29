@@ -6,7 +6,7 @@
 
 .active {
     .text-box:first-child {
-        border: 2px solid var(--accent);
+        border: 2px solid #fff;
     }
 }
 
@@ -64,37 +64,42 @@
 
 .tool {
     font-family: var(--font-family);
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     cursor: pointer;
     padding: 4px 8px;
     border: 1px solid transparent;
     &:hover {
-        --b: 1px; /* thickness of the border */
-        --c: var(--accent); /* color of the border */
-        --w: 5px; /* width of border */
-
-        border: var(--b) solid #0000; /* space for the border */
-        --_g: #0000 90deg, var(--c) 0;
-        --_p: var(--w) var(--w) border-box no-repeat;
-        background: conic-gradient(from 90deg at top var(--b) left var(--b), var(--_g)) 0 0 / var(--_p),
-            conic-gradient(from 180deg at top var(--b) right var(--b), var(--_g)) 100% 0 / var(--_p),
-            conic-gradient(from 0deg at bottom var(--b) left var(--b), var(--_g)) 0 100% / var(--_p),
-            conic-gradient(from -90deg at bottom var(--b) right var(--b), var(--_g)) 100% 100% / var(--_p);
+        text-decoration: underline;
     }
 }
 
-.liked {
-    font-weight: bold;
+.tool.LIKE {
+    color: rgb(15, 114, 236);
+}
+
+.tool.LOVE {
     color: #f66363;
 }
 
-.no-hover {
-    &:hover {
-        &:hover {
-            cursor: default;
-            background: transparent;
-        }
-    }
+.tool.CARE,
+.tool.SAD,
+.tool.HAHA,
+.tool.WOW {
+    color: #f7c44f;
+}
+
+.tool.ANGRY {
+    color: #fa8f1a;
+}
+
+.liked {
+    font-weight: lighter;
+    // font-size: 1.4rem;
+}
+
+.tool.no-hover:hover {
+    cursor: default;
+    text-decoration: none;
 }
 .dot {
     margin: 12px;
@@ -124,6 +129,7 @@
 .label {
     font-weight: bold;
     display: inline-flex;
+    max-width: fit-content;
     align-items: center;
     cursor: pointer;
     margin-bottom: 12px;
@@ -131,7 +137,7 @@
 
     .label-text {
         font-family: var(--system-ui);
-        font-size: 1.3rem;
+        font-size: 1.2rem;
     }
 
     .up-icon,
@@ -161,6 +167,10 @@
         font-weight: 500;
         cursor: pointer;
     }
+}
+
+.reactions-button {
+    margin-left: 4px;
 }
 
 @media (max-width: 768px) {

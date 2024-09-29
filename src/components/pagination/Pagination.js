@@ -24,7 +24,7 @@ function Pagination({ value, handleChangePage, length }) {
             </button>
             {realArray.map((_value, index) => (
                 <button
-                    className={cx('page', { active: _value == value })}
+                    className={cx('page', { active: _value === value })}
                     key={index}
                     onClick={() => handleChangePage(_value)}
                 >

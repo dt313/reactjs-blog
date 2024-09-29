@@ -13,7 +13,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToast, createToast } from '~/redux/actions/toastAction';
 import { articleService, bookmarkService, reactionService } from '~/services';
 import { sendNotificationWithCondition } from '~/socket';
-import checkReaction from '~/helper/checkReaction';
 import calculateTime from '~/helper/calculateTime';
 import copyTextToClipboard from '~/helper/copyClipboard';
 import CommentBox from '~/components/commentBox';
@@ -31,8 +30,10 @@ function Detail() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [article, setArticle] = useState({});
     const [isShowCommentsBox, setIsShowCommentsBox] = useState(false);
-    const [isLiked, setIsLiked] = useState(false);
+    const [reactionType, setReactionType] = useState(false);
+    const [isReacted, setIsReacted] = useState(false);
     const [countOfReaction, setCountOfReaction] = useState();
+    const [reactions, setReactions] = useState([]);
     // document.title = article?.title || '';
     useTitle(article?.title || '');
     const navigate = useNavigate();
@@ -45,7 +46,9 @@ function Detail() {
                 const result = await articleService.getArticleBySlug(slug);
                 setArticle(result);
                 setCountOfReaction(result?.reaction_count);
-                setIsLiked(result?.is_reacted);
+                setIsReacted(result?.is_reacted);
+                setReactionType(result?.reacted_type);
+                setReactions(result?.reactions);
                 setIsShowCommentsBox(!!searchParams.get('direct_id'));
             } catch (error) {
                 dispatch(
@@ -68,6 +71,7 @@ function Detail() {
     };
 
     const handleClickHeart = async (type) => {
+        console.log(type);
         const data = {
             reactionTableId: article.id,
             reactionTableType: 'ARTICLE',
@@ -75,19 +79,37 @@ function Detail() {
             reactedUser: userId,
         };
         try {
-            const result = await reactionService.tongleReaction(data);
-            setIsLiked(checkReaction(result?.data));
-            setCountOfReaction(checkReaction(result?.data) ? countOfReaction + 1 : countOfReaction - 1);
+            if (type !== reactionType) {
+                const result = await reactionService.tongleReaction(data);
 
-            sendNotificationWithCondition(isLiked === false && userId !== article.author.id, {
-                sender: userId,
-                type: notificationType.react_article,
-                receiver: article.author.id,
-                contextType: tableType.article,
-                contextId: article.id,
-                directObjectType: tableType.article,
-                directObjectId: article.id,
-            });
+                setReactionType(result?.data?.type || 'NULL');
+
+                // increase reaction count and reset isReacted
+                if (reactionType === 'NULL' && type !== 'NULL') {
+                    setCountOfReaction(countOfReaction + 1);
+                    setIsReacted(true);
+                    setReactions((pre) => [...pre, result.data]);
+                } else if (reactionType !== 'NULL' && type === 'NULL') {
+                    setCountOfReaction(countOfReaction - 1);
+                    setIsReacted(false);
+                    const newReaction = reactions.filter((r) => r.reacted_user.id !== userId);
+                    setReactions(newReaction);
+                } else {
+                    let newReaction = reactions.filter((r) => r.id !== result.data.id);
+                    setReactions(() => [...newReaction, result.data]);
+                }
+
+                // send notification
+                sendNotificationWithCondition(isReacted === false && type !== 'NULL' && userId !== article.author.id, {
+                    sender: userId,
+                    type: notificationType.react_article,
+                    receiver: article.author.id,
+                    contextType: tableType.article,
+                    contextId: article.id,
+                    directObjectType: tableType.article,
+                    directObjectId: article.id,
+                });
+            }
         } catch (error) {
             dispatch(
                 addToast(
@@ -171,10 +193,10 @@ function Detail() {
                     <Tools
                         className={cx('article-tools')}
                         onClickComment={handleClickCommentButton}
-                        onClickHeart={() =>
+                        onClickHeart={(type) =>
                             requireAuthFn(
                                 isAuthentication,
-                                () => handleClickHeart('LIKE'),
+                                () => handleClickHeart(type),
                                 () => {
                                     dispatch(
                                         addToast(
@@ -190,7 +212,7 @@ function Detail() {
                         }
                         onClickShare={handleClickShare}
                         onClickLink={handleClickLink}
-                        is_liked={isLiked}
+                        reactionType={reactionType}
                     />
                 </div>
                 <div className={cx('md-editor')}>
@@ -211,19 +233,31 @@ function Detail() {
                         <MarkDown className={cx('preview')} text={article?.content} />
                     </div>
                     <div className={cx('statistical')}>
-                        <Statistical like={countOfReaction} comment={article?.comment_count} liked={isLiked} />
+                        <Statistical
+                            like={countOfReaction}
+                            comment={article?.comment_count}
+                            liked={isReacted}
+                            likedUsers={reactions}
+                            onClickComment={() => setIsShowCommentsBox(true)}
+                        />
                     </div>
-                    <div className={cx('topics')}>
-                        <h5 className={cx('topics-title')}>Topics : </h5>
+                    {article.topics?.length > 0 && (
+                        <div className={cx('topics')}>
+                            <h5 className={cx('topics-title')}>Topics : </h5>
 
-                        {article?.topics?.map((topic, index) => {
-                            return (
-                                <span key={index} className={cx('topic')} onClick={() => handleClickTopic(topic?.name)}>
-                                    {topic?.name}
-                                </span>
-                            );
-                        })}
-                    </div>
+                            {article?.topics?.map((topic, index) => {
+                                return (
+                                    <span
+                                        key={index}
+                                        className={cx('topic')}
+                                        onClick={() => handleClickTopic(topic?.name)}
+                                    >
+                                        {topic?.name}
+                                    </span>
+                                );
+                            })}
+                        </div>
+                    )}
                 </div>
 
                 {isShowCommentsBox && (

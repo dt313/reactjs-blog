@@ -203,7 +203,7 @@ function SearchPage() {
                                 );
                             })
                         ) : (
-                            <p className={cx('empty-noti')}>There are no posts</p>
+                            <p className={cx('empty-noti')}>Không có bài viết nào</p>
                         )
                     ) : (
                         <div className={cx('loader-wrapper')}>

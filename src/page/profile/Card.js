@@ -1,19 +1,16 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styles from './Profile.module.scss';
 import classNames from 'classnames/bind';
 import { addToast, createToast } from '~/redux/actions/toastAction';
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import HeadlessTippy from '~/components/headless/HeadlessTippy';
-import Confirm from '~/components/confirm/Confirm';
 import { articleService, bookmarkService } from '~/services';
 import defaultFn from '~/utils/defaultFn';
 import MenuTippyItem from '~/components/menuTippyItem';
 import ModelBox from '~/components/modelBox';
 import Overlay from '~/components/overlay';
-import { motion } from 'framer-motion';
-
 const cx = classNames.bind(styles);
 
 function Card({ title, id, slug, tableType, handleDelete = defaultFn, editable }) {
@@ -45,7 +42,7 @@ function Card({ title, id, slug, tableType, handleDelete = defaultFn, editable }
         };
         const fetchAPI = async () => {
             try {
-                const result = await bookmarkService.toggleBookmark(data);
+                await bookmarkService.toggleBookmark(data);
                 handleDelete(id);
                 setIsShowConfirm(false);
                 dispatch(
@@ -157,21 +154,21 @@ function Card({ title, id, slug, tableType, handleDelete = defaultFn, editable }
             </div>
 
             <span className={cx('card-mode')}>public</span>
-            {isShowConfirm && (
-                <Overlay>
-                    <ModelBox title="Xác nhận" isConfirm onClose={handleCancle} onConfirm={handleConfirmOk}>
-                        <motion.p
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ ease: 'easeOut', duration: 1, delay: 1 }}
-                            className={cx('confirm-description')}
-                        >
-                            Bạn có chắc chắn muốn {tableType === 'article' ? 'xóa ' : 'bỏ lưu '} bài viết{' '}
-                            <strong onClick={() => navigate(`/article/${slug}`)}>{title}</strong>
-                        </motion.p>
-                    </ModelBox>
-                </Overlay>
-            )}
+
+            <Overlay state={isShowConfirm}>
+                <ModelBox
+                    state={isShowConfirm}
+                    title="Xác nhận"
+                    isConfirm
+                    onClose={handleCancle}
+                    onConfirm={handleConfirmOk}
+                >
+                    <p className={cx('confirm-description')}>
+                        Bạn có chắc chắn muốn {tableType === 'article' ? 'xóa ' : 'bỏ lưu '} bài viết{' '}
+                        <strong onClick={() => navigate(`/article/${slug}`)}>{title}</strong>
+                    </p>
+                </ModelBox>
+            </Overlay>
         </div>
     );
 }

@@ -3,7 +3,6 @@ import axios from '~/config/axios';
 export const getAllNotificationsByUser = async ({ id, pageSize, pageNumber }) => {
     try {
         const res = await axios.get(`/notifications/${id}?pageNumber=${pageNumber}&&pageSize=${pageSize}`);
-        console.log(res);
         return res?.data;
     } catch (error) {
         throw new Error(error?.message || 'Failed to fetch the notification');

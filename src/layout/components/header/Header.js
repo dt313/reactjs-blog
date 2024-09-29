@@ -1,7 +1,7 @@
 import styles from './Header.module.scss';
 import classNames from 'classnames/bind';
 import { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import useOutsideClick from '~/hook/useOutsideClick';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '~/redux/actions/authAction';
@@ -15,7 +15,6 @@ const cx = classNames.bind(styles);
 function Header() {
     const [isShowMenu, setIsShowMenu] = useState(false);
     const { isAuthentication } = useSelector((state) => state.auth);
-    const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const handleClickOutside = () => {
@@ -26,7 +25,7 @@ function Header() {
         const accessToken = tokenUtils.getAccessToken();
         const fetchAPI = async () => {
             try {
-                const result = await authService.logout(accessToken);
+                await authService.logout(accessToken);
                 dispatch(logout());
                 window.location.href = '/login';
             } catch (error) {

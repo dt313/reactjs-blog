@@ -1,7 +1,5 @@
-import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-// import { v4 as uuidv4 } from 'uuid';
-
 import Avatar from '~/components/avatar';
 import styles from './Profile.module.scss';
 import classNames from 'classnames/bind';
@@ -9,11 +7,11 @@ import TopicItem from '../search/TopicItem';
 import { profileTag } from '~/config/uiConfig';
 import useTitle from '~/hook/useTitle';
 import Card from './Card';
-import { useSelector } from 'react-redux';
-import { articleService, bookmarkService, questionService, userService } from '~/services';
+import { useDispatch, useSelector } from 'react-redux';
+import { articleService, bookmarkService, userService } from '~/services';
 import setProfileTag from '~/helper/setProfileTag';
-import { sortBy } from 'lodash';
 import { SpinnerLoader } from '~/components/loading/Loading';
+import { addToast, createToast } from '~/redux/actions/toastAction';
 
 const cx = classNames.bind(styles);
 
@@ -29,6 +27,7 @@ function Profile() {
     let { username } = useParams();
     useTitle(`Profile | ${username.slice(1).toUpperCase()}`);
 
+    const dispatch = useDispatch();
     const userId = useSelector((state) => state.auth.userId);
     const [searchParams, setSearchParams] = useSearchParams();
     const [infomation, setInfomation] = useState({});

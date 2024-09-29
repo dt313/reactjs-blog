@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Button from '~/components/button/Button';
-import { ImGithub, ImGoogle3, ImFacebook, ImMail } from 'react-icons/im';
+import { ImGithub, ImGoogle3 } from 'react-icons/im';
 import styles from './Register.module.scss';
 import classNames from 'classnames/bind';
 import useTitle from '~/hook/useTitle';
@@ -8,12 +8,15 @@ import Validation from '~/helper/validation';
 import { userService } from '~/services';
 import { useNavigate } from 'react-router-dom';
 import { GITHUB_OAUTH_URL, GOOGLE_OAUTH_URL } from '~/contants';
+import { addToast, createToast } from '~/redux/actions/toastAction';
+import { useDispatch } from 'react-redux';
 const cx = classNames.bind(styles);
 
 function Register() {
     useTitle('Register');
     const navigate = useNavigate();
-    const [isLoginWithEmail, setIsLoginWithEmail] = useState(true);
+    const dispatch = useDispatch();
+
     const [error, setError] = useState({
         email: '',
         pwd: '',
@@ -49,16 +52,7 @@ function Register() {
         if (email === '' && pwd === '' && cfpwd === '') {
             const fetchAPI = async () => {
                 try {
-                    const result = await userService.createUser({ email: info.email, password: info.pwd });
-                    dispatch(
-                        addToast(
-                            createToast({
-                                type: 'error',
-                                content: error,
-                            }),
-                        ),
-                    );
-                    ('Create new user successfully');
+                    await userService.createUser({ email: info.email, password: info.pwd });
                     navigate('/login');
                 } catch (error) {
                     dispatch(
@@ -146,6 +140,7 @@ function Register() {
                         type="password"
                         className={cx('register-input')}
                         name="pwd"
+                        autoComplete="off"
                         placeholder="Abc12345@"
                         value={info.pwd}
                         onChange={(e) => handleChange(e)}
@@ -158,6 +153,7 @@ function Register() {
                         type="password"
                         placeholder="Abc12345@"
                         className={cx('register-input')}
+                        autoComplete="off"
                         name="cfpwd"
                         value={info.cfpwd}
                         onChange={(e) => handleChange(e)}

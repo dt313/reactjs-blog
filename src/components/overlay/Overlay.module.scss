@@ -11,4 +11,34 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    overscroll-behavior: none;
+}
+
+@keyframes close {
+    0% {
+        opacity: 1;
+        display: flex;
+    }
+    100% {
+        opacity: 0;
+        display: none;
+    }
+}
+
+@keyframes active {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.close {
+    display: none;
+    animation: close 0.2s ease-in-out;
+}
+
+.active {
+    animation: active 0.2s ease-in-out;
 }

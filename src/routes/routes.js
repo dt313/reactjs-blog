@@ -28,13 +28,11 @@ const publicRoutes = [
     { path: routes.notfound, component: NotFound, layout: OtherLayout },
     { path: routes.error, component: NotFound, layout: OtherLayout },
     { path: routes.oauth2, component: OAuth2Redirect, layout: OtherLayout },
+    { path: routes.profile, component: Profile, layout: DefaultLayout },
 ];
 const protectedRoutes = [
-    { path: routes.write, component: Write, layout: DefaultLayout },
     { path: routes.art_edit, component: Write, layout: DefaultLayout },
-    // { path: routes.ask_edit, component: AskInput, layout: DefaultLayout },
-    // { path: routes.ask, component: AskInput, layout: DefaultLayout },
-    { path: routes.profile, component: Profile, layout: DefaultLayout },
+    { path: routes.write, component: Write, layout: DefaultLayout }, // protected
 ];
 const privateRoutes = [];
 

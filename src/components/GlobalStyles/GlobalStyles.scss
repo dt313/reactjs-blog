@@ -70,6 +70,7 @@ body {
     text-rendering: optimizespeed;
     background-color: var(--background-color);
     color: var(--color);
+    overscroll-behavior: none;
 }
 
 button,

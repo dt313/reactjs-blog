@@ -38,7 +38,7 @@ function NotificationItem({ content, onClick = defaultFn }) {
         }
     };
 
-    const text = generateNotificationContent(content.type, content.context.title);
+    const text = generateNotificationContent(content?.type, content?.context?.title);
 
     console.log();
 
