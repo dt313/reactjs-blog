@@ -1,5 +1,3 @@
-import sortByTime from '~/helper/sortByTime';
-
 export const INIT_COMMENT_TREE = 'INIT_COMMENT_TREE';
 export const ADD_COMMENT = 'ADD_COMMENT';
 export const DELETE_COMMENT = 'DELETE_COMMENT';

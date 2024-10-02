@@ -7,7 +7,6 @@ const initialState = {
 const shareBoxReducer = (state = initialState, action) => {
     switch (action.type) {
         case OPEN_SHAREBOX:
-            const userId = action.payload;
             return {
                 isOpen: true,
             };

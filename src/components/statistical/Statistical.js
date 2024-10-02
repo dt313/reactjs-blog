@@ -1,6 +1,5 @@
 import classNames from 'classnames/bind';
 import styles from './Statistical.module.scss';
-import { FaHeart, FaComment } from 'react-icons/fa6';
 import { FaRegComment } from 'react-icons/fa6';
 import defaultFn from '~/utils/defaultFn';
 import ReactionButton from '../reactionButton';

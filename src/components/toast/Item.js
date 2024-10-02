@@ -3,7 +3,7 @@ import styles from './Toast.module.scss';
 import { IoClose } from 'react-icons/io5';
 import { MdError, MdInfo, MdWarning } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
-import { deleteByDuration, deleteToast } from '~/redux/actions/toastAction';
+import { deleteToast } from '~/redux/actions/toastAction';
 import { useEffect } from 'react';
 
 const cx = classNames.bind(styles);

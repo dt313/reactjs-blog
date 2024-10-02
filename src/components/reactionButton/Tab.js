@@ -2,7 +2,6 @@ import classNames from 'classnames/bind';
 import styles from './ReactionButton.module.scss';
 import { useRef, useState, useEffect } from 'react';
 import { FaCheck } from 'react-icons/fa6';
-import useOutsideClick from '~/hook/useOutsideClick';
 const cx = classNames.bind(styles);
 function Tab({ content, isActive, onClick, className, isMoreTab, hasCheck }) {
     const Icon = content.icon;
