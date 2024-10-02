@@ -163,6 +163,8 @@ function Profile() {
                                             postType={post.tableType?.toLowerCase()}
                                             handleDelete={handleDeletePost}
                                             editable={infomation?.id === userId}
+                                            isPublish={post.is_published}
+                                            publishAt={post.publish_at}
                                         />
                                     );
                                 })

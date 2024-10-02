@@ -34,13 +34,13 @@ function Write() {
 
     const fetchAPI = async () => {
         try {
-            const result = await articleService.getArticleBySlug(slug);
+            const result = await articleService.getArticleBySlugWithAuth(slug);
             console.log(result);
             if (isConfictAuthor(result?.author?.id)) {
                 dispatch(
                     addToast(
                         createToast({
-                            type: 'error',
+                            type: 'warning',
                             content: 'You are not author!',
                         }),
                     ),
@@ -54,8 +54,8 @@ function Write() {
             dispatch(
                 addToast(
                     createToast({
-                        type: 'error',
-                        content: error || error.message,
+                        type: 'warning',
+                        content: error.message,
                     }),
                 ),
             );

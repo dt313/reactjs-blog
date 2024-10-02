@@ -188,24 +188,57 @@
     font-size: 1.3rem;
     font-weight: 300;
     color: var(--text-color);
-    opacity: 0.6;
-
     position: relative;
     padding-left: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-    &::before {
+    .mode-text::before {
         content: '';
         position: absolute;
-        top: 0;
+        top: 50%;
         left: 0;
         right: 0;
         bottom: 0;
-        transform: translateY(25%);
+        transform: translateY(-42%);
         width: 12px;
         height: 12px;
-        background-color: rgb(251, 163, 0);
+        background-color: rgb(251, 163, 0, 0.8);
         border-radius: 50%;
     }
+
+    .mode-text {
+        color: #9f9f9f;
+        margin-left: 2px;
+    }
+}
+
+.card-menu {
+    padding: 0 4px;
+}
+
+.card-mode.pedding .mode-text::before {
+    background-color: rgb(0, 157, 255, 0.8);
+}
+
+.clock {
+    float: right;
+    width: fit-content;
+
+    .clock-icon {
+        font-size: 2rem;
+        color: #9f9f9f;
+    }
+}
+
+.clock-tooltip {
+    border: 1px solid #464a4f;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    padding: 4px;
+    color: #fff;
+    font-size: 1.2rem;
 }
 
 .confirm-description {

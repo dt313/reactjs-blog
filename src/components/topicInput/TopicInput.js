@@ -16,7 +16,6 @@ function TopicInput({ title, handleDeleteTag, topics = [], setTopics, className 
         const handleKeyDown = (e) => {
             if (e.keyCode === 13 && e.target.value !== '') {
                 const isValid = topics.some((t) => t === e.target.value);
-                console.log(isValid);
                 if (!isValid) {
                     setTopics((prev) => [...prev, e.target.value.trim()]);
                     setInput('');

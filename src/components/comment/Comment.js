@@ -3,7 +3,7 @@ import styles from './Comment.module.scss';
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import Avatar from '../avatar';
 import { BiChevronDown } from 'react-icons/bi';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import CommentInput from '../commentInput';
 import { SpinnerLoader } from '../loading/Loading';
 import MarkDown from '../markdown';

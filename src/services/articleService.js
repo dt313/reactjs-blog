@@ -62,6 +62,16 @@ export const getArticleBySlug = async (slug) => {
     }
 };
 
+export const getArticleBySlugWithAuth = async (slug) => {
+    try {
+        const res = await axios.get(`/articles/edit/slug/${slug}`);
+        return res.data;
+    } catch (error) {
+        console.log(error);
+        throw new Error(error?.message || 'Failed to fetch the article');
+    }
+};
+
 export const getSuggestion = async (data) => {
     try {
         const res = await axios.post(`/articles/suggestion`, data);
@@ -92,6 +102,15 @@ export const create = async (data) => {
 export const update = async (slug, data) => {
     try {
         const res = await axios.put(`/articles/${slug}`, data);
+        return res.data;
+    } catch (error) {
+        throw new Error(error?.message || 'Failed to fetch the article');
+    }
+};
+
+export const publish = async (id) => {
+    try {
+        const res = await axios.post(`/articles/publish/${id}`);
         return res.data;
     } catch (error) {
         throw new Error(error?.message || 'Failed to fetch the article');

@@ -65,7 +65,7 @@ function Article({ className, content, primary }) {
             <ArticleHeader
                 author={content?.author}
                 postSlug={content?.slug}
-                time={calculateTime(content?.updated_at)}
+                time={calculateTime(content?.publish_at)}
                 hasShare
                 onBookmark={handleBookmark}
                 is_bookmarked={content.is_bookmarked}

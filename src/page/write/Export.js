@@ -24,7 +24,7 @@ function Export({ submitData, isEdit }) {
     const [thumbnail, setThumbnail] = useState('');
     const [topics, setTopics] = useState([]);
     const [isSchedule, setIsSchedule] = useState(false);
-    const [scheduleTime, setScheduleTime] = useState(getDateTimeLocal());
+    const [scheduleTime, setScheduleTime] = useState(getDateTimeLocal({}));
 
     const [meta, setMeta] = useState({
         metaTitle: submitData.title.trim(),
@@ -106,6 +106,7 @@ function Export({ submitData, isEdit }) {
                 ...meta,
                 thumbnail,
                 topics,
+                publishAt: scheduleTime,
             };
             let result;
             if (isEdit) {
@@ -113,7 +114,12 @@ function Export({ submitData, isEdit }) {
             } else {
                 result = await articleService.create(data);
             }
-            navigate(`/article/${result?.slug}`);
+
+            if (isSchedule) {
+                navigate(`/profile/@me`);
+            } else {
+                navigate(`/article/${result?.slug}`);
+            }
         } catch (error) {
             dispatch(
                 addToast(
@@ -238,10 +244,17 @@ function Export({ submitData, isEdit }) {
 
                     {isSchedule && (
                         <div className={cx('actions')}>
-                            <Button primary className={cx('btn')}>
+                            <Button primary className={cx('btn')} onClick={handleSubmit}>
                                 Đặt lịch
                             </Button>
-                            <Button secondary className={cx('btn')} onClick={() => setIsSchedule(false)}>
+                            <Button
+                                secondary
+                                className={cx('btn')}
+                                onClick={() => {
+                                    setIsSchedule(false);
+                                    setScheduleTime(getDateTimeLocal({}));
+                                }}
+                            >
                                 Hủy lên lịch
                             </Button>
                         </div>

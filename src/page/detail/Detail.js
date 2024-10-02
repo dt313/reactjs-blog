@@ -28,7 +28,7 @@ function Detail() {
     const dispatch = useDispatch();
     const { slug } = useParams();
     const [searchParams, setSearchParams] = useSearchParams();
-    const [article, setArticle] = useState({});
+    const [article, setArticle] = useState(null);
     const [isShowCommentsBox, setIsShowCommentsBox] = useState(false);
     const [reactionType, setReactionType] = useState(false);
     const [isReacted, setIsReacted] = useState(false);
@@ -71,7 +71,6 @@ function Detail() {
     };
 
     const handleClickHeart = async (type) => {
-        console.log(type);
         const data = {
             reactionTableId: article.id,
             reactionTableType: 'ARTICLE',
@@ -186,6 +185,15 @@ function Detail() {
             );
         }
     };
+    if (!article) {
+        return (
+            <div className={cx('no-article')}>
+                <p>
+                    Bài viết không tồn tại . <a href="/search">Tìm kiếm bài viết</a>
+                </p>
+            </div>
+        );
+    }
     return (
         <div className={cx('wrapper')}>
             <div className={cx('content')}>
@@ -219,7 +227,7 @@ function Detail() {
                     <h1 className={cx('title')}>{article?.title}</h1>
                     <div className={cx('article-header')}>
                         <ArticleHeader
-                            time={calculateTime(article?.updated_at)}
+                            time={calculateTime(article?.publish_at)}
                             className={cx('header')}
                             type="article"
                             large
