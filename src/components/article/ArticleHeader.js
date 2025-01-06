@@ -91,7 +91,7 @@ function ArticleHeader({
             <div className={cx('user')} onClick={handleClickUser}>
                 <Avatar className={cx('avatar')} alt="name" src={author?.avatar} />
                 <div className={cx('blog-info')}>
-                    <span className={cx('author')}>{author?.username}</span>
+                    <span className={cx('author')}>{author?.name || author?.username}</span>
                     {time && <span className={cx('date')}>{time}</span>}
                 </div>
             </div>

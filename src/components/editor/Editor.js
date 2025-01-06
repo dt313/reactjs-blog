@@ -5,6 +5,7 @@ import 'react-markdown-editor-lite/lib/index.css';
 import { uploadService } from '~/services';
 import { addToast, createToast } from '~/redux/actions/toastAction';
 import { useDispatch } from 'react-redux';
+import setError from '~/helper/setError';
 
 // const cx = classNames.bind(styles);
 
@@ -45,6 +46,7 @@ function Editor({ renderHTML, handleEditorChange, className, placeholder = '', c
                 const image = await uploadService.uploadImage(file);
                 resolve(`${url}/image/${image.data}`);
             } catch (error) {
+                error = setError(error);
                 dispatch(
                     addToast(
                         createToast({

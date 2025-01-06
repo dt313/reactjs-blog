@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { tokenUtils } from '~/utils';
+import setError from '~/helper/setError';
 
 export const uploadImage = async (file) => {
     try {
@@ -15,6 +16,7 @@ export const uploadImage = async (file) => {
         );
         return res.data;
     } catch (error) {
+        error = setError(error);
         throw new Error(error?.message || 'Failed to upload image');
     }
 };

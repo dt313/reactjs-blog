@@ -8,7 +8,7 @@ import { commentService } from '~/services';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToast, createToast } from '~/redux/actions/toastAction';
-
+import setError from '~/helper/setError';
 import Comment from '../comment';
 
 import { addComment, deleteComment, initCommentTree, loadMoreComment } from '~/redux/actions/commentAction';
@@ -27,6 +27,8 @@ function CommentBox({ commentCount, authorId, articleId }) {
     const { slug } = useParams();
     const { id } = useSelector((state) => state.comment);
 
+    console.log('re-render');
+
     useEffect(() => {
         const fetchAPI = async () => {
             const data = {
@@ -40,6 +42,7 @@ function CommentBox({ commentCount, authorId, articleId }) {
                 const result = await commentService.getAllCommentByType(data);
                 dispatch(initCommentTree(articleId, result));
             } catch (error) {
+                error = setError(error);
                 dispatch(
                     addToast(
                         createToast({
@@ -57,6 +60,10 @@ function CommentBox({ commentCount, authorId, articleId }) {
             fetchAPI();
         }
     }, [slug]);
+
+    useEffect(() => {
+        setCountOfComment(tree.length);
+    }, []);
 
     const renderComments = () => {
         if (tree.length > 0) {
@@ -97,6 +104,8 @@ function CommentBox({ commentCount, authorId, articleId }) {
             });
             increaseCountOfComments();
         } catch (error) {
+            error = setError(error);
+            if (typeof error == 'object') error = error.message;
             dispatch(
                 addToast(
                     createToast({
@@ -114,6 +123,7 @@ function CommentBox({ commentCount, authorId, articleId }) {
             dispatch(deleteComment(id));
             decreaseCountOfComments();
         } catch (error) {
+            error = setError(error);
             dispatch(
                 addToast(
                     createToast({
@@ -136,6 +146,7 @@ function CommentBox({ commentCount, authorId, articleId }) {
             const result = await commentService.getAllCommentByType(data);
             dispatch(loadMoreComment(result));
         } catch (error) {
+            error = setError(error);
             dispatch(
                 addToast(
                     createToast({

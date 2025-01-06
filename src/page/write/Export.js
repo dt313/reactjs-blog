@@ -10,6 +10,7 @@ import TopicInput from '~/components/topicInput/TopicInput';
 import { addToast, createToast } from '~/redux/actions/toastAction';
 import { useDispatch } from 'react-redux';
 import getDateTimeLocal from '~/helper/getDateTimeLocal';
+import setError from '~/helper/setError';
 
 const MAX_META_TITLE_LENGTH = 100;
 const MAX_META_DES_LENGTH = 160;
@@ -51,6 +52,7 @@ function Export({ submitData, isEdit }) {
                 const result = await uploadService.uploadImage(e.target.files[0]);
                 setThumbnail(`${process.env.REACT_APP_API_URL}/image/${result.data}`);
             } catch (error) {
+                error = setError(error);
                 dispatch(
                     addToast(
                         createToast({
@@ -76,6 +78,7 @@ function Export({ submitData, isEdit }) {
                 const result = await uploadService.uploadImage(e.dataTransfer.files[0]);
                 setThumbnail(`${process.env.REACT_APP_API_URL}/image/${result.data}`);
             } catch (error) {
+                error = setError(error);
                 dispatch(
                     addToast(
                         createToast({
@@ -121,6 +124,7 @@ function Export({ submitData, isEdit }) {
                 navigate(`/article/${result?.slug}`);
             }
         } catch (error) {
+            error = setError(error);
             dispatch(
                 addToast(
                     createToast({

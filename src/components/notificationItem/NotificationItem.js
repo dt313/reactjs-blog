@@ -55,7 +55,7 @@ function NotificationItem({ content, onClick = defaultFn }) {
                             onClick();
                         }}
                     >
-                        {content.sender.username}
+                        {content.sender.name || content.sender.username}
                     </strong>
                     <span dangerouslySetInnerHTML={{ __html: text }}></span>
                 </p>

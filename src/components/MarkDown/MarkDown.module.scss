@@ -5,6 +5,8 @@
     color: var(--color);
     font-size: 1.5rem;
     .code-block {
+        margin: 0;
+        padding: 0;
         background-color: transparent !important;
         max-width: 100%;
         code {
@@ -26,6 +28,11 @@
         margin: 6px 0;
         width: 100%;
         overflow: auto;
+    }
+
+    p {
+        text-wrap: wrap;
+        word-break: break-all;
     }
 
     table {
@@ -115,4 +122,24 @@
         margin: 12px 0;
         object-fit: cover;
     }
+}
+
+.hight-light {
+    position: relative;
+    padding: 8px 0;
+}
+
+.copy-button {
+    min-width: 50px;
+    background-color: #a8a8a888;
+    color: #fff;
+    font-size: 1.2rem;
+    border-radius: 12px;
+    position: absolute;
+    right: 2px;
+    top: 2px;
+}
+
+.no-language {
+    padding: 4px 0;
 }

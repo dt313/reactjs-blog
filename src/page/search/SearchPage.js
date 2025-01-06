@@ -15,6 +15,7 @@ import { articleService } from '~/services';
 import { ARTICLE_PAGE_SIZE } from '~/config/uiConfig';
 import useDebounce from '~/hook/useDebounce';
 import { useDispatch } from 'react-redux';
+import setError from '~/helper/setError';
 const cx = classNames.bind(styles);
 
 function SearchPage() {
@@ -43,6 +44,7 @@ function SearchPage() {
                 }
                 setArticles(result);
             } catch (error) {
+                error = setError(error);
                 dispatch(
                     addToast(
                         createToast({
@@ -69,6 +71,7 @@ function SearchPage() {
                 }
                 setLength(length);
             } catch (error) {
+                error = setError(error);
                 dispatch(
                     addToast(
                         createToast({

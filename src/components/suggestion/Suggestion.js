@@ -4,6 +4,7 @@ import styles from './Suggestion.module.scss';
 import SuggestItem from './SuggestItem';
 import { articleService } from '~/services';
 import { addToast, createToast } from '~/redux/actions/toastAction';
+import setError from '~/helper/setError';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 const cx = classNames.bind(styles);
@@ -22,6 +23,7 @@ function Suggestion({ topics, author, postId, className }) {
                     setArticles(newSugest);
                 }
             } catch (error) {
+                error = setError(error);
                 dispatch(
                     addToast(
                         createToast({

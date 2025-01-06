@@ -7,6 +7,7 @@ import { BiSolidLike, BiSolidComment } from 'react-icons/bi';
 import { bookmarkService } from '~/services';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToast, createToast } from '~/redux/actions/toastAction';
+import setError from '~/helper/setError';
 import calculateTime from '~/helper/calculateTime';
 import isConfictAuthor from '~/helper/isConflictAuthor';
 
@@ -33,6 +34,7 @@ function Article({ className, content, primary }) {
                 const result = await bookmarkService.toggleBookmark(data);
                 handleClientMore(result.data);
             } catch (error) {
+                error = setError(error);
                 dispatch(
                     addToast(
                         createToast({

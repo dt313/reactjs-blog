@@ -31,13 +31,15 @@ function Login() {
 
     let prePath = useRef(null);
 
+    console.log(prePath);
+
     useEffect(() => {
         if (searchParams.size > 0) {
-            prePath = searchParams.get('continue');
-            tokenUtils.setRedirectPath(prePath);
+            prePath.current = searchParams.get('continue');
         } else {
-            tokenUtils.setRedirectPath('/');
+            prePath.current = '/';
         }
+        tokenUtils.setRedirectPath(prePath);
     }, []);
 
     const handleChange = (e) => {
@@ -77,8 +79,11 @@ function Login() {
                         user: result.user,
                     }),
                 );
-                navigate(prePath || '/');
+
+                console.log(prePath.current);
+                navigate(prePath.current);
             } catch (error) {
+                error = setError(error);
                 dispatch(
                     addToast(
                         createToast({

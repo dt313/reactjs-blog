@@ -14,6 +14,8 @@ import useLimitInput from '~/hook/useLimitInput';
 import { useParams } from 'react-router-dom';
 import isConfictAuthor from '~/helper/isConflictAuthor';
 import { useDispatch } from 'react-redux';
+import setError from '~/helper/setError';
+
 const MAX_TITLE_LENGTH = 200;
 const cx = classNames.bind(styles);
 
@@ -51,6 +53,7 @@ function Write() {
             setTitle(result.title);
             setContent(result.content);
         } catch (error) {
+            error = setError(error);
             dispatch(
                 addToast(
                     createToast({
@@ -136,6 +139,7 @@ function Write() {
                 const image = await uploadService.uploadImage(file);
                 resolve(`${url}/image/${image.data}`);
             } catch (error) {
+                error = setError(error);
                 dispatch(
                     addToast(
                         createToast({

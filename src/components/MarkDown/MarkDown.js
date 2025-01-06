@@ -7,6 +7,8 @@ import Highlighter from './Highlighter';
 
 const cx = classNames.bind(styles);
 function MarkDown({ text = '', className }) {
+    if (!text) return <br></br>;
+
     const components = {
         code: Highlighter,
         em(props) {

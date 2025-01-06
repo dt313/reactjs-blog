@@ -25,6 +25,8 @@ import { SHARE_MENU } from './config/uiConfig';
 import ShareItem from './components/shareItem';
 import { close } from './redux/actions/shareBoxAction';
 import { addToast, createToast } from './redux/actions/toastAction';
+import setError from '~/helper/setError';
+
 const cx = classNames.bind(styles);
 
 function App() {
@@ -67,7 +69,9 @@ function App() {
                 pageNumber: 1,
             });
             dispatch(initialNotifications(result));
-        } catch (error) {}
+        } catch (error) {
+            error = setError(error);
+        }
     };
 
     // socket receive notification
@@ -102,6 +106,7 @@ function App() {
             dispatch(readAllNotification());
             setHasUnreadedNotification(false);
         } catch (error) {
+            error = setError(error);
             dispatch(
                 addToast(
                     createToast({
@@ -121,6 +126,7 @@ function App() {
                 dispatch(readNotification(noti_id));
             }
         } catch (error) {
+            error = setError(error);
             dispatch(
                 addToast(
                     createToast({

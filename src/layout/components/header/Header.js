@@ -5,6 +5,7 @@ import { NavLink } from 'react-router-dom';
 import useOutsideClick from '~/hook/useOutsideClick';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '~/redux/actions/authAction';
+import setError from '~/helper/setError';
 
 import { authService } from '~/services';
 import { tokenUtils } from '~/utils';
@@ -29,6 +30,7 @@ function Header() {
                 dispatch(logout());
                 window.location.href = '/login';
             } catch (error) {
+                error = setError(error);
                 dispatch(
                     addToast(
                         createToast({

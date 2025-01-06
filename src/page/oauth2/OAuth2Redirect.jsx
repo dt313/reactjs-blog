@@ -3,6 +3,7 @@ import { tokenUtils } from '~/utils';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { login } from '~/redux/actions/authAction';
+import setError from '~/helper/setError';
 import { useEffect } from 'react';
 
 function OAuth2Redirect() {
@@ -26,6 +27,7 @@ function OAuth2Redirect() {
                 );
             }
         } catch (error) {
+            error = setError(error);
             console.error('Error fetching user info:', error);
         }
     };

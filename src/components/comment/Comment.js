@@ -29,6 +29,7 @@ import Tippy from '@tippyjs/react/headless';
 import Reaction from '../reaction';
 import getReactionText from '~/helper/getReactionText';
 import ReactionButton from '../reactionButton';
+import setError from '~/helper/setError';
 
 const cx = classNames.bind(styles);
 
@@ -89,6 +90,9 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
                 directObjectId: result.id,
             });
         } catch (error) {
+            error = setError(error);
+            console.log(error);
+            if (typeof error == 'object') error = error.message;
             dispatch(
                 addToast(
                     createToast({
@@ -106,6 +110,7 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
             await commentService.deleteComment(id);
             dispatch(deleteReplyComment(comment.id, id));
         } catch (error) {
+            error = setError(error);
             alert(error);
         }
     };
@@ -124,6 +129,7 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
             const result = await commentService.getAllCommentByType(data);
             dispatch(initReplyComment(comment.id, result));
         } catch (error) {
+            error = setError(error);
             dispatch(
                 addToast(
                     createToast({
@@ -148,6 +154,7 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
             const result = await commentService.getAllCommentByType(data);
             dispatch(loadMoreReplyComment(comment.id, result));
         } catch (error) {
+            error = setError(error);
             alert(error);
         }
     };
@@ -180,6 +187,7 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
                 );
             }
         } catch (error) {
+            error = setError(error);
             dispatch(
                 addToast(
                     createToast({
@@ -232,7 +240,7 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
                                 className={cx('name')}
                                 onClick={() => navigate(`/profile/@${comment?.publisher?.username}`)}
                             >
-                                {comment?.publisher?.username || 'Me'}
+                                {comment?.publisher?.name || comment?.publisher?.username}
                             </span>
                             {userId === comment.publisher.id && (
                                 <DropMenu offset={[-35, -60]} menu={menuList} width={100}>

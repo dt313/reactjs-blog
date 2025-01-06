@@ -6,13 +6,15 @@ import classNames from 'classnames/bind';
 import TopicItem from '../search/TopicItem';
 import { profileTag } from '~/config/uiConfig';
 import useTitle from '~/hook/useTitle';
+import Button from '~/components/button/Button';
 import Card from './Card';
 import { useDispatch, useSelector } from 'react-redux';
 import { articleService, bookmarkService, userService } from '~/services';
 import setProfileTag from '~/helper/setProfileTag';
 import { SpinnerLoader } from '~/components/loading/Loading';
 import { addToast, createToast } from '~/redux/actions/toastAction';
-
+import setError from '~/helper/setError';
+import tokenUtils from '~/utils/token';
 const cx = classNames.bind(styles);
 
 const toCardForm = (post) => {
@@ -35,6 +37,17 @@ function Profile() {
     const [posts, setPosts] = useState([]);
     const [tags, setTags] = useState(profileTag);
     const [loading, setLoading] = useState(false);
+    const [isEditor, setIsEditor] = useState(false);
+
+    const [name, setName] = useState('');
+    const [usrname, setUsrname] = useState('');
+
+    useEffect(() => {
+        if (infomation) {
+            setName(infomation.name);
+            setUsrname(infomation.username);
+        }
+    }, [infomation]);
 
     const fetchPosts = async (id) => {
         try {
@@ -49,6 +62,7 @@ function Profile() {
             }
             return newPost;
         } catch (error) {
+            error = setError(error);
             dispatch(
                 addToast(
                     createToast({
@@ -72,6 +86,9 @@ function Profile() {
                     setTags(setProfileTag(true));
                     setPosts(await fetchPosts(userId));
                 } catch (error) {
+                    error = setError(error);
+                    if (typeof error === 'object') error = error.message;
+
                     dispatch(
                         addToast(
                             createToast({
@@ -93,6 +110,7 @@ function Profile() {
                     setTags(setProfileTag(result?.data.id === userId));
                     setPosts(await fetchPosts(result?.data?.id));
                 } catch (error) {
+                    error = setError(error);
                     dispatch(
                         addToast(
                             createToast({
@@ -116,17 +134,71 @@ function Profile() {
         setPosts(newPosts);
     };
 
+    const updateInfomation = async () => {
+        try {
+            const result = await userService.updateInfomation(infomation.id, {
+                username: usrname,
+                name: name,
+            });
+
+            const { token, user } = result.data;
+            tokenUtils.setUser(user);
+            tokenUtils.setAccessToken(token);
+            setInfomation(user);
+            setIsEditor(false);
+        } catch (error) {}
+    };
+
+    console.log(userId, infomation.id);
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('container')}>
                 <div className={cx('info')}>
                     <Avatar className={cx('avatar')} src={infomation?.avatar} />
-                    {/* <h3 className={cx('name')}>{infomation?.name || 'NO NAME'}</h3> */}
-                    <span className={cx('special-name')}>{infomation?.username || 'NO USERNAME'}</span>
-                    {/* <Button secondary onClick={handleCickSetting}>
-                        {' '}
-                        Setting
-                    </Button> */}
+                    {!isEditor && <h3 className={cx('name')}>{infomation?.name || 'NO NAME'}</h3>}
+                    {!isEditor && <span className={cx('special-name')}>{infomation?.username || 'NO USERNAME'}</span>}
+                    {!isEditor && userId === infomation?.id && (
+                        <Button className={cx('edit-button')} onClick={() => setIsEditor(true)}>
+                            Edit profile
+                        </Button>
+                    )}
+
+                    {isEditor && (
+                        <div className={cx('profile-editor')}>
+                            <div className={cx('form')}>
+                                <label htmlFor="username" className={cx('editor-label')}>
+                                    Username{' '}
+                                </label>
+                                <input
+                                    className={cx('editor-input')}
+                                    id="username"
+                                    type="text"
+                                    value={usrname}
+                                    onChange={(e) => setUsrname(e.target.value)}
+                                />
+                            </div>
+                            <div className={cx('form')}>
+                                <label htmlFor="name" className={cx('editor-label')}>
+                                    Name{' '}
+                                </label>
+                                <input
+                                    className={cx('editor-input')}
+                                    id="name"
+                                    type="text"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                />
+                            </div>
+
+                            <Button className={cx('edit-button')} onClick={updateInfomation}>
+                                Save
+                            </Button>
+                            <Button className={cx('edit-button')} onClick={() => setIsEditor(false)}>
+                                Cancel
+                            </Button>
+                        </div>
+                    )}
                 </div>
                 <div className={cx('body')}>
                     <div className={cx('nav')}>

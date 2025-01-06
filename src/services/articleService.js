@@ -1,4 +1,5 @@
 import axios from '~/config/axios';
+import setError from '~/helper/setError';
 
 export const searchFor = async ({ searchValue = '', topic, pageNumber, pageSize }) => {
     try {
@@ -14,6 +15,7 @@ export const searchFor = async ({ searchValue = '', topic, pageNumber, pageSize 
             return res?.data;
         }
     } catch (error) {
+        error = setError(error);
         throw new Error(error?.message || 'Failed to fetch the article');
     }
 };
@@ -25,6 +27,7 @@ export const searchFeature = async ({ searchValue = '', pageNumber, pageSize }) 
         );
         return res?.data;
     } catch (error) {
+        error = setError(error);
         throw new Error(error?.message || 'Failed to fetch the article');
     }
 };
@@ -39,6 +42,7 @@ export const getLength = async ({ searchValue, topic }) => {
             return res?.data;
         }
     } catch (error) {
+        error = setError(error);
         throw new Error(error?.message || 'Failed to fetch the article');
     }
 };
@@ -48,6 +52,7 @@ export const getArticleById = async (id) => {
         const res = await axios.get(`/articles/${id}`);
         return res.data;
     } catch (error) {
+        error = setError(error);
         throw new Error(error?.message || 'Failed to fetch the article');
     }
 };
@@ -57,6 +62,7 @@ export const getArticleBySlug = async (slug) => {
         const res = await axios.get(`/articles/slug/${slug}`);
         return res.data;
     } catch (error) {
+        error = setError(error);
         console.log(error);
         throw new Error(error?.message || 'Failed to fetch the article');
     }
@@ -67,6 +73,7 @@ export const getArticleBySlugWithAuth = async (slug) => {
         const res = await axios.get(`/articles/edit/slug/${slug}`);
         return res.data;
     } catch (error) {
+        error = setError(error);
         console.log(error);
         throw new Error(error?.message || 'Failed to fetch the article');
     }
@@ -77,6 +84,7 @@ export const getSuggestion = async (data) => {
         const res = await axios.post(`/articles/suggestion`, data);
         return res.data;
     } catch (error) {
+        error = setError(error);
         throw new Error(error?.message || 'Failed to fetch the article');
     }
 };
@@ -86,6 +94,7 @@ export const getArticleByAuthor = async (id) => {
         const res = await axios.get(`/articles/author/${id}`);
         return res.data;
     } catch (error) {
+        error = setError(error);
         throw new Error(error?.message || 'Failed to fetch the article');
     }
 };
@@ -95,6 +104,7 @@ export const create = async (data) => {
         const res = await axios.post(`/articles`, data);
         return res.data;
     } catch (error) {
+        error = setError(error);
         throw new Error(error?.message || 'Failed to fetch the article');
     }
 };
@@ -104,6 +114,7 @@ export const update = async (slug, data) => {
         const res = await axios.put(`/articles/${slug}`, data);
         return res.data;
     } catch (error) {
+        error = setError(error);
         throw new Error(error?.message || 'Failed to fetch the article');
     }
 };
@@ -113,6 +124,7 @@ export const publish = async (id) => {
         const res = await axios.post(`/articles/publish/${id}`);
         return res.data;
     } catch (error) {
+        error = setError(error);
         throw new Error(error?.message || 'Failed to fetch the article');
     }
 };
@@ -122,6 +134,7 @@ export const deleteArt = async (id) => {
         const res = await axios.delete(`/articles/${id}`);
         return res;
     } catch (error) {
+        error = setError(error);
         throw new Error(error?.message || 'Failed to fetch the article');
     }
 };

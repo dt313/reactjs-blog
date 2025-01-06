@@ -55,6 +55,7 @@ function Register() {
                     await userService.createUser({ email: info.email, password: info.pwd });
                     navigate('/login');
                 } catch (error) {
+                    error = setError(error);
                     dispatch(
                         addToast(
                             createToast({

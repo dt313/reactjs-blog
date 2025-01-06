@@ -6,6 +6,7 @@ import ArticleHeader from '~/components/article/ArticleHeader';
 import Suggestion from '~/components/suggestion';
 import Statistical from '~/components/statistical';
 
+import setError from '~/helper/setError';
 import { useEffect, useState } from 'react';
 import { MdClose } from 'react-icons/md';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -51,6 +52,7 @@ function Detail() {
                 setReactions(result?.reactions);
                 setIsShowCommentsBox(!!searchParams.get('direct_id'));
             } catch (error) {
+                error = setError(error);
                 dispatch(
                     addToast(
                         createToast({
@@ -110,6 +112,7 @@ function Detail() {
                 });
             }
         } catch (error) {
+            error = setError(error);
             dispatch(
                 addToast(
                     createToast({
@@ -161,6 +164,7 @@ function Detail() {
                 const result = await bookmarkService.toggleBookmark(data);
                 handleClientMore(result.data);
             } catch (error) {
+                error = setError(error);
                 dispatch(
                     addToast(
                         createToast({

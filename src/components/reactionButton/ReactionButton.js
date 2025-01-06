@@ -105,7 +105,9 @@ function ReactionButton({ className, list = [], total, reacted }) {
                                             <Avatar className={cx('avatar')} src={reaction.reacted_user.avatar} />
                                             <Icon className={cx('reacted-icon')} width={16} height={16} />
                                         </div>
-                                        <span className={cx('reacted-name')}>{reaction.reacted_user.username}</span>
+                                        <span className={cx('reacted-name')}>
+                                            {reaction.reacted_user.name || reaction.reacted_user.username}
+                                        </span>
                                     </div>
                                 );
                             })}

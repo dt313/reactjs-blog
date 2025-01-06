@@ -17,6 +17,7 @@ import { addComment, deleteComment, initCommentTree, loadMoreComment } from '~/r
 import checkReaction from '~/helper/checkReaction';
 import { notificationType, tableType } from '~/config/types';
 import { sendNotificationWithCondition } from '~/socket';
+import setError from '~/helper/setError';
 
 const cx = classNames.bind(styles);
 function Question() {
@@ -46,6 +47,7 @@ function Question() {
                 const result = await commentService.getAllCommentByType(data);
                 dispatch(initCommentTree(id, result));
             } catch (error) {
+                error = setError(error);
                 dispatch(
                     addToast(
                         createToast({
@@ -83,6 +85,7 @@ function Question() {
             });
             setCountOfReaction(checkReaction(result?.data) ? countOfReaction + 1 : countOfReaction - 1);
         } catch (error) {
+            error = setError(error);
             dispatch(
                 addToast(
                     createToast({
@@ -106,6 +109,7 @@ function Question() {
             const result = await bookmarkService.toggleBookmark(data);
             handleClientMore(result.data);
         } catch (error) {
+            error = setError(error);
             dispatch(
                 addToast(
                     createToast({
@@ -140,6 +144,7 @@ function Question() {
             });
             setCountOfComments(countOfComments + 1);
         } catch (error) {
+            error = setError(error);
             dispatch(
                 addToast(
                     createToast({
@@ -157,6 +162,7 @@ function Question() {
             dispatch(deleteComment(id));
             setCountOfComments(countOfComments - 1);
         } catch (error) {
+            error = setError(error);
             dispatch(
                 addToast(
                     createToast({
@@ -179,6 +185,7 @@ function Question() {
             const result = await commentService.getAllCommentByType(data);
             dispatch(loadMoreComment(result));
         } catch (error) {
+            error = setError(error);
             dispatch(
                 addToast(
                     createToast({

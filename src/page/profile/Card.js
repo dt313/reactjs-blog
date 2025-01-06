@@ -13,6 +13,7 @@ import ModelBox from '~/components/modelBox';
 import Overlay from '~/components/overlay';
 import { PiClockFill } from 'react-icons/pi';
 import Tippy from '@tippyjs/react/headless';
+import setError from '~/helper/setError';
 import calculateTime from '~/helper/calculateTime';
 const cx = classNames.bind(styles);
 
@@ -58,6 +59,7 @@ function Card({ title, id, slug, tableType, handleDelete = defaultFn, editable, 
                     ),
                 );
             } catch (error) {
+                error = setError(error);
                 dispatch(
                     addToast(
                         createToast({
@@ -93,6 +95,7 @@ function Card({ title, id, slug, tableType, handleDelete = defaultFn, editable, 
                     console.log(result);
                 }
             } catch (error) {
+                error = setError(error);
                 dispatch(
                     addToast(
                         createToast({
@@ -113,6 +116,7 @@ function Card({ title, id, slug, tableType, handleDelete = defaultFn, editable, 
                 const result = await articleService.publish(id);
                 navigate(`/article/${result.slug}`);
             } catch (error) {
+                error = setError(error);
                 dispatch(
                     addToast(
                         createToast({
