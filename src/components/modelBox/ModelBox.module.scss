@@ -2,7 +2,7 @@
     min-width: 200px;
     max-width: 500px;
     width: 100%;
-    background-color: #242526;
+    background-color: var(--model-box-br);
     border-radius: 8px;
     min-height: 200px;
     animation: active 0.2s cubic-bezier(0, 0.56, 0.62, 0.57);
@@ -47,12 +47,14 @@
         left: 50%;
         transform: translate(-50%, -50%);
         font-size: 2rem;
+        color: var(--text-color);
+        font-family: var(--system-ui);
     }
 
     .close-icon-wrap {
         width: 3.6rem;
         height: 3.6rem;
-        background-color: #ffffff1a;
+        background-color: var(--close-btn-br);
         display: inline-flex;
         justify-content: center;
         align-items: center;
@@ -63,7 +65,7 @@
         border-radius: 999999px;
         cursor: pointer;
         &:hover {
-            background-color: #ffffff2c;
+            background-color: var(--close-btn-hover);
         }
     }
 
@@ -80,6 +82,8 @@
     min-height: 100px;
     height: 100%;
     border-bottom: 1px solid var(--border-color);
+    color: var(--text-color);
+    font-family: var(--system-ui);
 }
 
 .confirm {

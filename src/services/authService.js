@@ -6,8 +6,8 @@ export const login = async (data) => {
         const res = await axios.post('/auth/login', data);
         return res?.data;
     } catch (error) {
-        error = setError(error);
-        throw new Error(error?.message || 'Failed to login');
+        let err = setError(error);
+        throw new Error(err || 'Failed to login');
     }
 };
 
@@ -16,8 +16,8 @@ export const logout = async (token) => {
         const res = await axios.post('/auth/logout', { token });
         return res.data;
     } catch (error) {
-        error = setError(error);
-        throw new Error(error?.message || 'Failed to logut');
+        let err = setError(error);
+        throw new Error(err || 'Failed to logut');
     }
 };
 
@@ -26,7 +26,7 @@ export const refreshToken = async (token) => {
         const res = await axios.post('/auth/refresh', { token });
         return res.data;
     } catch (error) {
-        error = setError(error);
-        throw new Error(error?.message || 'Failed');
+        let err = setError(error);
+        throw new Error(err || 'Failed');
     }
 };

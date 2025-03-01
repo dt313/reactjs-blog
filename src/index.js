@@ -9,9 +9,9 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <GlobalStyles>
         <Provider store={store}>
-            {/* <React.StrictMode> */}
-            <App />
-            {/* </React.StrictMode> */}
+            <React.StrictMode>
+                <App />
+            </React.StrictMode>
         </Provider>
     </GlobalStyles>,
 );

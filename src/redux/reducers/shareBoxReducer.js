@@ -2,6 +2,7 @@ import { OPEN_SHAREBOX, CLOSE_SHAREBOX } from '../actions/shareBoxAction';
 
 const initialState = {
     isOpen: false,
+    href: '',
 };
 
 const shareBoxReducer = (state = initialState, action) => {
@@ -9,10 +10,12 @@ const shareBoxReducer = (state = initialState, action) => {
         case OPEN_SHAREBOX:
             return {
                 isOpen: true,
+                href: action.href,
             };
         case CLOSE_SHAREBOX:
             return {
                 isOpen: false,
+                href: '',
             };
         default:
             return state;

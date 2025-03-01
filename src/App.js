@@ -1,4 +1,4 @@
-import { Fragment, Suspense, useEffect, useState } from 'react';
+import { Fragment, Suspense, useCallback, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { PiBellDuotone, PiBellRingingDuotone } from 'react-icons/pi';
 import DefaultLayout from './layout/DefaultLayout';
@@ -9,12 +9,13 @@ import useOutsideClick from './hook/useOutsideClick';
 import { useDispatch, useSelector } from 'react-redux';
 import ProtecedRoute from './routes/ProtectedRoute';
 import Toast from './components/toast/Toast';
-import ContinueLoader from './components/loading/Loading';
+import ContinueLoader, { SpinnerLoader } from './components/loading/Loading';
 import stompClient, { connect, disconnect } from './socket';
 import { notificationService } from './services';
 import {
     addNotification,
     initialNotifications,
+    loadNotification,
     readAllNotification,
     readNotification,
 } from './redux/actions/notificationAction';
@@ -35,9 +36,14 @@ function App() {
     const [isRing, setIsRing] = useState(false);
     const [isShow, setIsShow] = useState(false);
 
+    const [notiPage, setNotiPage] = useState(1);
+    const [isLoadMore, setIsLoadMore] = useState(false);
+
     const { userId, isAuthentication } = useSelector((state) => state.auth);
-    const { notifications, countOfUnReaded } = useSelector((state) => state.notification);
-    const { isOpen } = useSelector((state) => state.shareBox);
+    const { notifications, countOfUnReaded, isEnd } = useSelector((state) => state.notification);
+    const { isOpen, href } = useSelector((state) => state.shareBox);
+
+    const { theme, primaryColor } = useSelector((state) => state.color);
 
     const handleClickOutside = () => {
         if (notiRef.current) {
@@ -61,16 +67,24 @@ function App() {
     }, [countOfUnReaded]);
 
     // fetch notifications from server
-    const fetchAPI = async () => {
+    const fetchNotificationAPI = async (page = 1) => {
         try {
             const result = await notificationService.getAllNotificationsByUser({
                 id: userId,
                 pageSize: 10,
-                pageNumber: 1,
+                pageNumber: page,
             });
             dispatch(initialNotifications(result));
         } catch (error) {
-            error = setError(error);
+            let err = setError(error);
+            dispatch(
+                addToast(
+                    createToast({
+                        type: 'error',
+                        content: err,
+                    }),
+                ),
+            );
         }
     };
 
@@ -90,7 +104,7 @@ function App() {
                 });
             };
             connect();
-            fetchAPI();
+            fetchNotificationAPI();
         } else {
             disconnect();
         }
@@ -106,19 +120,19 @@ function App() {
             dispatch(readAllNotification());
             setHasUnreadedNotification(false);
         } catch (error) {
-            error = setError(error);
+            let err = setError(error);
             dispatch(
                 addToast(
                     createToast({
                         type: 'error',
-                        content: error,
+                        content: err,
                     }),
                 ),
             );
         }
     };
 
-    const handleReadNotification = async (is_readed, noti_id) => {
+    const handleReadNotification = useCallback(async (is_readed, noti_id) => {
         try {
             setIsShow(false);
             if (is_readed === false) {
@@ -126,20 +140,49 @@ function App() {
                 dispatch(readNotification(noti_id));
             }
         } catch (error) {
-            error = setError(error);
+            let err = setError(error);
             dispatch(
                 addToast(
                     createToast({
                         type: 'error',
-                        content: error,
+                        content: err,
                     }),
                 ),
             );
         }
+    }, []);
+
+    const handleScroll = async (e) => {
+        if (e.target.scrollTop + e.target.clientHeight >= e.target.scrollHeight) {
+            setIsLoadMore(true);
+            setNotiPage(notiPage + 1);
+            try {
+                const result = await notificationService.getAllNotificationsByUser({
+                    id: userId,
+                    pageSize: 10,
+                    pageNumber: notiPage + 1,
+                });
+
+                dispatch(loadNotification(result));
+            } catch (error) {
+                let err = setError(error);
+                dispatch(
+                    addToast(
+                        createToast({
+                            type: 'error',
+                            content: err,
+                        }),
+                    ),
+                );
+            } finally {
+                setIsLoadMore(false);
+            }
+        }
     };
+
     return (
         <Router>
-            <div className="App">
+            <div className="App" data-theme={theme} data-primary-color={primaryColor}>
                 <Routes>
                     {publicRoutes.map((route, index) => {
                         let Layout = DefaultLayout;
@@ -203,19 +246,25 @@ function App() {
                             </div>
                         )}
 
-                        <div className={cx('noti-list')}>
+                        <div className={cx('noti-list')} onScroll={handleScroll}>
                             {isShow &&
                                 notifications.map((notification, index) => {
                                     return (
                                         <NotificationItem
                                             key={notification.id}
                                             content={notification}
-                                            onClick={() =>
-                                                handleReadNotification(notification.is_readed, notification.id)
-                                            }
+                                            onClick={handleReadNotification}
                                         ></NotificationItem>
                                     );
                                 })}
+
+                            {isLoadMore && !isEnd && isShow && (
+                                <div className={cx('noti-loading')}>
+                                    <SpinnerLoader small />
+                                </div>
+                            )}
+
+                            {isEnd && isShow && <p className={cx('end-text')}>Đã hết thông báo</p>}
                         </div>
 
                         {hasUnreadedNotification ? (
@@ -239,29 +288,25 @@ function App() {
                         )}
                     </div>
                 )}
+
+                <Overlay state={isOpen} onClick={() => dispatch(close())}>
+                    <ModelBox state={isOpen} title="Chia sẻ" onClose={() => dispatch(close())}>
+                        <div className={cx('share-container')}>
+                            {SHARE_MENU.map((item, index) => {
+                                return (
+                                    <ShareItem
+                                        key={index}
+                                        title={item.title}
+                                        icon={item.icon}
+                                        onClick={() => item.fn(href)}
+                                    />
+                                );
+                            })}
+                        </div>
+                    </ModelBox>
+                </Overlay>
+                <Toast placement="top left" duration={5000} />
             </div>
-
-            <Overlay state={isOpen} onClick={() => dispatch(close())}>
-                <ModelBox state={isOpen} title="Chia sẻ" onClose={() => dispatch(close())}>
-                    <div className={cx('share-container')}>
-                        {SHARE_MENU.map((item, index) => {
-                            return (
-                                <ShareItem
-                                    key={index}
-                                    title={item.title}
-                                    icon={item.icon}
-                                    onClick={() =>
-                                        item.fn('http://localhost:3000/article/7761c678-448c-41c8-9047-cde9846a4904')
-                                    }
-                                />
-                            );
-                        })}
-                    </div>
-                </ModelBox>
-            </Overlay>
-            <Toast placement="top left" duration={5000} />
-
-            {/* <ModelBox error title={'Error'}></ModelBox> */}
         </Router>
     );
 }

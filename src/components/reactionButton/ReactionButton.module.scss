@@ -58,6 +58,7 @@
 .total {
     margin-left: 8px;
     font-size: 1.4rem;
+    font-family: var(--system-ui);
 }
 
 // Reaction List User
@@ -65,7 +66,8 @@
 .reactions-listbox {
     padding: 10px 20px;
     border-radius: 10px;
-    background-color: #242526;
+    background-color: var(--model-box-br);
+    font-family: var(--system-ui);
     max-width: 640px;
     width: 100%;
     height: 468px;
@@ -100,7 +102,7 @@
         position: relative;
 
         &:hover {
-            background-color: #fff3;
+            background-color: var(--close-btn-hover);
             cursor: pointer;
         }
     }
@@ -114,7 +116,7 @@
     }
 
     .active {
-        color: #0093fc;
+        color: var(--react-active-btn-color);
         position: relative;
 
         .sub-tabs {
@@ -126,7 +128,7 @@
         content: '';
         width: 100%;
         height: 3px;
-        background-color: #0093fc;
+        background-color: var(--react-active-btn-color);
         position: absolute;
         bottom: 0;
     }
@@ -163,7 +165,7 @@
     display: none;
     margin-top: 4px;
     width: 120%;
-    background-color: #242526;
+    background-color: var(--model-box-br);
     position: absolute;
     top: 48px;
     left: 0;
@@ -172,7 +174,7 @@
     padding: 4px;
 
     .check {
-        color: #5ab8ff;
+        color: var(--react-tick-icon-btn);
         position: absolute;
         right: 4px;
     }
@@ -190,7 +192,7 @@
         }
 
         &:hover {
-            background-color: #fff3;
+            background-color: var(--close-btn-hover);
         }
     }
 }
@@ -202,11 +204,11 @@
 
     min-width: 40px;
     min-height: 40px;
-    background-color: rgba(58, 59, 60, 1);
+    background-color: var(--close-btn-br);
     border-radius: 9999px;
 
     &:hover {
-        background-color: #fff3;
+        background-color: var(--close-btn-hover);
         cursor: pointer;
     }
 
@@ -248,8 +250,12 @@
     .reacted-name {
         margin-left: 4px;
         font-size: 1.4rem;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
-            'Open Sans', 'Helvetica Neue', sans-serif;
+        font-weight: 500;
+        font-family: var(--system-ui);
         letter-spacing: 0.5px;
+    }
+
+    .reacted-name:hover {
+        text-decoration: underline;
     }
 }

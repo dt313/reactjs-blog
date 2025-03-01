@@ -4,7 +4,6 @@ const routes = {
     login_error: '/login/oauth2/error',
     register: '/register',
     search: '/search',
-    question: '/question/:id',
     // ask_edit: '/ask/:id',
     // ask: '/ask',
     write: '/write',
@@ -14,6 +13,9 @@ const routes = {
     article: '/article/:slug',
     notfound: '/404',
     oauth2: '/oauth2/*',
+    setting: '/setting',
+    forgotPassword: '/forgot-password',
+    resetPassword: '/reset-password',
     error: '/*',
 };
 

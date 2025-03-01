@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import styles from './ReactionButton.module.scss';
 import getReactionIconList from '~/helper/getReactionIconList';
@@ -9,6 +10,7 @@ import CloseIcon from '~/assets/svg/close';
 import Avatar from '../avatar';
 import getReactionTabs from '~/helper/getReactionTab';
 import Tab from './Tab';
+import { useNavigate } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
@@ -19,6 +21,7 @@ function ReactionButton({ className, list = [], total, reacted }) {
     const [currentTab, setCurrentTab] = useState('ALL');
     const [tabs, setTabs] = useState(getReactionTabs([]));
     const [isMoreTab, setIsMoreTab] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         setCurrentList(list);
@@ -101,11 +104,17 @@ function ReactionButton({ className, list = [], total, reacted }) {
                                 const Icon = getReactionIcon(reaction.type);
                                 return (
                                     <div className={cx('reacted-user')} key={reaction.id}>
-                                        <div className={cx('avatar-box')}>
+                                        <div
+                                            className={cx('avatar-box')}
+                                            onClick={() => navigate(`/profile/@${reaction.reacted_user.username}`)}
+                                        >
                                             <Avatar className={cx('avatar')} src={reaction.reacted_user.avatar} />
                                             <Icon className={cx('reacted-icon')} width={16} height={16} />
                                         </div>
-                                        <span className={cx('reacted-name')}>
+                                        <span
+                                            className={cx('reacted-name')}
+                                            onClick={() => navigate(`/profile/@${reaction.reacted_user.username}`)}
+                                        >
                                             {reaction.reacted_user.name || reaction.reacted_user.username}
                                         </span>
                                     </div>
@@ -119,4 +128,10 @@ function ReactionButton({ className, list = [], total, reacted }) {
     );
 }
 
+ReactionButton.propTypes = {
+    className: PropTypes.string,
+    list: PropTypes.array.isRequired,
+    total: PropTypes.number,
+    reacted: PropTypes.bool,
+};
 export default ReactionButton;

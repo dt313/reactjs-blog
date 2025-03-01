@@ -17,13 +17,17 @@
 .editor {
     width: 100%;
     height: 100%;
-    border: 1px dashed var(--text-color);
+    background-color: var(--model-box-br);
     margin-bottom: 32px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid var(--border-color);
 }
 
 .title-input {
     width: 100%;
     min-height: 48px;
+    background-color: var(--model-box-br);
     font-family: var(--system-ui);
     font-size: 2.8rem;
     font-weight: 500;
@@ -31,15 +35,16 @@
     outline: none;
     white-space: pre-wrap;
     padding: 20px 8px;
-    border-bottom: 1px dashed var(--text-color);
-    background-image: var(--background-repeat);
+    color: var(--text-color);
+    // border-bottom: 1px dashed var(--text-color);
+    // background-image: var(--background-repeat);
 
     &:empty::before {
         content: attr(data-empty-text);
         box-sizing: inherit;
         width: 100%;
         height: 100%;
-        color: #b3b3b1;
+        opacity: 0.7;
         // background-color: #333;
     }
 }
@@ -76,7 +81,6 @@
     width: 100%;
     height: 100%;
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
 }
@@ -95,13 +99,18 @@
     }
 }
 
+.title {
+    color: var(--text-color);
+}
+
 .upload {
     width: 100%;
     height: 100%;
     height: 172px;
     border-radius: 4px;
-    background-color: var(--black-hover);
-    color: var(--color);
+    background-color: var(--model-box-br);
+    color: var(--text-color);
+    font-family: var(--system-ui);
     overflow: hidden;
 }
 
@@ -122,12 +131,12 @@
     font-size: 1.4rem;
     border-radius: 4px;
     background-color: var(--black-hover);
-    color: var(--color);
+    color: var(--text-color);
 }
 
 .upload-text {
     margin-top: 12px;
-    color: var(--accent);
+    color: var(--primary);
     text-align: center;
     cursor: pointer;
 
@@ -194,7 +203,7 @@
 .meta-des {
     width: 100%;
     padding: 4px 4px;
-    color: var(--color);
+    color: var(--text-color);
     background-color: transparent;
     font-family: var(--system-ui);
     font-size: 1.6rem;
@@ -215,12 +224,20 @@
 
 .count-length {
     font-size: 1rem;
+    color: var(--text-color);
+    font-family: var(--system-ui);
+}
+
+.count-length.count-error {
+    color: #f33a58;
+    font-family: var(--system-ui);
 }
 
 .note {
     margin-top: 12px;
     font-size: 1.4rem;
-    color: #b3b3b1;
+    color: var(--schedule-text-color);
+    opacity: 0.8;
     font-family: var(--system-ui);
 }
 
@@ -229,6 +246,8 @@
     align-items: flex-start;
     justify-content: flex-start;
     flex-direction: column;
+    color: var(--text-color);
+    font-family: var(--system-ui);
 }
 
 .tags-block {
@@ -239,6 +258,7 @@
     padding: 4px 8px;
     border: 1px solid var(--text-color);
     background-color: var(--black-hover);
+
     min-height: 56px;
     margin-top: 12px;
 
@@ -251,24 +271,24 @@
     }
 
     .tag {
-        background-color: var(--black);
+        background-color: var(--tag-br);
         padding: 4px 8px;
         margin: 4px;
         display: inline-flex;
         justify-content: center;
         align-items: center;
         height: 34px;
-        border: 1px dashed var(--accent-hover);
+        border: 1px dashed var(--primary-hover);
         border-radius: 3px;
         cursor: pointer;
 
         &:hover {
-            border-color: var(--accent);
+            border-color: var(--primary);
         }
     }
 
     .tag-name {
-        color: var(--color);
+        color: var(--text-color);
     }
 
     .close-icon {
@@ -276,7 +296,7 @@
         height: 2rem;
         width: 2rem;
         margin-left: 4px;
-        color: var(--color);
+        color: var(--text-color);
         opacity: 0.6;
 
         &:hover {
@@ -291,7 +311,7 @@
         height: 34px;
         flex: 1 1;
         font-size: inherit;
-        color: var(--color);
+        color: var(--text-color);
     }
 }
 
@@ -326,7 +346,7 @@
 
     .label {
         font-size: 1.4rem;
-        color: #e0e0e0;
+        color: var(--schedule-text-color);
     }
 
     .schedule-input {
@@ -338,20 +358,32 @@
         height: 40px;
         font-size: 1.5rem;
         outline: none;
-        background-color: #e0e0e0;
+        background-color: var(--schedule-text-color);
         border-bottom: 1px solid var(--border-color);
         color: var(--border-color);
     }
 
     .help {
         font-size: 1.5rem;
-        color: #dadada8a;
+        color: var(--schedule-text-color);
     }
 
     p {
         margin-top: 24px;
         font-size: 1.5rem;
-        color: #dadada8a;
+        color: var(--schedule-text-color);
+        opacity: 0.8;
+    }
+}
+
+@media (max-width: 1024px) {
+    .export-wrapper {
+        flex-direction: column;
+        height: auto;
+
+        .right {
+            width: 100%;
+        }
     }
 }
 

@@ -22,7 +22,9 @@
         "react-app-rewired": "^2.2.1",
         "react-copy-to-clipboard": "^5.1.0",
         "react-dom": "^18.2.0",
+        "react-easy-crop": "^5.4.1",
         "react-icons": "^4.11.0",
+        "react-loading-skeleton": "^3.5.0",
         "react-markdown": "^9.0.0",
         "react-markdown-editor-lite": "^1.3.4",
         "react-redux": "^9.1.1",
@@ -38,7 +40,7 @@
         "ws": "^8.18.0"
     },
     "scripts": {
-        "start": "react-app-rewired start",
+        "start": "HOST=web-dev.com react-app-rewired start",
         "build": "react-app-rewired build",
         "test": "react-app-rewired test",
         "eject": "react-app-rewired eject"

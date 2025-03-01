@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import styles from './Tools.module.scss';
 import { RiShareLine, RiLinksFill } from 'react-icons/ri';
@@ -5,7 +6,9 @@ import { MdOutlineModeComment } from 'react-icons/md';
 import Tippy from '@tippyjs/react/headless';
 import Reaction from '../reaction';
 import getReactionIcon from '~/helper/getReactionIcon';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, memo } from 'react';
+import { useSelector } from 'react-redux';
+import CopyToClipboard from 'react-copy-to-clipboard';
 
 const cx = classNames.bind(styles);
 const defaultFn = () => {};
@@ -16,10 +19,12 @@ function Tools({
     onClickShare = defaultFn,
     onClickLink = defaultFn,
     reactionType = 'NULL',
+    copyText,
 }) {
     const [visible, setVisible] = useState(false);
     const [placement, setPlacement] = useState('right');
     const [isHovering, setIsHovering] = useState(false);
+    const { theme } = useSelector((state) => state.color);
 
     const reactArticle = (type) => {
         onClickHeart(type);
@@ -60,7 +65,7 @@ function Tools({
                         onMouseEnter={() => setIsHovering(true)}
                         onMouseLeave={() => setIsHovering(false)}
                     >
-                        <Reaction onClick={reactArticle} />
+                        <Reaction theme={theme} onClick={reactArticle} />
                     </div>
                 )}
             >
@@ -110,12 +115,24 @@ function Tools({
                     </div>
                 )}
             >
-                <div className={cx('icon-block')} onClick={onClickLink}>
-                    <RiLinksFill className={cx('icon')} />
+                <div className={cx('icon-block')}>
+                    <CopyToClipboard text={copyText} onCopy={onClickLink}>
+                        <RiLinksFill className={cx('icon')} />
+                    </CopyToClipboard>
                 </div>
             </Tippy>
         </div>
     );
 }
 
-export default Tools;
+Tools.propTypes = {
+    className: PropTypes.string,
+    onClickHeart: PropTypes.func.isRequired,
+    onClickComment: PropTypes.func.isRequired,
+    onClickShare: PropTypes.func.isRequired,
+    onClickLink: PropTypes.func.isRequired,
+    reactionType: PropTypes.string,
+    copyText: PropTypes.string,
+};
+
+export default memo(Tools);

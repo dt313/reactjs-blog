@@ -1,7 +1,8 @@
+import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import Button from '~/components/button';
 import styles from './Write.module.scss';
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import useAutoResize from '~/hook/useAutoResize';
 import useLimitInput from '~/hook/useLimitInput';
 import { articleService, uploadService } from '~/services';
@@ -11,6 +12,7 @@ import { addToast, createToast } from '~/redux/actions/toastAction';
 import { useDispatch } from 'react-redux';
 import getDateTimeLocal from '~/helper/getDateTimeLocal';
 import setError from '~/helper/setError';
+import ValidationOnChange from '~/helper/fieldValidation';
 
 const MAX_META_TITLE_LENGTH = 100;
 const MAX_META_DES_LENGTH = 160;
@@ -32,10 +34,15 @@ function Export({ submitData, isEdit }) {
         description: submitData.content.trim(),
     });
 
+    const [metaError, setMetaError] = useState({
+        eMetaTitle: '',
+        eDescription: '',
+    });
+
     useEffect(() => {
         setMeta({
-            metaTitle: submitData.title.trim(),
-            description: submitData.content.trim(),
+            metaTitle: submitData.title.trim().slice(0, 100),
+            description: submitData.content.trim().slice(0, 160),
         });
     }, [submitData]);
 
@@ -52,12 +59,12 @@ function Export({ submitData, isEdit }) {
                 const result = await uploadService.uploadImage(e.target.files[0]);
                 setThumbnail(`${process.env.REACT_APP_API_URL}/image/${result.data}`);
             } catch (error) {
-                error = setError(error);
+                let err = setError(error);
                 dispatch(
                     addToast(
                         createToast({
                             type: 'error',
-                            content: error.message,
+                            content: err,
                         }),
                     ),
                 );
@@ -78,12 +85,12 @@ function Export({ submitData, isEdit }) {
                 const result = await uploadService.uploadImage(e.dataTransfer.files[0]);
                 setThumbnail(`${process.env.REACT_APP_API_URL}/image/${result.data}`);
             } catch (error) {
-                error = setError(error);
+                let err = setError(error);
                 dispatch(
                     addToast(
                         createToast({
                             type: 'error',
-                            content: error.message,
+                            content: err,
                         }),
                     ),
                 );
@@ -91,18 +98,43 @@ function Export({ submitData, isEdit }) {
         }
     };
 
-    const handleDeleteTag = (name) => {
-        const newTags = topics.filter((t) => t !== name);
-        setTopics(newTags);
-    };
+    const handleDeleteTag = useCallback(
+        (name) => {
+            const newTags = topics.filter((t) => t !== name);
+            setTopics(newTags);
+        },
+        [topics],
+    );
 
     const handleChangeMeta = (e) => {
         const { name, value } = e.target;
+        if (name === 'metaTitle') {
+            const error = ValidationOnChange({ value, rules: [ValidationOnChange.maxLength(100)] });
+            setMetaError((pre) => ({ ...pre, eMetaTitle: error }));
+        }
+
+        if (name === 'description') {
+            const error = ValidationOnChange({ value, rules: [ValidationOnChange.maxLength(160)] });
+            setMetaError((pre) => ({ ...pre, eDescription: error }));
+        }
+
         setMeta((pre) => ({ ...pre, [name]: value }));
     };
 
     // Submit
     const handleSubmit = async () => {
+        if (metaError.eMetaTitle || metaError.eDescription) {
+            dispatch(
+                addToast(
+                    createToast({
+                        type: 'warning',
+                        content: 'Tiêu đề hoặc mô tả hiển thị đã quá số chữ cho phép',
+                    }),
+                ),
+            );
+            return;
+        }
+
         try {
             const data = {
                 ...submitData,
@@ -124,12 +156,12 @@ function Export({ submitData, isEdit }) {
                 navigate(`/article/${result?.slug}`);
             }
         } catch (error) {
-            error = setError(error);
+            let err = setError(error);
             dispatch(
                 addToast(
                     createToast({
                         type: 'error',
-                        content: error.message,
+                        content: err,
                     }),
                 ),
             );
@@ -143,7 +175,7 @@ function Export({ submitData, isEdit }) {
         <div className={cx('export')}>
             <div className={cx('export-wrapper')}>
                 <div className={cx('left')}>
-                    <h4>Preview</h4>
+                    <h4 className={cx('title')}>Preview</h4>
                     <div className={cx('upload')}>
                         {!thumbnail ? (
                             <div
@@ -183,13 +215,16 @@ function Export({ submitData, isEdit }) {
                         <textarea
                             className={cx('meta-title')}
                             rows={1}
+                            placeholder="Tiêu đề sẽ được hiển thị ở đây..."
                             ref={metaTitleRef}
                             name="metaTitle"
                             value={meta.metaTitle}
                             onChange={(e) => handleChangeMeta(e)}
                         />
                         {meta.metaTitle?.length > 60 && (
-                            <span className={cx('count-length')}>{`${meta.metaTitle.length}/100`}</span>
+                            <span
+                                className={cx('count-length', metaError.eMetaTitle && 'count-error')}
+                            >{`${meta.metaTitle.length}/100`}</span>
                         )}
                         <textarea
                             className={cx('meta-des')}
@@ -201,7 +236,9 @@ function Export({ submitData, isEdit }) {
                             placeholder="Mô tả sẽ được hiển thị ở đây..."
                         />
                         {meta.description?.length > 80 && (
-                            <span className={cx('count-length')}>{`${meta.description?.length}/160`}</span>
+                            <span
+                                className={cx('count-length', metaError.eDescription && 'count-error')}
+                            >{`${meta.description?.length}/160`}</span>
                         )}
                         <p className={cx('note')}>
                             <strong className={cx('note-title')}>Lưu ý: </strong>Chỉnh sửa tại đây sẽ thay đổi cách bài
@@ -269,4 +306,9 @@ function Export({ submitData, isEdit }) {
     );
 }
 
-export default memo(Export);
+Export.propTypes = {
+    submitData: PropTypes.object,
+    isEdit: PropTypes.bool,
+};
+
+export default Export;

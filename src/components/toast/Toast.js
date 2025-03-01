@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import { memo } from 'react';
 import styles from './Toast.module.scss';
@@ -19,5 +20,10 @@ function Toast({ placement, duration }) {
         return <></>;
     }
 }
+
+Toast.propTypes = {
+    placement: PropTypes.string.isRequired,
+    duration: PropTypes.number.isRequired,
+};
 
 export default memo(Toast);

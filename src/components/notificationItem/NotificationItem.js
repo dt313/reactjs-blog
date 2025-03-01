@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import styles from './NotificationItem.module.scss';
 import Avatar from '../avatar';
@@ -18,7 +19,7 @@ function NotificationItem({ content, onClick = defaultFn }) {
         const directId = content.direct_object_id;
         const hasParentId = content?.direct_object || null;
 
-        onClick();
+        onClick(content.is_readed, content.id);
 
         switch (type) {
             case tableType.article:
@@ -40,11 +41,9 @@ function NotificationItem({ content, onClick = defaultFn }) {
 
     const text = generateNotificationContent(content?.type, content?.context?.title);
 
-    console.log();
-
     return (
         <div className={cx('wrapper', content.is_readed && 'readed')} onClick={handleClickNotificationItem}>
-            <Avatar className={cx('avatar')} src={content.sender.avatar} />
+            <Avatar className={cx('avatar')} src={content?.sender?.avatar} />
             <div className={cx('text-box')}>
                 <p className={cx('content')}>
                     <strong
@@ -64,5 +63,10 @@ function NotificationItem({ content, onClick = defaultFn }) {
         </div>
     );
 }
+
+NotificationItem.propTypes = {
+    content: PropTypes.object.isRequired,
+    onClick: PropTypes.func.isRequired,
+};
 
 export default NotificationItem;

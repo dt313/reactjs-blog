@@ -59,6 +59,18 @@ class Validation {
         return this;
     }
 
+    isStrongPassword(errorMsg = 'Mật khẩu phải bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt') {
+        if (this.error.trim().length > 0) {
+            return this;
+        }
+
+        var regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!regex.test(this.field)) {
+            this.error = errorMsg;
+        }
+        return this;
+    }
+
     getResult() {
         return this.error;
     }

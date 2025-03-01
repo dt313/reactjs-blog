@@ -25,11 +25,12 @@
     display: flex;
     align-items: center;
     cursor: pointer;
+    color: var(--text-color);
+    border-radius: 999px;
+    transition: background-color 0.3s ease;
 
     &:hover {
-        .close-icon {
-            color: var(--accent);
-        }
+        background-color: var(--close-btn-hover);
     }
 }
 

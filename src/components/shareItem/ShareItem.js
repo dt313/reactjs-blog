@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import styles from './ShareItem.module.scss';
 import { motion } from 'framer-motion';
@@ -24,5 +25,11 @@ function ShareItem({ icon, title, onClick }) {
         </motion.div>
     );
 }
+
+ShareItem.propTypes = {
+    icon: PropTypes.node.isRequired,
+    title: PropTypes.string.isRequired,
+    onClick: PropTypes.func.isRequired,
+};
 
 export default ShareItem;

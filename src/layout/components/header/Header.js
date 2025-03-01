@@ -30,12 +30,12 @@ function Header() {
                 dispatch(logout());
                 window.location.href = '/login';
             } catch (error) {
-                error = setError(error);
+                let err = setError(error);
                 dispatch(
                     addToast(
                         createToast({
                             type: 'error',
-                            content: error.message,
+                            content: err,
                         }),
                     ),
                 );

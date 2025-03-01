@@ -4,7 +4,7 @@ import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import { BsBookmark, BsBookmarkFill } from 'react-icons/bs';
 import Avatar from '../avatar/Avatar';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToast, createToast } from '~/redux/actions/toastAction';
 import copyTextToClipboard from '~/helper/copyClipboard';
@@ -34,14 +34,13 @@ function ArticleHeader({
         {
             title: 'Chia sẻ',
             fn: () => {
-                dispatch(open());
+                dispatch(open(path));
             },
         },
         {
             title: 'Sao chép liên kết',
+            copyText: path,
             fn: () => {
-                copyTextToClipboard(path);
-
                 dispatch(addToast(createToast({ type: 'success', content: 'Đã link bài viết copy thành công' })));
             },
         },
@@ -150,4 +149,4 @@ function ArticleHeader({
     );
 }
 
-export default ArticleHeader;
+export default memo(ArticleHeader);

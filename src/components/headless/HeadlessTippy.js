@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import Tippy from '@tippyjs/react/headless';
 import styles from './HeadlessTippy.module.scss';
 import classNames from 'classnames/bind';
@@ -16,5 +17,10 @@ function HeadlessTippy({ children, menu, ...props }) {
         </Tippy>
     );
 }
+
+HeadlessTippy.propTypes = {
+    children: PropTypes.node.isRequired,
+    menu: PropTypes.node.isRequired,
+};
 
 export default HeadlessTippy;

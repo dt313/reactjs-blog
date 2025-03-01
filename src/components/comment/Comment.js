@@ -1,9 +1,10 @@
+import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import styles from './Comment.module.scss';
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import Avatar from '../avatar';
 import { BiChevronDown } from 'react-icons/bi';
-import { useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CommentInput from '../commentInput';
 import { SpinnerLoader } from '../loading/Loading';
 import MarkDown from '../markdown';
@@ -45,6 +46,8 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
     const [visible, setVisible] = useState(false);
     const [isHovering, setIsHovering] = useState(false);
 
+    const { theme } = useSelector((state) => state.color);
+
     const parent_id = parseInt(searchParams.get('parent_id')) || null;
     const direct_id = parseInt(searchParams.get('direct_id')) || null;
 
@@ -54,66 +57,80 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
         }
 
         if (direct_id && direct_id === comment?.id) {
-            ref.current.scrollIntoView({ behavior: 'smooth' });
+            ref.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
     }, [searchParams]);
 
-    const menuList = [
-        {
-            title: 'Delete',
-            fn: onDelete,
-        },
-    ];
+    const menuList = useMemo(
+        () => [
+            {
+                title: 'Delete',
+                fn: () => onDelete(comment.id),
+            },
+        ],
+        [comment],
+    );
 
     // handle create comment
-    const handeComment = async (content) => {
-        const data = {
-            commentableId: level < COMMENT_DEPTH - 1 ? comment.id : comment.comment_table_id,
-            publisher: userId,
-            commentType: 'COMMENT',
-            content,
-        };
+    const handeComment = useCallback(
+        async (content) => {
+            const data = {
+                commentableId: level < COMMENT_DEPTH - 1 ? comment.id : comment.comment_table_id,
+                publisher: userId,
+                commentType: 'COMMENT',
+                content,
+            };
 
-        try {
-            if (!comment.isSeeMore) {
-                handleClickSeeMore();
+            try {
+                if (!comment.isSeeMore) {
+                    handleClickSeeMore();
+                }
+                const result = await commentService.createComment(data);
+                dispatch(addReplyComment(data.commentableId, result));
+                sendNotificationWithCondition(userId !== comment.publisher.id, {
+                    sender: userId,
+                    type: notificationType.reply_comment,
+                    receiver: comment.publisher.id,
+                    contextType: 'ARTICLE',
+                    contextId: contextId,
+                    directObjectType: tableType.comment,
+                    directObjectId: result.id,
+                });
+            } catch (error) {
+                let err = setError(error);
+                dispatch(
+                    addToast(
+                        createToast({
+                            type: 'error',
+                            content: err,
+                        }),
+                    ),
+                );
             }
-            const result = await commentService.createComment(data);
-            dispatch(addReplyComment(data.commentableId, result));
-            sendNotificationWithCondition(userId !== comment.publisher.id, {
-                sender: userId,
-                type: notificationType.reply_comment,
-                receiver: comment.publisher.id,
-                contextType: 'ARTICLE',
-                contextId: contextId,
-                directObjectType: tableType.comment,
-                directObjectId: result.id,
-            });
-        } catch (error) {
-            error = setError(error);
-            console.log(error);
-            if (typeof error == 'object') error = error.message;
-            dispatch(
-                addToast(
-                    createToast({
-                        type: 'error',
-                        content: error,
-                    }),
-                ),
-            );
-        }
-    };
+        },
+        [level, comment],
+    );
 
     // handle delete comment
-    const handleDelete = async (id) => {
-        try {
-            await commentService.deleteComment(id);
-            dispatch(deleteReplyComment(comment.id, id));
-        } catch (error) {
-            error = setError(error);
-            alert(error);
-        }
-    };
+    const handleDelete = useCallback(
+        async (id) => {
+            try {
+                await commentService.deleteComment(id);
+                dispatch(deleteReplyComment(comment.id, id));
+            } catch (error) {
+                let err = setError(error);
+                dispatch(
+                    addToast(
+                        createToast({
+                            type: 'error',
+                            content: err,
+                        }),
+                    ),
+                );
+            }
+        },
+        [comment.id, dispatch],
+    );
 
     // load replies comment
     const handleClickSeeMore = async () => {
@@ -129,12 +146,12 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
             const result = await commentService.getAllCommentByType(data);
             dispatch(initReplyComment(comment.id, result));
         } catch (error) {
-            error = setError(error);
+            let err = setError(error);
             dispatch(
                 addToast(
                     createToast({
                         type: 'error',
-                        content: error.message,
+                        content: err,
                     }),
                 ),
             );
@@ -154,8 +171,15 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
             const result = await commentService.getAllCommentByType(data);
             dispatch(loadMoreReplyComment(comment.id, result));
         } catch (error) {
-            error = setError(error);
-            alert(error);
+            let err = setError(error);
+            dispatch(
+                addToast(
+                    createToast({
+                        type: 'error',
+                        content: err,
+                    }),
+                ),
+            );
         }
     };
 
@@ -187,12 +211,12 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
                 );
             }
         } catch (error) {
-            error = setError(error);
+            let err = setError(error);
             dispatch(
                 addToast(
                     createToast({
                         type: 'error',
-                        content: error,
+                        content: err,
                     }),
                 ),
             );
@@ -229,11 +253,19 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
         };
     }, [isHovering]);
 
+    const showInputBox = useCallback(() => {
+        setIsShowReplyInput(true);
+    }, []);
+
+    const hideInputBox = useCallback(() => {
+        setIsShowReplyInput(false);
+    }, []);
+
     return (
         <div id={comment.id} className={cx('wrapper', className)} ref={ref}>
             <div className={cx('container')}>
-                <Avatar src={comment?.publisher.avatar} />
-                <div className={cx('comment', { active: parseInt(searchParams.get('direct_id')) === comment.id })}>
+                <Avatar src={comment?.publisher?.avatar} />
+                <div className={cx('comment', { active: parseInt(searchParams.get('direct_id')) === comment?.id })}>
                     <div className={cx('text-box')}>
                         <div className={cx('comment-header')}>
                             <span
@@ -242,7 +274,7 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
                             >
                                 {comment?.publisher?.name || comment?.publisher?.username}
                             </span>
-                            {userId === comment.publisher.id && (
+                            {userId === comment?.publisher?.id && (
                                 <DropMenu offset={[-35, -60]} menu={menuList} width={100}>
                                     <BiDotsHorizontalRounded className={cx('icon')} />
                                 </DropMenu>
@@ -266,7 +298,7 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
                                     onMouseLeave={() => setIsHovering(false)}
                                     onMouseEnter={() => setIsHovering(true)}
                                 >
-                                    <Reaction theme="dark" onClick={handleReactCommentWithCondition} />
+                                    <Reaction theme={theme} onClick={handleReactCommentWithCondition} />
                                 </div>
                             )}
                         >
@@ -315,10 +347,10 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
                         <div className={cx('reply-box')}>
                             <CommentInput
                                 reply={true}
-                                placeholder="Reply here"
+                                placeholder="Trả lời ở đây"
                                 isShow={isShowReplyInput}
-                                onCloseInput={() => setIsShowReplyInput(false)}
-                                onOpenInput={() => setIsShowReplyInput(false)}
+                                onCloseInput={hideInputBox}
+                                onOpenInput={showInputBox}
                                 onComment={handeComment}
                             />
                         </div>
@@ -342,7 +374,7 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
                                 comment={comment}
                                 contextId={contextId}
                                 level={level + 1}
-                                onDelete={() => handleDelete(comment.id)}
+                                onDelete={handleDelete}
                             ></Comment>
                         ))}
                         {comment.replies_count > comment.replies.length && (
@@ -365,4 +397,12 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
     );
 }
 
-export default Comment;
+Comment.propTypes = {
+    contextId: PropTypes.number,
+    comment: PropTypes.object.isRequired,
+    className: PropTypes.string,
+    level: PropTypes.number,
+    onDelete: PropTypes.func.isRequired,
+};
+
+export default memo(Comment);

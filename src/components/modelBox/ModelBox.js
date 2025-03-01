@@ -1,7 +1,9 @@
+import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import styles from './ModelBox.module.scss';
 import { IoClose } from 'react-icons/io5';
 import Button from '../button/Button';
+import { memo } from 'react';
 
 const cx = classNames.bind(styles);
 
@@ -34,4 +36,15 @@ function ModelBox({ children, state, title, isConfirm = false, onClose, onConfir
     );
 }
 
-export default ModelBox;
+ModelBox.propTypes = {
+    children: PropTypes.node.isRequired,
+    state: PropTypes.bool.isRequired,
+    title: PropTypes.string.isRequired,
+    isConfirm: PropTypes.string.isRequired,
+    onClose: PropTypes.func.isRequired,
+    isConfirm: PropTypes.bool,
+    className: PropTypes.string,
+    error: PropTypes.bool,
+};
+
+export default memo(ModelBox);

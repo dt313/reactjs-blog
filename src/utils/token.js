@@ -39,7 +39,29 @@ const getRedirectPath = () => {
 };
 
 const clearToken = () => {
+    const theme = getTheme();
+    const pColor = getPrimaryColor();
+
     localStorage.clear();
+
+    setTheme(theme);
+    setPrimaryColor(pColor);
+};
+
+const setTheme = (theme) => {
+    localStorage.setItem('theme', theme);
+};
+
+const getTheme = () => {
+    return localStorage.getItem('theme');
+};
+
+const setPrimaryColor = (color) => {
+    localStorage.setItem('primary-color', color);
+};
+
+const getPrimaryColor = () => {
+    return localStorage.getItem('primary-color');
 };
 
 export default {
@@ -54,4 +76,8 @@ export default {
     getAvatar,
     getUserId,
     clearToken,
+    setTheme,
+    getTheme,
+    setPrimaryColor,
+    getPrimaryColor,
 };

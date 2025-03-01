@@ -10,6 +10,7 @@ function OAuth2Redirect() {
     const [searchParams, setSearchParams] = useSearchParams();
     const navigator = useNavigate();
     const dispacth = useDispatch();
+
     const fetchInfo = async () => {
         try {
             const result = await axios.get('http://localhost:8080/api/v1/users/me', {
@@ -17,7 +18,6 @@ function OAuth2Redirect() {
                     Authorization: `Bearer ${searchParams.get('accessToken')}`, // Thay YOUR_TOKEN_HERE bằng token thực tế của bạn
                 },
             });
-            console.log(result);
             if (result.data.data) {
                 dispacth(
                     login({
@@ -27,8 +27,9 @@ function OAuth2Redirect() {
                 );
             }
         } catch (error) {
-            error = setError(error);
-            console.error('Error fetching user info:', error);
+            let err = setError(error);
+            alert(err);
+            console.error('Error fetching user info:', err);
         }
     };
 

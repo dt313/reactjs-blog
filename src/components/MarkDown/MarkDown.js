@@ -1,9 +1,11 @@
+import PropTypes from 'prop-types';
 import MarkDownR from 'react-markdown';
 import styles from './MarkDown.module.scss';
 import classNames from 'classnames/bind';
 import remarkGfm from 'remark-gfm';
 
 import Highlighter from './Highlighter';
+import { memo } from 'react';
 
 const cx = classNames.bind(styles);
 function MarkDown({ text = '', className }) {
@@ -27,4 +29,8 @@ function MarkDown({ text = '', className }) {
     );
 }
 
-export default MarkDown;
+MarkDown.propTypes = {
+    text: PropTypes.string,
+    className: PropTypes.string,
+};
+export default memo(MarkDown);

@@ -10,9 +10,10 @@ const instance = axios.create({
 });
 
 const NO_AUTH_HEADER_URLS = ['/users', '/auth/oauth2/code/google'];
-const OPTION_AUTH_HEADER_URLS = ['/article', '/comment'];
+const OPTION_AUTH_HEADER_URLS = ['/article', '/comment', '/mail'];
 instance.interceptors.request.use(
     async function (config) {
+        // console.log(config);
         if (config.url === '/users/me') {
             config.headers.Authorization = `Bearer ${tokenUtils.getAccessToken()}`;
             return config;
@@ -35,7 +36,7 @@ instance.interceptors.request.use(
             return config;
         }
 
-        if (config.url.startsWith('/auth')) {
+        if (config.url.startsWith('/auth') || config.url.startsWith('/users/reset-password')) {
             return config;
         }
         // With Authentication
@@ -58,8 +59,8 @@ instance.interceptors.response.use(
         // console.log(error);
         if (error.code === 'ERR_NETWORK') {
             tokenUtils.clearToken();
-            // console.log(error);
-            // redirectToNotFoundPage();
+            console.log(error);
+            redirectToNotFoundPage();
             return Promise.reject(sendError('Sorry !! Internal server error'));
         }
         const error_message = handleHTTPError(error.response.data);

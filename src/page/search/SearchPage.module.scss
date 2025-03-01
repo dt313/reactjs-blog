@@ -16,7 +16,7 @@
         text-transform: uppercase;
         font-size: 2.2rem;
         letter-spacing: 1px;
-        color: var(--color);
+        color: var(--text-color);
         line-height: 2.6rem;
         font-weight: bold;
         text-align: center;
@@ -29,7 +29,7 @@
 
 .topic-search {
     padding: 12px 4px;
-    background-color: #242526;
+    background-color: var(--topic-search-br);
     color: var(--text-color);
     font-size: 1.4rem;
     font-family: var(--font-family);
@@ -47,17 +47,19 @@
         position: absolute;
         right: 12px;
         transition: color 0.2s;
+        border-radius: 9999px;
+        transition: background-color 0.3s ease;
     }
 
     .close-icon:hover {
-        color: rgb(244, 57, 57);
+        background-color: var(--border-color);
     }
 }
 
 span.topic-item {
     display: inline-block;
     &::first-letter {
-        color: var(--accent);
+        color: var(--primary);
     }
 }
 // Line
@@ -86,7 +88,7 @@ span.topic-item {
 .topic.active {
     &::after {
         display: block;
-        background-color: var(--accent);
+        background-color: var(--primary);
     }
 }
 
@@ -112,8 +114,13 @@ span.topic-item {
     border: 1px solid transparent;
     z-index: 3;
     font-family: var(--font-family);
+    color: var(--text-color);
+
     font-size: 1.5rem;
     letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &:first-child {
         margin-left: 0;
@@ -126,7 +133,7 @@ span.topic-item {
         left: 0;
         right: 0;
         border-radius: 8px;
-        background-color: var(--accent);
+        background-color: var(--primary);
         height: 2px;
         display: none;
     }
@@ -137,15 +144,26 @@ span.topic-item {
         }
     }
     &:active {
-        border: 1px solid var(--accent);
+        border: 1px solid var(--primary);
+    }
+
+    .icon {
+        font-size: 1.6rem;
+        font-weight: bold;
+        margin-right: 4px;
+        margin-top: 4px;
     }
 }
-
-// List Result
 
 .list {
     margin: 40px 0;
     width: 100%;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
 }
 
 .empty-noti {
@@ -154,6 +172,8 @@ span.topic-item {
     align-items: center;
     font-weight: 200;
     font-size: 1.4rem;
+    font-family: var(--system-ui);
+    color: var(--text-color);
 }
 
 .loader-wrapper {
@@ -166,6 +186,12 @@ span.topic-item {
     padding: 12px;
     display: flex;
     justify-content: center;
+}
+
+.load-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 @media (max-width: 684px) {

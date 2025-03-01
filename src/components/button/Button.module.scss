@@ -5,7 +5,6 @@
     justify-content: center;
     min-width: 100px;
     padding: 7.5px 16px;
-
     font-size: 1.4rem;
     font-weight: 700;
     font-family: var(--font-family);
@@ -31,24 +30,25 @@ a {
 
 .icon {
     display: inline-block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 24px;
     text-align: center;
 }
 
 .primary {
-    background-color: var(--accent);
-
-    color: var(--black);
+    background-color: var(--primary);
 
     &:hover {
-        background-color: var(--accent-hover);
+        background-color: var(--primary-hover);
     }
 }
 
 .outline {
     background-color: transparent;
-    color: var(--accent);
-    border: 1px solid var(--accent);
+    color: var(--primary);
+    border: 1px solid var(--primary);
 
     &:hover {
         background-color: #78e2a022;
@@ -57,8 +57,8 @@ a {
 
 .secondary {
     background-color: transparent;
-    color: var(--accent);
-    border: 1px dashed var(--accent);
+    color: var(--primary);
+    border: 1px dashed var(--primary);
 
     &:hover {
         background-color: #78e2a022;
@@ -71,10 +71,10 @@ a {
     height: 70px;
     border-radius: 50%;
     color: var(--black);
-    background-color: var(--accent);
+    background-color: var(--primary);
 
     &:hover {
-        background-color: var(--accent-hover);
+        background-color: var(--primary-hover);
     }
 }
 
@@ -83,7 +83,7 @@ a {
 }
 
 .disabled {
-    background-color: var(--border-color);
+    opacity: 0.56;
 }
 
 .small {

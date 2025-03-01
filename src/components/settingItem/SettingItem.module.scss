@@ -1,0 +1,53 @@
+.wrapper {
+    width: 100%;
+    padding: 8px 16px;
+    position: relative;
+    background-color: var(--sett-item-br);
+
+    &:hover {
+        background-color: var(--sett-item-hover);
+        cursor: pointer;
+    }
+}
+
+.title {
+    font-size: 1.6rem;
+    font-weight: 500;
+    margin-bottom: 4px;
+    font-family: var(--system-ui);
+}
+
+.content {
+    font-size: 1.3rem;
+    padding-right: 20px;
+    font-family: var(--font-family);
+}
+
+.border-line {
+    border-bottom: 1px solid #fff;
+}
+
+.icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.6rem;
+}
+
+.img {
+    width: 60px;
+    height: 60px;
+    border-radius: 99999px;
+    object-fit: cover;
+    margin-right: 8px;
+    margin-top: 8px;
+}
+
+.color {
+    display: block;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background-color: var(--primary);
+}

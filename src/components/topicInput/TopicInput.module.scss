@@ -30,19 +30,19 @@
     }
 
     .tag {
-        background-color: var(--black);
+        background-color: var(--tag-br);
         padding: 4px 8px;
         margin: 4px;
         display: inline-flex;
         justify-content: center;
         align-items: center;
         height: 34px;
-        border: 1px dashed var(--accent-hover);
+        border: 1px dashed var(--primary-hover);
         border-radius: 3px;
         cursor: pointer;
 
         &:hover {
-            border-color: var(--accent);
+            border-color: var(--primary);
         }
     }
 

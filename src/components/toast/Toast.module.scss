@@ -1,7 +1,7 @@
 .wrapper {
     max-width: 300px;
     width: 100%;
-    background-color: var(--background-color);
+    background-color: transparent;
     overflow: hidden;
     height: fit-content;
     position: fixed;
@@ -50,11 +50,11 @@
 }
 
 .toast-box {
-    border: 1px dashed #fff;
+    border: 1px dashed var(--text-color);
     display: flex;
     align-items: center;
-    background-color: var(--background-color);
-    color: #fff;
+    background-color: var(--toast-br);
+    color: var(--text-color);
     text-align: start;
     padding: 16px;
     padding-left: 8px;
@@ -68,6 +68,7 @@
 
     .content {
         margin: 0px 8px;
+        padding-right: 12px;
     }
 }
 
@@ -102,7 +103,7 @@
     position: absolute;
     top: 50%;
     right: 4px;
-    transform: translateY(-50%);
+    top: 4px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -113,7 +114,7 @@
     }
     &:hover {
         .close-icon {
-            color: red;
+            opacity: 0.5;
         }
     }
 }

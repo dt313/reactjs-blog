@@ -40,6 +40,7 @@ export const sendError = (message) => {
 
 export default function handleHTTPError(error) {
     console.log('Http Error :', error);
+
     switch (error.code) {
         case 1001:
         case 1005:

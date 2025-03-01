@@ -8,7 +8,7 @@
     cursor: pointer;
 
     &:hover {
-        background-color: #3a3b3c;
+        background-color: var(--share-item-hover);
     }
 
     .icon-wrap {
@@ -18,7 +18,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: #ffffff1a;
+        background-color: var(--close-btn-br);
         margin-bottom: 4px;
 
         svg {

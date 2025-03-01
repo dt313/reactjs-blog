@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import styles from './Reaction.module.scss';
 import Like from '~/assets/svg/like';
@@ -70,5 +71,10 @@ function Reaction({ onClick, theme = 'dark' }) {
         </div>
     );
 }
+
+Reaction.propTypes = {
+    onClick: PropTypes.func.isRequired,
+    theme: PropTypes.string,
+};
 
 export default Reaction;

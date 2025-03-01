@@ -6,7 +6,7 @@
 
 .active {
     .text-box:first-child {
-        border: 2px solid #fff;
+        border: 2px solid var(--text-color);
     }
 }
 
@@ -19,14 +19,14 @@
 }
 
 .text-box {
-    border: 1px solid var(--border-color);
     padding: 8px 12px;
     border-radius: 8px;
     min-width: 240px;
     max-width: 100%;
     width: fit-content;
     overflow: hidden;
-    background-color: #202020;
+    border: 1px solid var(--border-color);
+    background-color: var(--model-box-br);
 }
 
 .comment-header {
@@ -38,7 +38,7 @@
     font-weight: bold;
     font-size: 1.5rem;
     font-family: var(--system-ui);
-    color: var(--color);
+    color: var(--text-color);
     &:hover {
         text-decoration: underline;
         cursor: pointer;
@@ -47,7 +47,7 @@
 
 .text {
     font-size: 1.3rem;
-    color: var(--color);
+    color: var(--text-color);
     font-family: var(--font-family);
     margin-top: 8px;
     white-space: normal;
@@ -63,8 +63,8 @@
 }
 
 .tool {
-    font-family: var(--font-family);
-    font-size: 1.2rem;
+    font-family: var(--system-ui);
+    font-size: 1.3rem;
     cursor: pointer;
     padding: 4px 8px;
     border: 1px solid transparent;
@@ -93,7 +93,7 @@
 }
 
 .liked {
-    font-weight: lighter;
+    font-weight: 500;
     // font-size: 1.4rem;
 }
 
@@ -107,13 +107,13 @@
 
     height: 3px;
     border-radius: 50%;
-    background-color: var(--accent);
+    background-color: var(--primary);
 }
 
 .comments {
     margin-left: 48px;
     padding-left: 8px;
-    border-left: 1px solid var(--accent);
+    border-left: 1px solid var(--primary);
 }
 
 .reply-box {
@@ -121,7 +121,7 @@
 }
 
 .list-reply {
-    border-left: 1px solid var(--accent);
+    border-left: 1px solid var(--primary);
     padding-left: 12px;
     margin-top: 12px;
 }

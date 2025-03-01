@@ -1,8 +1,9 @@
+import PropTypes from 'prop-types';
 import MarkDown from '~/components/markdown';
 import styles from './CommentInput.module.scss';
 import classNames from 'classnames/bind';
 import Editor from '~/components/editor';
-import { useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import Button from '~/components/button';
 import Avatar from '~/components/avatar';
 import requireAuthFn from '~/helper/requireAuthFn';
@@ -37,15 +38,15 @@ function CommentInput({
         }
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = useCallback(() => {
         setValue('');
         onComment(value);
         onCloseInput();
-    };
+    }, [value]);
 
-    const handleCancle = () => {
+    const handleCancle = useCallback(() => {
         let result = false;
-        if (value.trim().length > 0) {
+        if (!disabled > 0) {
             result = window.confirm(value);
             if (result === true) {
                 setValue('');
@@ -57,7 +58,8 @@ function CommentInput({
             setDisabled(true);
             onCloseInput();
         }
-    };
+    }, [disabled]);
+
     const renderHTML = (text) => {
         return <MarkDown text={text} />;
     };
@@ -100,10 +102,10 @@ function CommentInput({
                         </div>
                     </div>
                     <div className={cx('btn-box')}>
-                        <Button text onClick={handleCancle}>
+                        <Button text onClick={handleCancle} className={cx('btn', 'cancel-btn')}>
                             Hủy
                         </Button>
-                        <Button disabled={disabled} primary onClick={handleSubmit}>
+                        <Button disabled={disabled} primary onClick={handleSubmit} className={cx('btn', 'submit-btn')}>
                             {reply ? 'Tra loi' : 'Bình luận'}
                         </Button>
                     </div>
@@ -113,4 +115,14 @@ function CommentInput({
     );
 }
 
-export default CommentInput;
+CommentInput.propTypes = {
+    reply: PropTypes.bool,
+    defaultValue: PropTypes.string,
+    onComment: PropTypes.func.isRequired,
+    placeholder: PropTypes.string,
+    isShow: PropTypes.bool.isRequired,
+    onCloseInput: PropTypes.func.isRequired,
+    onOpenInput: PropTypes.func.isRequired,
+};
+
+export default memo(CommentInput);

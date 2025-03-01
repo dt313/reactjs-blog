@@ -1,13 +1,11 @@
-// import styles from './Input.module.scss';
-// import classNames from 'classnames/bind';
+import PropTypes from 'prop-types';
+
 import MdEditor from 'react-markdown-editor-lite';
 import 'react-markdown-editor-lite/lib/index.css';
 import { uploadService } from '~/services';
 import { addToast, createToast } from '~/redux/actions/toastAction';
 import { useDispatch } from 'react-redux';
 import setError from '~/helper/setError';
-
-// const cx = classNames.bind(styles);
 
 const PLUGINS = [
     'header',
@@ -31,6 +29,7 @@ const PLUGINS = [
     'divider',
     'full-screen',
 ];
+
 function Editor({ renderHTML, handleEditorChange, className, placeholder = '', content, defaultValue }) {
     // const handleFocus = (e) => {
     //     const element = e.target;
@@ -46,12 +45,12 @@ function Editor({ renderHTML, handleEditorChange, className, placeholder = '', c
                 const image = await uploadService.uploadImage(file);
                 resolve(`${url}/image/${image.data}`);
             } catch (error) {
-                error = setError(error);
+                let err = setError(error);
                 dispatch(
                     addToast(
                         createToast({
                             type: 'error',
-                            content: error.message,
+                            content: err,
                         }),
                     ),
                 );
@@ -83,5 +82,14 @@ function Editor({ renderHTML, handleEditorChange, className, placeholder = '', c
         />
     );
 }
+
+Editor.propTypes = {
+    renderHTML: PropTypes.func.isRequired,
+    handleEditorChange: PropTypes.func.isRequired,
+    className: PropTypes.string,
+    placeholder: PropTypes.string,
+    defaultValue: PropTypes.string,
+    content: PropTypes.string.isRequired,
+};
 
 export default Editor;

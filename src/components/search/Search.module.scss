@@ -32,11 +32,11 @@
     font-weight: 500;
     background-color: transparent;
     flex: 1;
-    color: var(--color);
+    color: var(--text-color);
     font-family: var(--font-family);
 
     &::placeholder {
-        color: var(--color);
+        color: var(--text-color);
         opacity: 0.6;
         font-weight: 500;
         opacity: 0.6;
@@ -47,7 +47,7 @@
     font-size: 2rem;
     margin: 0 4px;
     font-weight: bold;
-    color: var(--color);
+    color: var(--text-color);
     cursor: pointer;
 }
 
@@ -66,7 +66,7 @@
     align-items: center;
 
     &:hover {
-        background-color: var(--accent-hover);
+        background-color: var(--primary-hover);
     }
 
     &:active {

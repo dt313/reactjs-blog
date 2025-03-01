@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { useState, useEffect, useRef, memo, useCallback, useId } from 'react';
 import styles from './CommentBox.module.scss';
 import classNames from 'classnames/bind';
 import { COMMENT_PAGE_SIZE } from '~/config/uiConfig';
@@ -10,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToast, createToast } from '~/redux/actions/toastAction';
 import setError from '~/helper/setError';
 import Comment from '../comment';
+import { FaArrowUp } from 'react-icons/fa';
 
 import { addComment, deleteComment, initCommentTree, loadMoreComment } from '~/redux/actions/commentAction';
 import { sendNotificationWithCondition } from '~/socket';
@@ -17,17 +19,17 @@ import { notificationType, tableType } from '~/config/types';
 
 const cx = classNames.bind(styles);
 
-function CommentBox({ commentCount, authorId, articleId }) {
+function CommentBox({ commentCount, authorId, articleId, decreaseCountOfComments, increaseCountOfComments }) {
     const { userId } = useSelector((state) => state.auth);
     const { childrens: tree, page } = useSelector((state) => state.comment);
-    const dispatch = useDispatch();
     const [isShowInput, setIsShowInput] = useState(false);
-    const [countOfComments, setCountOfComment] = useState(commentCount);
     const [loading, setLoading] = useState(false);
+    const [showGoToTop, setShowGoToTop] = useState(false);
+
+    const dispatch = useDispatch();
     const { slug } = useParams();
     const { id } = useSelector((state) => state.comment);
-
-    console.log('re-render');
+    const commentListRef = useRef(null);
 
     useEffect(() => {
         const fetchAPI = async () => {
@@ -42,12 +44,12 @@ function CommentBox({ commentCount, authorId, articleId }) {
                 const result = await commentService.getAllCommentByType(data);
                 dispatch(initCommentTree(articleId, result));
             } catch (error) {
-                error = setError(error);
+                let err = setError(error);
                 dispatch(
                     addToast(
                         createToast({
                             type: 'error',
-                            content: error.message,
+                            content: err,
                         }),
                     ),
                 );
@@ -61,10 +63,6 @@ function CommentBox({ commentCount, authorId, articleId }) {
         }
     }, [slug]);
 
-    useEffect(() => {
-        setCountOfComment(tree.length);
-    }, []);
-
     const renderComments = () => {
         if (tree.length > 0) {
             return tree?.map((comment, index) => {
@@ -75,65 +73,67 @@ function CommentBox({ commentCount, authorId, articleId }) {
                         comment={comment}
                         contextId={articleId}
                         level={0}
-                        onDelete={() => handleDeleteComment(comment.id)}
+                        onDelete={handleDeleteComment}
                     ></Comment>
                 );
             });
         } else {
-            return <p className={cx('no-comment')}>Chưa có bình luận</p>;
+            return !loading && <p className={cx('no-comment')}>Chưa có bình luận</p>;
         }
     };
 
-    const handleComment = async (content) => {
-        try {
-            const result = await commentService.createComment({
-                commentableId: articleId,
-                publisher: userId,
-                commentType: 'ARTICLE',
-                content,
-            });
-            dispatch(addComment(result));
-            sendNotificationWithCondition(userId !== authorId, {
-                sender: userId,
-                type: notificationType.comment_article,
-                receiver: authorId,
-                contextType: tableType.article,
-                contextId: articleId,
-                directObjectType: tableType.comment,
-                directObjectId: result.id,
-            });
-            increaseCountOfComments();
-        } catch (error) {
-            error = setError(error);
-            if (typeof error == 'object') error = error.message;
-            dispatch(
-                addToast(
-                    createToast({
-                        type: 'error',
-                        content: error,
-                    }),
-                ),
-            );
-        }
-    };
+    const handleComment = useCallback(
+        async (content) => {
+            try {
+                const result = await commentService.createComment({
+                    commentableId: articleId,
+                    publisher: userId,
+                    commentType: 'ARTICLE',
+                    content,
+                });
+                dispatch(addComment(result));
+                sendNotificationWithCondition(userId !== authorId, {
+                    sender: userId,
+                    type: notificationType.comment_article,
+                    receiver: authorId,
+                    contextType: tableType.article,
+                    contextId: articleId,
+                    directObjectType: tableType.comment,
+                    directObjectId: result.id,
+                });
+                increaseCountOfComments();
+            } catch (error) {
+                let err = setError(error);
+                dispatch(
+                    addToast(
+                        createToast({
+                            type: 'error',
+                            content: err,
+                        }),
+                    ),
+                );
+            }
+        },
+        [articleId, userId],
+    );
 
-    const handleDeleteComment = async (id) => {
+    const handleDeleteComment = useCallback(async (id) => {
         try {
             await commentService.deleteComment(id);
             dispatch(deleteComment(id));
             decreaseCountOfComments();
         } catch (error) {
-            error = setError(error);
+            let err = setError(error);
             dispatch(
                 addToast(
                     createToast({
                         type: 'error',
-                        content: error,
+                        content: err,
                     }),
                 ),
             );
         }
-    };
+    }, []);
 
     const handleLoadMoreComment = async () => {
         const data = {
@@ -146,30 +146,54 @@ function CommentBox({ commentCount, authorId, articleId }) {
             const result = await commentService.getAllCommentByType(data);
             dispatch(loadMoreComment(result));
         } catch (error) {
-            error = setError(error);
+            let err = setError(error);
             dispatch(
                 addToast(
                     createToast({
                         type: 'error',
-                        content: error,
+                        content: err,
                     }),
                 ),
             );
         }
     };
 
-    const decreaseCountOfComments = () => {
-        setCountOfComment(countOfComments - 1);
+    const handleScroll = () => {
+        if (commentListRef.current) {
+            const { scrollTop } = commentListRef.current;
+            setShowGoToTop(scrollTop > 400);
+        }
     };
 
-    const increaseCountOfComments = () => {
-        setCountOfComment(countOfComments + 1);
+    const handleGoToTop = () => {
+        if (commentListRef.current) {
+            commentListRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     };
+
+    useEffect(() => {
+        if (commentListRef.current) {
+            commentListRef.current.addEventListener('scroll', handleScroll);
+        }
+        return () => {
+            if (commentListRef.current) {
+                commentListRef.current.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, []);
+
+    const showInputBox = useCallback(() => {
+        setIsShowInput(true);
+    }, []);
+
+    const hideInputBox = useCallback(() => {
+        setIsShowInput(false);
+    }, []);
 
     return (
-        <>
+        <div className={cx('wrapper')} ref={commentListRef}>
             <div className={cx('comments-count')}>
-                {<SpinnerLoader small /> && `${countOfComments} Comments`}
+                {<SpinnerLoader small /> && `${commentCount} Comments`}
                 <p className={cx('comments-des')}>(Nếu thấy bình luận spam, các bạn bấm report giúp admin nhé)</p>
             </div>
 
@@ -178,8 +202,8 @@ function CommentBox({ commentCount, authorId, articleId }) {
                     <CommentInput
                         placeholder="Viết bình luận của bạn..."
                         isShow={isShowInput}
-                        onCloseInput={() => setIsShowInput(false)}
-                        onOpenInput={() => setIsShowInput(true)}
+                        onCloseInput={hideInputBox}
+                        onOpenInput={showInputBox}
                         onComment={handleComment}
                     />
                 </div>
@@ -191,15 +215,29 @@ function CommentBox({ commentCount, authorId, articleId }) {
                     )}
                     {renderComments()}
 
-                    {commentCount > page * COMMENT_PAGE_SIZE && (
+                    {!loading && commentCount > page * COMMENT_PAGE_SIZE && (
                         <p className={cx('see-more')} onClick={handleLoadMoreComment}>
                             Xem thêm bình luận
                         </p>
                     )}
                 </div>
+
+                {showGoToTop && (
+                    <div className={cx('st-btn')} onClick={handleGoToTop}>
+                        <FaArrowUp />
+                    </div>
+                )}
             </div>
-        </>
+        </div>
     );
 }
 
-export default CommentBox;
+CommentBox.propTypes = {
+    commentCount: PropTypes.number.isRequired,
+    authorId: PropTypes.number.isRequired,
+    articleId: PropTypes.number.isRequired,
+    decreaseCountOfComments: PropTypes.func.isRequired,
+    increaseCountOfComments: PropTypes.func.isRequired,
+};
+
+export default memo(CommentBox);

@@ -1,22 +1,32 @@
 /* HTML: <div class="loader"></div> */
 .loader {
-    width: 120px;
-    height: 20px;
+    width: 90px;
+    height: 15px;
     -webkit-mask: linear-gradient(90deg, #000 70%, #0000 0) left/20% 100%;
-    background: linear-gradient(var(--accent) 0 0) left -25% top 0 /20% 100% no-repeat #fff;
+    background: linear-gradient(var(--primary) 0 0) left -25% top 0 /20% 100% no-repeat #fff;
     animation: l7 1.5s infinite steps(6);
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+.loader.small {
+    width: 60px;
+    height: 10px;
+}
+
+.loader.small {
+    width: 90px;
+    height: 15px;
+}
+
 @keyframes l7 {
     100% {
         background-position: right -25% top 0;
     }
 }
 
-/* HTML: <div class="loader"></div> */
 .spinner {
     width: 50px;
     margin: 4px;
@@ -24,13 +34,14 @@
     aspect-ratio: 1;
     border-radius: 50%;
     padding: 1px;
-    background: conic-gradient(#0000 10%, #fff) content-box;
+    background: var(--spinner-loading-br);
     -webkit-mask: repeating-conic-gradient(#0000 0deg, #000 1deg 20deg, #0000 21deg 36deg),
         radial-gradient(farthest-side, #0000 calc(100% - var(--b) - 1px), #000 calc(100% - var(--b)));
     -webkit-mask-composite: destination-in;
     mask-composite: intersect;
     animation: l4 1s infinite steps(10);
 }
+
 @keyframes l4 {
     to {
         transform: rotate(1turn);

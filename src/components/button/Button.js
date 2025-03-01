@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { memo } from 'react';
 import styles from './Button.module.scss';
 import classNames from 'classnames/bind';
@@ -64,5 +65,24 @@ function Button({
         </Comp>
     );
 }
+
+Button.propTypes = {
+    children: PropTypes.node.isRequired,
+    className: PropTypes.string,
+    primary: PropTypes.bool,
+    secondary: PropTypes.bool,
+    text: PropTypes.bool,
+    outline: PropTypes.bool,
+    rounded: PropTypes.bool,
+    circle: PropTypes.bool,
+    small: PropTypes.bool,
+    large: PropTypes.bool,
+    to: PropTypes.string,
+    href: PropTypes.string,
+    disabled: PropTypes.bool,
+    leftIcon: PropTypes.node,
+    rightIcon: PropTypes.node,
+    onClick: PropTypes.func,
+};
 
 export default memo(Button);

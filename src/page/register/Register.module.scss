@@ -8,7 +8,7 @@
 }
 
 .container {
-    background-color: #242526;
+    background-color: var(--model-box-br);
     padding: 48px 84px;
     border-radius: 8px;
 }
@@ -29,12 +29,12 @@
     text-align: center;
     font-size: 2.2rem;
     letter-spacing: 1px;
-    color: var(--color);
+    color: var(--text-color);
     line-height: 2.7rem;
     font-weight: bold;
 
     .logo {
-        color: var(--accent);
+        color: var(--primary);
     }
 }
 
@@ -72,7 +72,7 @@
 // Login Form
 
 .register-form {
-    max-width: 400px;
+    max-width: 300px;
     width: 100%;
     height: auto;
     margin-top: 24px;
@@ -85,6 +85,7 @@
     align-self: flex-start;
     margin-bottom: 8px;
     font-size: 1.3rem;
+    color: var(--text-color);
     font-family: var(--system-ui);
 }
 
@@ -99,11 +100,41 @@
     border: 1px solid var(--border-color);
     border-radius: 4px;
     &:focus {
-        border-color: var(--accent-hover);
+        border-color: var(--primary-hover);
     }
 }
 
-.register-input {
+.opt-form {
+    width: 100%;
+    display: flex;
+
+    input[type='number'] {
+        -moz-appearance: textfield;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .opt-btn {
+        margin-left: 12px;
+        height: 48px;
+        border-radius: 4px;
+        font-size: 1.2rem;
+        padding-left: 0;
+        padding-right: 0;
+        min-width: 70px;
+    }
+}
+
+.opt-des {
+    font-size: 1.1rem;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+        'Open Sans', 'Helvetica Neue', sans-serif;
+    width: 100%;
+    color: var(--text-color);
 }
 
 .register-btn {
@@ -118,4 +149,58 @@
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
         'Open Sans', 'Helvetica Neue', sans-serif;
     color: red;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.password-wrapper {
+    position: relative;
+    width: 100%;
+    margin-bottom: 12px;
+
+    .register-input {
+        width: 100%;
+        padding-right: 40px;
+        margin-bottom: 0;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        color: var(--text-color);
+        opacity: 0.7;
+        transition: opacity 0.3s ease;
+
+        &:hover {
+            opacity: 1;
+        }
+
+        svg {
+            width: 18px;
+            height: 18px;
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        width: 100%;
+        padding: 48px 24px;
+    }
+
+    .register-form {
+        max-width: 100%;
+    }
 }

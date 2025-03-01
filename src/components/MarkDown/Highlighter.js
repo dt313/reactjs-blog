@@ -1,14 +1,16 @@
 import styles from './MarkDown.module.scss';
 import classNames from 'classnames/bind';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { dracula, prism } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useEffect, useState } from 'react';
 import Button from '../button/Button';
+import { useSelector } from 'react-redux';
 const cx = classNames.bind(styles);
 
 function Highlighter(props) {
     const [copied, setCopied] = useState(false);
+    const { theme } = useSelector((state) => state.color);
     const { children, className, node, ...rest } = props;
     const match = /language-(\w+)/.exec(className || '');
 
@@ -35,7 +37,7 @@ function Highlighter(props) {
                     className={cx('code-block')}
                     {...rest}
                     children={String(children).replace(/\n$/, '')}
-                    style={dracula}
+                    style={theme === 'dark' ? dracula : prism}
                     language={match[1]}
                     PreTag="div"
                 />

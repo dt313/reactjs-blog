@@ -23,12 +23,12 @@ function Suggestion({ topics, author, postId, className }) {
                     setArticles(newSugest);
                 }
             } catch (error) {
-                error = setError(error);
+                let err = setError(error);
                 dispatch(
                     addToast(
                         createToast({
                             type: 'error',
-                            content: error.message,
+                            content: err,
                         }),
                     ),
                 );
@@ -54,6 +54,8 @@ function Suggestion({ topics, author, postId, className }) {
 Suggestion.propTypes = {
     topics: PropTypes.array.isRequired,
     author: PropTypes.number.isRequired,
+    postId: PropTypes.number,
+    className: PropTypes.string,
 };
 
 Suggestion.defaultProps = {

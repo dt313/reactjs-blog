@@ -6,8 +6,8 @@ export const getReactionByTableId = async (type, id) => {
         const res = await axios.get(`/${type}/${id}`);
         return res?.data;
     } catch (error) {
-        error = setError(error);
-        throw new Error(error?.message || 'Failed to fetch reactions');
+        let err = setError(error);
+        throw new Error(err || 'Failed to fetch reactions');
     }
 };
 
@@ -16,7 +16,7 @@ export const tongleReaction = async (data) => {
         const res = await axios.post(`/reaction/toggle`, data);
         return res;
     } catch (error) {
-        error = setError(error);
-        throw new Error(error?.message || 'Failed to reaction');
+        let err = setError(error);
+        throw new Error(err || 'Failed to reaction');
     }
 };

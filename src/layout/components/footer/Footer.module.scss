@@ -7,12 +7,13 @@
 }
 
 .footer-inner {
+    width: 760px;
+    max-width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: auto;
-    max-width: 100%;
-    width: 760px;
+    font-family: var(--system-ui);
+    color: var(--text-color);
 }
 
 .footer-copyright {

@@ -1,19 +1,18 @@
 .wrapper {
     width: 100%;
-}
-.comments-detail {
-    padding: 0 18px 68px 0;
+    padding: 0 32px 68px 0;
     overflow-y: auto;
     overflow-x: hidden;
     max-height: 100vh;
     overscroll-behavior: contain;
 }
+
 .comments-count {
     margin-top: 32px;
     font-size: 2.4rem;
     font-weight: bold;
     font-family: var(--font-family);
-    color: #fff;
+    color: var(--text-color);
 
     .comments-des {
         font-size: 1.2rem;
@@ -54,7 +53,42 @@
 
 .no-comment {
     font-size: 1.4rem;
-    color: #b0b0b0;
+    font-family: var(--system-ui);
+    color: var(--schedule-text-color);
     text-align: center;
     margin-top: -12px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.st-btn {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    font-size: 2rem;
+    width: 50px;
+    height: 50px;
+    background-color: var(--model-box-br);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    z-index: 1;
+    animation: fadeIn 0.3s ease;
+    color: var(--primary);
+
+    &:hover {
+        background-color: var(--close-btn-hover);
+    }
 }

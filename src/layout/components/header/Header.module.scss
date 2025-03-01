@@ -21,7 +21,7 @@
 
 .header-logo::after {
     content: '';
-    background: repeating-linear-gradient(90deg, var(--accent), var(--accent) 2px, transparent 0, transparent 10px);
+    background: repeating-linear-gradient(90deg, var(--primary), var(--primary) 2px, transparent 0, transparent 10px);
     display: block;
     width: 100%;
     right: 10px;
@@ -42,7 +42,7 @@
     align-items: center;
     text-decoration: none;
     background: #78e2a0;
-    background: var(--accent);
+    background: var(--primary);
     color: #000;
     padding: 0 8px;
     font-variant-ligatures: contextual;
@@ -51,7 +51,7 @@
 }
 
 .header .menu-trigger {
-    color: var(--accent);
+    color: var(--primary);
     border: 2px solid;
     margin-left: 8px;
     height: 100%;
@@ -88,7 +88,7 @@
     }
     a.active {
         opacity: 1;
-        color: var(--accent);
+        color: var(--primary);
     }
 }
 
@@ -115,7 +115,7 @@
         right: 0;
         top: 30px;
         padding: 20px;
-        border: 2px solid var(--color);
+        border: 2px solid var(--border-color);
         z-index: 9;
         background-color: var(--background-color);
         animation: slideDown 0.3s;

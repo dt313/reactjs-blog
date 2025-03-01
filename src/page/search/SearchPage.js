@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import styles from './SearchPage.module.scss';
 import classNames from 'classnames/bind';
 import Search from '~/components/search';
@@ -10,12 +10,12 @@ import { addToast, createToast } from '~/redux/actions/toastAction';
 import { useSearchParams } from 'react-router-dom';
 import { MdClose } from 'react-icons/md';
 import useTitle from '~/hook/useTitle';
-import { SpinnerLoader } from '~/components/loading/Loading';
 import { articleService } from '~/services';
 import { ARTICLE_PAGE_SIZE } from '~/config/uiConfig';
 import useDebounce from '~/hook/useDebounce';
 import { useDispatch } from 'react-redux';
 import setError from '~/helper/setError';
+
 const cx = classNames.bind(styles);
 
 function SearchPage() {
@@ -28,6 +28,7 @@ function SearchPage() {
     const [topic, setTopic] = useState(searchParams.get('topic') || '');
     const [articles, setArticles] = useState([]);
     const [length, setLength] = useState(0);
+
     const debounceValue = useDebounce(searchValue, 1300);
     const dispatch = useDispatch();
 
@@ -149,10 +150,10 @@ function SearchPage() {
         setTopic('');
     };
 
-    const handleChangePage = (page) => {
+    const handleChangePage = useCallback((page) => {
         setPage(page);
         setParams('article', topic, searchValue, page);
-    };
+    }, []);
 
     return (
         <div className={cx('wrapper')}>
@@ -193,35 +194,29 @@ function SearchPage() {
                 </div>
 
                 <div className={cx('list')}>
-                    {!loading ? (
-                        articles?.length > 0 ? (
-                            articles.map((art, index) => {
-                                return (
-                                    <Article
-                                        primary={tag === 'best'}
-                                        key={art.id}
-                                        className={cx('card')}
-                                        content={art}
-                                    ></Article>
-                                );
-                            })
-                        ) : (
-                            <p className={cx('empty-noti')}>Không có bài viết nào</p>
-                        )
-                    ) : (
-                        <div className={cx('loader-wrapper')}>
-                            <SpinnerLoader />
-                        </div>
-                    )}
+                    {articles?.length > 0
+                        ? articles.map((art, index) => {
+                              return !loading ? (
+                                  <Article
+                                      primary={tag === 'best'}
+                                      key={art.id}
+                                      className={cx('card')}
+                                      content={art}
+                                  ></Article>
+                              ) : (
+                                  <Article.Skeleton key={index}></Article.Skeleton>
+                              );
+                          })
+                        : !loading && <p className={cx('empty-noti')}>Không có bài viết nào</p>}
                 </div>
 
                 <div className={cx('pagination')}>
                     {tag !== 'best' && (
                         <Pagination
-                            value={page}
+                            value={Number(page)}
                             setValue={setPage}
                             handleChangePage={handleChangePage}
-                            length={length}
+                            length={Number(length)}
                         />
                     )}
                 </div>

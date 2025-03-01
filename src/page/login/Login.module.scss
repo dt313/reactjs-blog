@@ -8,7 +8,7 @@
 }
 
 .container {
-    background-color: #242526;
+    background-color: var(--model-box-br);
     padding: 48px 64px;
     border-radius: 8px;
 }
@@ -29,12 +29,12 @@
     text-align: center;
     font-size: 2.2rem;
     letter-spacing: 1px;
-    color: var(--color);
+    color: var(--text-color);
     line-height: 2.7rem;
     font-weight: bold;
 
     .logo {
-        color: var(--accent);
+        color: var(--primary);
     }
 }
 
@@ -69,6 +69,12 @@
     justify-content: space-around;
 }
 
+.forgot-password {
+    .back {
+        margin-top: 8px;
+    }
+}
+
 // Login Form
 
 .login-form {
@@ -86,6 +92,7 @@
     margin-bottom: 8px;
     font-size: 1.3rem;
     font-family: var(--system-ui);
+    color: var(--text-color);
 }
 
 .login-input {
@@ -100,11 +107,8 @@
     border-radius: 4px;
 
     &:focus {
-        border-color: var(--accent-hover);
+        border-color: var(--primary-hover);
     }
-}
-
-.login-input {
 }
 
 .login-btn {
@@ -121,8 +125,45 @@
     color: red;
 }
 
+.password-field {
+    position: relative;
+    width: 100%;
+    margin-bottom: 12px;
+
+    .login-input {
+        width: 100%;
+        padding-right: 40px;
+        margin-bottom: 0;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        color: var(--text-color);
+        opacity: 0.7;
+        transition: opacity 0.3s ease;
+
+        &:hover {
+            opacity: 1;
+        }
+
+        svg {
+            width: 18px;
+            height: 18px;
+        }
+    }
+}
+
 @media (max-width: 480px) {
     .container {
-        padding: 24px;
+        padding: 48px 24px;
     }
 }

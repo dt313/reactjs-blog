@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import styles from './Article.module.scss';
 import classNames from 'classnames/bind';
@@ -11,8 +12,13 @@ import setError from '~/helper/setError';
 import calculateTime from '~/helper/calculateTime';
 import isConfictAuthor from '~/helper/isConflictAuthor';
 
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+import { skeletonColors } from '~/config/uiConfig';
+import { tokenUtils } from '~/utils';
+
 const cx = classNames.bind(styles);
-function Article({ className, content, primary }) {
+function Article({ className, content, primary, square }) {
     const navigate = useNavigate();
     // handle click content
     const handleClickArticle = () => {
@@ -34,12 +40,12 @@ function Article({ className, content, primary }) {
                 const result = await bookmarkService.toggleBookmark(data);
                 handleClientMore(result.data);
             } catch (error) {
-                error = setError(error);
+                let err = setError(error);
                 dispatch(
                     addToast(
                         createToast({
                             type: 'error',
-                            content: error.message,
+                            content: err,
                         }),
                     ),
                 );
@@ -60,7 +66,7 @@ function Article({ className, content, primary }) {
             );
         }
     };
-    const classes = cx('wrapper', { [className]: className, primary });
+    const classes = cx('wrapper', { [className]: className, primary, square });
 
     return (
         <div className={classes}>
@@ -93,5 +99,43 @@ function Article({ className, content, primary }) {
         </div>
     );
 }
+
+Article.propTypes = {
+    className: PropTypes.string,
+    content: PropTypes.object.isRequired,
+    primary: PropTypes.bool,
+    square: PropTypes.bool,
+};
+
+Article.Skeleton = function () {
+    const theme = tokenUtils.getTheme();
+
+    return (
+        <div className={cx('wrapper')}>
+            <SkeletonTheme
+                baseColor={theme === 'dark' ? skeletonColors[0].base : skeletonColors[1].base}
+                highlightColor={theme === 'dark' ? skeletonColors[0].hl : skeletonColors[1].hl}
+            >
+                <div className={cx('header')}>
+                    <Skeleton circle={true} height={40} width={40} />
+                    <div className={cx('header-info')}>
+                        <Skeleton width={60} />
+                    </div>
+                </div>
+                <div className={cx('body')}>
+                    <div className={cx('info')}>
+                        <Skeleton width="80%" height={30} />
+                        <Skeleton count={3} />
+                        <div className={cx('statistical')}>
+                            <Skeleton width={30} height={20} />
+                            <Skeleton width={30} height={20} />
+                        </div>
+                    </div>
+                    <Skeleton height={150} />
+                </div>
+            </SkeletonTheme>
+        </div>
+    );
+};
 
 export default Article;

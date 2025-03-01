@@ -1,4 +1,4 @@
-import { useSearchParams, useParams } from 'react-router-dom';
+import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Avatar from '~/components/avatar';
 import styles from './Profile.module.scss';
@@ -11,17 +11,20 @@ import Card from './Card';
 import { useDispatch, useSelector } from 'react-redux';
 import { articleService, bookmarkService, userService } from '~/services';
 import setProfileTag from '~/helper/setProfileTag';
-import { SpinnerLoader } from '~/components/loading/Loading';
 import { addToast, createToast } from '~/redux/actions/toastAction';
 import setError from '~/helper/setError';
 import tokenUtils from '~/utils/token';
+import { FaGithub, FaUserClock, FaInstagram, FaLinkedin, FaFacebook } from 'react-icons/fa';
+import { TbWorldWww } from 'react-icons/tb';
+import calculateTime from '~/helper/calculateTime';
+
 const cx = classNames.bind(styles);
 
 const toCardForm = (post) => {
     return {
         ...post.content,
         bookmarkId: post.id,
-        createdAt: post.created_at,
+        created_at: post.created_at,
     };
 };
 
@@ -37,17 +40,8 @@ function Profile() {
     const [posts, setPosts] = useState([]);
     const [tags, setTags] = useState(profileTag);
     const [loading, setLoading] = useState(false);
-    const [isEditor, setIsEditor] = useState(false);
 
-    const [name, setName] = useState('');
-    const [usrname, setUsrname] = useState('');
-
-    useEffect(() => {
-        if (infomation) {
-            setName(infomation.name);
-            setUsrname(infomation.username);
-        }
-    }, [infomation]);
+    const navigate = useNavigate();
 
     const fetchPosts = async (id) => {
         try {
@@ -56,18 +50,21 @@ function Profile() {
                 newPost = await articleService.getArticleByAuthor(id);
             } else if (tag === 'bookmark') {
                 newPost = await bookmarkService.getAllBookmarkedArticleByUserId(id);
+                newPost.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
                 newPost = newPost?.map((post) => {
                     return toCardForm(post);
                 });
             }
+            // Sort posts by createdAt
+            newPost.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             return newPost;
         } catch (error) {
-            error = setError(error);
+            let err = setError(error);
             dispatch(
                 addToast(
                     createToast({
                         type: 'error',
-                        content: error,
+                        content: err,
                     }),
                 ),
             );
@@ -78,22 +75,19 @@ function Profile() {
 
     // Fetch Infomation
     useEffect(() => {
-        if (username === '@me') {
+        if (username === '@me' || username === `@${tokenUtils.getUser().username}`) {
             const fetchAPI = async () => {
                 try {
-                    const result = await userService.getMyInfomation();
-                    setInfomation(result?.data);
+                    setInfomation(tokenUtils.getUser());
                     setTags(setProfileTag(true));
                     setPosts(await fetchPosts(userId));
                 } catch (error) {
-                    error = setError(error);
-                    if (typeof error === 'object') error = error.message;
-
+                    let err = setError(error);
                     dispatch(
                         addToast(
                             createToast({
                                 type: 'error',
-                                content: error,
+                                content: err,
                             }),
                         ),
                     );
@@ -110,12 +104,12 @@ function Profile() {
                     setTags(setProfileTag(result?.data.id === userId));
                     setPosts(await fetchPosts(result?.data?.id));
                 } catch (error) {
-                    error = setError(error);
+                    let err = setError(error);
                     dispatch(
                         addToast(
                             createToast({
                                 type: 'error',
-                                content: error,
+                                content: err,
                             }),
                         ),
                     );
@@ -134,70 +128,91 @@ function Profile() {
         setPosts(newPosts);
     };
 
-    const updateInfomation = async () => {
-        try {
-            const result = await userService.updateInfomation(infomation.id, {
-                username: usrname,
-                name: name,
-            });
-
-            const { token, user } = result.data;
-            tokenUtils.setUser(user);
-            tokenUtils.setAccessToken(token);
-            setInfomation(user);
-            setIsEditor(false);
-        } catch (error) {}
+    const renderInfo = () => {
+        return (
+            <div className={cx('extra-info')}>
+                {infomation?.created_at && (
+                    <Button
+                        text
+                        leftIcon={<FaUserClock className={cx('extra-info-icon')} />}
+                        className={cx('extra-info-item', 'date')}
+                    >
+                        {calculateTime(infomation?.created_at)}
+                    </Button>
+                )}
+                {infomation?.bio && <p className={cx('bio')}>{infomation?.bio}</p>}
+                {infomation?.web_link && (
+                    <Button
+                        text
+                        leftIcon={<TbWorldWww className={cx('extra-info-icon')} />}
+                        className={cx('extra-info-item')}
+                        href={infomation?.web_link}
+                        target="_blank"
+                    >
+                        {infomation?.web_link}
+                    </Button>
+                )}
+                {infomation?.fb_link && (
+                    <Button
+                        text
+                        leftIcon={<FaFacebook className={cx('extra-info-icon')} />}
+                        className={cx('extra-info-item')}
+                        href={infomation?.fb_link}
+                        target="_blank"
+                    >
+                        {infomation?.fb_link}
+                    </Button>
+                )}
+                {infomation?.lk_link && (
+                    <Button
+                        text
+                        leftIcon={<FaLinkedin className={cx('extra-info-icon')} />}
+                        className={cx('extra-info-item')}
+                        href={infomation?.lk_link}
+                        target="_blank"
+                    >
+                        {infomation?.lk_link}
+                    </Button>
+                )}
+                {infomation?.gh_link && (
+                    <Button
+                        text
+                        leftIcon={<FaGithub className={cx('extra-info-icon')} />}
+                        className={cx('extra-info-item')}
+                        href={infomation?.gh_link}
+                        target="_blank"
+                    >
+                        {infomation?.gh_link}
+                    </Button>
+                )}
+                {infomation?.ig_link && (
+                    <Button
+                        text
+                        leftIcon={<FaInstagram className={cx('extra-info-icon')} />}
+                        className={cx('extra-info-item')}
+                        href={infomation?.ig_link}
+                        target="_blank"
+                    >
+                        {infomation?.ig_link}
+                    </Button>
+                )}
+            </div>
+        );
     };
-
-    console.log(userId, infomation.id);
 
     return (
         <div className={cx('wrapper')}>
             <div className={cx('container')}>
                 <div className={cx('info')}>
                     <Avatar className={cx('avatar')} src={infomation?.avatar} />
-                    {!isEditor && <h3 className={cx('name')}>{infomation?.name || 'NO NAME'}</h3>}
-                    {!isEditor && <span className={cx('special-name')}>{infomation?.username || 'NO USERNAME'}</span>}
-                    {!isEditor && userId === infomation?.id && (
-                        <Button className={cx('edit-button')} onClick={() => setIsEditor(true)}>
-                            Edit profile
+                    {infomation?.name && <h3 className={cx('name')}>{infomation?.name || 'NO NAME'}</h3>}
+                    {<span className={cx('special-name')}>@{infomation?.username || 'NO USERNAME'}</span>}
+                    {renderInfo()}
+
+                    {userId === infomation?.id && (
+                        <Button primary className={cx('setting-button')} onClick={() => navigate('/setting')}>
+                            Cài đặt
                         </Button>
-                    )}
-
-                    {isEditor && (
-                        <div className={cx('profile-editor')}>
-                            <div className={cx('form')}>
-                                <label htmlFor="username" className={cx('editor-label')}>
-                                    Username{' '}
-                                </label>
-                                <input
-                                    className={cx('editor-input')}
-                                    id="username"
-                                    type="text"
-                                    value={usrname}
-                                    onChange={(e) => setUsrname(e.target.value)}
-                                />
-                            </div>
-                            <div className={cx('form')}>
-                                <label htmlFor="name" className={cx('editor-label')}>
-                                    Name{' '}
-                                </label>
-                                <input
-                                    className={cx('editor-input')}
-                                    id="name"
-                                    type="text"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                />
-                            </div>
-
-                            <Button className={cx('edit-button')} onClick={updateInfomation}>
-                                Save
-                            </Button>
-                            <Button className={cx('edit-button')} onClick={() => setIsEditor(false)}>
-                                Cancel
-                            </Button>
-                        </div>
                     )}
                 </div>
                 <div className={cx('body')}>
@@ -210,7 +225,11 @@ function Profile() {
                                         key={index}
                                         active={tag === nav.tag}
                                         topic={nav.name}
+                                        icon={nav.icon}
                                         onClickTopic={() => {
+                                            if (tag === nav.tag) {
+                                                return;
+                                            }
                                             const idx = profileTag.findIndex((item) => item.tag === nav.tag);
                                             setLoading(true);
                                             setSearchParams({ tag: profileTag[idx].tag });
@@ -222,31 +241,27 @@ function Profile() {
                         </div>
                     </div>
                     <div className={cx('content')}>
-                        {!loading ? (
-                            posts?.length > 0 ? (
-                                posts.map((post, index) => {
-                                    return (
-                                        <Card
-                                            key={post.bookmarkId || post.id}
-                                            title={post.metaTitle || post.title || post.content}
-                                            id={post.id}
-                                            slug={post.slug}
-                                            tableType={tag}
-                                            postType={post.tableType?.toLowerCase()}
-                                            handleDelete={handleDeletePost}
-                                            editable={infomation?.id === userId}
-                                            isPublish={post.is_published}
-                                            publishAt={post.publish_at}
-                                        />
-                                    );
-                                })
-                            ) : (
-                                <p className={cx('empty-noti')}>Không có bài viết nào</p>
-                            )
+                        {posts?.length > 0 ? (
+                            posts.map((post, index) => {
+                                return !loading ? (
+                                    <Card
+                                        key={post.bookmarkId || post.id}
+                                        title={post.metaTitle || post.title || post.content}
+                                        id={post.id}
+                                        slug={post.slug}
+                                        tableType={tag}
+                                        postType={post.tableType?.toLowerCase()}
+                                        handleDelete={handleDeletePost}
+                                        editable={infomation?.id === userId}
+                                        isPublish={post.is_published}
+                                        publishAt={post.publish_at}
+                                    />
+                                ) : (
+                                    <Card.Skeleton key={index}></Card.Skeleton>
+                                );
+                            })
                         ) : (
-                            <div className={cx('loader-wrapper')}>
-                                <SpinnerLoader small />
-                            </div>
+                            <p className={cx('empty-noti')}>Không có bài viết nào</p>
                         )}
                     </div>
                 </div>

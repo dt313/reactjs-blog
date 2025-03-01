@@ -11,14 +11,28 @@
 }
 
 .suggest-list {
-    // &::-webkit-scrollbar {
-    //     display: none;
-    // }
     display: flex;
     margin-top: 24px;
     justify-content: flex-start;
     overflow-x: auto;
+    &::-webkit-scrollbar {
+        height: 4px; /* Height of the scrollbar */
+    }
+
+    &::-webkit-scrollbar-track {
+        background: var(--scrollbar-track); /* Background of the scrollbar track */
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--scrollbar-thumb); /* Color of the scrollbar thumb */
+        border-radius: 2px; /* Rounded corners for the scrollbar thumb */
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: var(--scrollbar-thumb-hover); /* Color of the scrollbar thumb on hover */
+    }
 }
+
 .suggest-item {
     margin-right: 12px;
     width: 120px;
@@ -33,7 +47,7 @@
 
     &:hover {
         --b: 1.5px; /* thickness of the border */
-        --c: var(--accent); /* color of the border */
+        --c: var(--primary); /* color of the border */
         --w: 20px; /* width of border */
 
         border: var(--b) solid #0000; /* space for the border */
@@ -50,6 +64,25 @@
     width: 100%;
     height: 122px;
     border-radius: 4px;
+}
+
+.image-fake {
+    height: 122px;
+    width: 100%;
+    border-radius: 4px;
+    background-color: var(--model-box-br);
+    position: relative;
+}
+
+.image-fake::before {
+    content: attr(data-content);
+    color: var(--primary-blur);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .suggest-title {

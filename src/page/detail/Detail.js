@@ -7,7 +7,7 @@ import Suggestion from '~/components/suggestion';
 import Statistical from '~/components/statistical';
 
 import setError from '~/helper/setError';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { MdClose } from 'react-icons/md';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,6 +22,7 @@ import useTitle from '~/hook/useTitle';
 import { open } from '~/redux/actions/shareBoxAction';
 import requireAuthFn from '~/helper/requireAuthFn';
 import isConfictAuthor from '~/helper/isConflictAuthor';
+import { SpinnerLoader } from '~/components/loading/Loading';
 
 const cx = classNames.bind(styles);
 
@@ -35,7 +36,9 @@ function Detail() {
     const [isReacted, setIsReacted] = useState(false);
     const [countOfReaction, setCountOfReaction] = useState();
     const [reactions, setReactions] = useState([]);
-    // document.title = article?.title || '';
+    const [countOfComments, setCountOfComment] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
+
     useTitle(article?.title || '');
     const navigate = useNavigate();
 
@@ -43,6 +46,7 @@ function Detail() {
 
     useEffect(() => {
         const fetchAPI = async () => {
+            setIsLoading(true);
             try {
                 const result = await articleService.getArticleBySlug(slug);
                 setArticle(result);
@@ -51,16 +55,19 @@ function Detail() {
                 setReactionType(result?.reacted_type);
                 setReactions(result?.reactions);
                 setIsShowCommentsBox(!!searchParams.get('direct_id'));
+                setCountOfComment(result.comment_count);
             } catch (error) {
-                error = setError(error);
+                let err = setError(error);
                 dispatch(
                     addToast(
                         createToast({
                             type: 'error',
-                            content: error.message,
+                            content: err,
                         }),
                     ),
                 );
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -72,66 +79,69 @@ function Detail() {
         navigate(`/search?tag=article&&topic=${topic}`);
     };
 
-    const handleClickHeart = async (type) => {
-        const data = {
-            reactionTableId: article.id,
-            reactionTableType: 'ARTICLE',
-            type: type,
-            reactedUser: userId,
-        };
-        try {
-            if (type !== reactionType) {
-                const result = await reactionService.tongleReaction(data);
+    const handleClickHeart = useCallback(
+        async (type) => {
+            const data = {
+                reactionTableId: article.id,
+                reactionTableType: 'ARTICLE',
+                type: type,
+                reactedUser: userId,
+            };
+            try {
+                if (type !== reactionType) {
+                    const result = await reactionService.tongleReaction(data);
 
-                setReactionType(result?.data?.type || 'NULL');
+                    setReactionType(result?.data?.type || 'NULL');
 
-                // increase reaction count and reset isReacted
-                if (reactionType === 'NULL' && type !== 'NULL') {
-                    setCountOfReaction(countOfReaction + 1);
-                    setIsReacted(true);
-                    setReactions((pre) => [...pre, result.data]);
-                } else if (reactionType !== 'NULL' && type === 'NULL') {
-                    setCountOfReaction(countOfReaction - 1);
-                    setIsReacted(false);
-                    const newReaction = reactions.filter((r) => r.reacted_user.id !== userId);
-                    setReactions(newReaction);
-                } else {
-                    let newReaction = reactions.filter((r) => r.id !== result.data.id);
-                    setReactions(() => [...newReaction, result.data]);
+                    // increase reaction count and reset isReacted
+                    if (reactionType === 'NULL' && type !== 'NULL') {
+                        setCountOfReaction(countOfReaction + 1);
+                        setIsReacted(true);
+                        setReactions((pre) => [...pre, result.data]);
+                    } else if (reactionType !== 'NULL' && type === 'NULL') {
+                        setCountOfReaction(countOfReaction - 1);
+                        setIsReacted(false);
+                        const newReaction = reactions.filter((r) => r.reacted_user.id !== userId);
+                        setReactions(newReaction);
+                    } else {
+                        let newReaction = reactions.filter((r) => r.id !== result.data.id);
+                        setReactions(() => [...newReaction, result.data]);
+                    }
+
+                    // send notification
+                    sendNotificationWithCondition(
+                        isReacted === false && type !== 'NULL' && userId !== article.author.id,
+                        {
+                            sender: userId,
+                            type: notificationType.react_article,
+                            receiver: article.author.id,
+                            contextType: tableType.article,
+                            contextId: article.id,
+                            directObjectType: tableType.article,
+                            directObjectId: article.id,
+                        },
+                    );
                 }
-
-                // send notification
-                sendNotificationWithCondition(isReacted === false && type !== 'NULL' && userId !== article.author.id, {
-                    sender: userId,
-                    type: notificationType.react_article,
-                    receiver: article.author.id,
-                    contextType: tableType.article,
-                    contextId: article.id,
-                    directObjectType: tableType.article,
-                    directObjectId: article.id,
-                });
+            } catch (error) {
+                let err = setError(error);
+                dispatch(
+                    addToast(
+                        createToast({
+                            type: 'error',
+                            content: err,
+                        }),
+                    ),
+                );
             }
-        } catch (error) {
-            error = setError(error);
-            dispatch(
-                addToast(
-                    createToast({
-                        type: 'error',
-                        content: error,
-                    }),
-                ),
-            );
-        }
-    };
+        },
+        [isReacted, article, userId],
+    );
 
-    const handleClickShare = () => {
-        dispatch(open());
-    };
+    const handleClickShare = useCallback(() => {
+        dispatch(open(window.location.href));
+    }, []);
 
-    const handleClickLink = () => {
-        const path = window.origin + `/article/${article.id}`;
-        // copyclipboad
-        copyTextToClipboard(path);
+    const handleClickLink = useCallback(() => {
         dispatch(
             addToast(
                 createToast({
@@ -140,11 +150,11 @@ function Detail() {
                 }),
             ),
         );
-    };
+    }, []);
 
-    const handleClickCommentButton = () => {
+    const handleClickCommentButton = useCallback(() => {
         setIsShowCommentsBox(!isShowCommentsBox);
-    };
+    });
 
     const handleCloseCommenBox = () => {
         setSearchParams('');
@@ -152,52 +162,67 @@ function Detail() {
     };
 
     // handle bookmark
-    const handleBookmark = (handleClientMore) => {
-        const data = {
-            bookmarkTableId: article.id,
-            bookmarkTableType: 'ARTICLE',
-            bookmarkedUser: userId,
-        };
-        // fetchAPI to server
-        const fetchAPI = async () => {
-            try {
-                const result = await bookmarkService.toggleBookmark(data);
-                handleClientMore(result.data);
-            } catch (error) {
-                error = setError(error);
+    const handleBookmark = useCallback(
+        (handleClientMore) => {
+            const data = {
+                bookmarkTableId: article.id,
+                bookmarkTableType: 'ARTICLE',
+                bookmarkedUser: userId,
+            };
+            // fetchAPI to server
+            const fetchAPI = async () => {
+                try {
+                    const result = await bookmarkService.toggleBookmark(data);
+                    handleClientMore(result.data);
+                } catch (error) {
+                    let err = setError(error);
+                    dispatch(
+                        addToast(
+                            createToast({
+                                type: 'error',
+                                content: err,
+                            }),
+                        ),
+                    );
+                }
+            };
+
+            if (isConfictAuthor(article.author.id)) {
+                fetchAPI();
+            } else {
                 dispatch(
                     addToast(
                         createToast({
-                            type: 'error',
-                            content: error.message,
+                            type: 'warning',
+                            content: 'Bạn không thể lưu bài viết của bạn !',
                         }),
                     ),
                 );
             }
-        };
+        },
+        [article],
+    );
 
-        if (isConfictAuthor(article.author.id)) {
-            fetchAPI();
-        } else {
-            dispatch(
-                addToast(
-                    createToast({
-                        type: 'warning',
-                        content: 'Bạn không thể lưu bài viết của bạn !',
-                    }),
-                ),
-            );
-        }
-    };
     if (!article) {
         return (
-            <div className={cx('no-article')}>
-                <p>
-                    Bài viết không tồn tại . <a href="/search">Tìm kiếm bài viết</a>
-                </p>
-            </div>
+            !isLoading && (
+                <div className={cx('no-article')}>
+                    <p>
+                        Bài viết không tồn tại . <a href="/search">Tìm kiếm bài viết</a>
+                    </p>
+                </div>
+            )
         );
     }
+
+    const decreaseCountOfComments = () => {
+        setCountOfComment((pre) => pre - 1);
+    };
+
+    const increaseCountOfComments = () => {
+        setCountOfComment((pre) => pre + 1);
+    };
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('content')}>
@@ -225,6 +250,7 @@ function Detail() {
                         onClickShare={handleClickShare}
                         onClickLink={handleClickLink}
                         reactionType={reactionType}
+                        copyText={window.location.href}
                     />
                 </div>
                 <div className={cx('md-editor')}>
@@ -271,29 +297,6 @@ function Detail() {
                         </div>
                     )}
                 </div>
-
-                {isShowCommentsBox && (
-                    <div className={cx('overlay')} onClick={handleCloseCommenBox}>
-                        <div
-                            className={cx('comments-wrapper')}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                            }}
-                        >
-                            <span className={cx('close')}>
-                                <MdClose className={cx('close-icon')} onClick={handleCloseCommenBox} />
-                            </span>
-
-                            <div className={cx('comments-detail')}>
-                                <CommentBox
-                                    commentCount={article?.comment_count}
-                                    authorId={article.author.id}
-                                    articleId={article.id}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                )}
             </div>
             <Suggestion
                 className={cx('suggestion')}
@@ -301,6 +304,36 @@ function Detail() {
                 author={article?.author?.id}
                 postId={article?.id}
             />
+            {isShowCommentsBox && (
+                <div className={cx('overlay')} onClick={handleCloseCommenBox}>
+                    <div
+                        className={cx('comments-wrapper')}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                        }}
+                    >
+                        <span className={cx('close')}>
+                            <MdClose className={cx('close-icon')} onClick={handleCloseCommenBox} />
+                        </span>
+
+                        <div className={cx('comments-detail')}>
+                            <CommentBox
+                                commentCount={countOfComments}
+                                decreaseCountOfComments={decreaseCountOfComments}
+                                increaseCountOfComments={increaseCountOfComments}
+                                authorId={article.author.id}
+                                articleId={article.id}
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {isLoading && (
+                <div className={cx('loading')}>
+                    <SpinnerLoader />
+                </div>
+            )}
         </div>
     );
 }

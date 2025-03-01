@@ -6,8 +6,8 @@ export const toggleBookmark = async (data) => {
         const res = await axios.post('/bookmark/toggle', data);
         return res;
     } catch (error) {
-        error = setError(error);
-        throw new Error(error?.message || 'Failed to bookmark');
+        let err = setError(error);
+        throw new Error(err || 'Failed to bookmark');
     }
 };
 
@@ -16,7 +16,7 @@ export const getAllBookmarkedArticleByUserId = async (id) => {
         const res = await axios.get(`/bookmark/byUser/${id}`);
         return res.data;
     } catch (error) {
-        error = setError(error);
-        throw new Error(error?.message || 'Failed to fetch the bookmark');
+        let err = setError(error);
+        throw new Error(err || 'Failed to fetch the bookmark');
     }
 };

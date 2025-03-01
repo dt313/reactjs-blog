@@ -1,7 +1,7 @@
-import { stompClient } from '~/socket';
 import {
     ADD_NOTIFICATION,
     INITIAL_NOTIFICATIONS,
+    LOAD_NOTIFICATIONS,
     READ_ALL_NOTIFICATION,
     READ_NOTIFICATION,
 } from '../actions/notificationAction';
@@ -11,6 +11,7 @@ const initialState = {
     countOfUnReaded: 0,
     notifications: [],
     page: 1,
+    isEnd: false,
 };
 
 const notificationReducer = (state = initialState, action) => {
@@ -51,6 +52,17 @@ const notificationReducer = (state = initialState, action) => {
                 notifications: newNotifications,
                 countOfUnReaded: 0,
             };
+        case LOAD_NOTIFICATIONS:
+            const unreadNotis = action.notifications?.filter((n) => n.is_readed === false).length;
+
+            return {
+                ...state,
+                notifications: [...state.notifications, ...action.notifications],
+                page: state.page + 1,
+                countOfUnReaded: unreadNotis + state.countOfUnReaded,
+                isEnd: action.notifications.length === 0,
+            };
+
         default:
             return state;
     }

@@ -1,6 +1,6 @@
 import styles from './Write.module.scss';
 import classNames from 'classnames/bind';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import MarkDown from '~/components/markdown';
 import { addToast, createToast } from '~/redux/actions/toastAction';
 import MdEditor from 'react-markdown-editor-lite';
@@ -34,10 +34,13 @@ function Write() {
     // limit title
     useLimitInput(inputRef, MAX_TITLE_LENGTH, title);
 
+    useEffect(() => {
+        document.title = title;
+    }, [title]);
+
     const fetchAPI = async () => {
         try {
             const result = await articleService.getArticleBySlugWithAuth(slug);
-            console.log(result);
             if (isConfictAuthor(result?.author?.id)) {
                 dispatch(
                     addToast(
@@ -53,12 +56,12 @@ function Write() {
             setTitle(result.title);
             setContent(result.content);
         } catch (error) {
-            error = setError(error);
+            let err = setError(error);
             dispatch(
                 addToast(
                     createToast({
                         type: 'warning',
-                        content: error.message,
+                        content: err,
                     }),
                 ),
             );
@@ -71,7 +74,7 @@ function Write() {
             dispatch(
                 addToast(
                     createToast({
-                        type: 'error',
+                        type: 'warning',
                         content: 'Title của bài viết phải từ 25 đến 200 kí tự !',
                     }),
                 ),
@@ -81,7 +84,7 @@ function Write() {
             dispatch(
                 addToast(
                     createToast({
-                        type: 'error',
+                        type: 'warning',
                         content: 'Nội dung phải lớn hơn 100 kí tự',
                     }),
                 ),
@@ -139,18 +142,22 @@ function Write() {
                 const image = await uploadService.uploadImage(file);
                 resolve(`${url}/image/${image.data}`);
             } catch (error) {
-                error = setError(error);
+                let err = setError(error);
                 dispatch(
                     addToast(
                         createToast({
                             type: 'error',
-                            content: error.message,
+                            content: err,
                         }),
                     ),
                 );
             }
         });
     };
+
+    const hideExportBox = useCallback(() => {
+        setIsShowExport(false);
+    }, []);
 
     return (
         <div className={cx('wrapper')}>
@@ -204,8 +211,8 @@ function Write() {
                 </Button>
             </div>
 
-            <CloseBox state={isShowExport} onBack={() => setIsShowExport(false)}>
-                <Export submitData={{ title: title, content }} isEdit={!!slug} />
+            <CloseBox state={isShowExport} onBack={hideExportBox}>
+                {isShowExport && <Export submitData={{ title: title, content }} isEdit={!!slug} />}
             </CloseBox>
         </div>
     );

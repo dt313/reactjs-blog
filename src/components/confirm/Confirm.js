@@ -1,4 +1,4 @@
-import useOutsideClick from '~/hook/useOutsideClick';
+import PropTypes from 'prop-types';
 import Button from '../button/Button';
 import styles from './Confirm.module.scss';
 import classNames from 'classnames/bind';
@@ -22,4 +22,9 @@ function Confirm({ title = 'No title', handleOK, handleCancle }) {
     );
 }
 
+Confirm.propTypes = {
+    title: PropTypes.string.isRequired,
+    handleOK: PropTypes.func.isRequired,
+    handleCancle: PropTypes.func.isRequired,
+};
 export default Confirm;

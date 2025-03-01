@@ -1,5 +1,6 @@
 export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
 export const INITIAL_NOTIFICATIONS = 'INITIAL_NOTIFICATIONS';
+export const LOAD_NOTIFICATIONS = 'LOAD_NOTIFICATIONS';
 export const READ_NOTIFICATION = 'READ_NOTIFICATION';
 export const READ_ALL_NOTIFICATION = 'READ_ALL_NOTIFICATION';
 export const SET_STOMP_CLIENT = 'SET_STOMP_CLIENT';
@@ -14,6 +15,13 @@ export function addNotification(newNotification) {
 export function initialNotifications(notifications) {
     return {
         type: INITIAL_NOTIFICATIONS,
+        notifications,
+    };
+}
+
+export function loadNotification(notifications) {
+    return {
+        type: LOAD_NOTIFICATIONS,
         notifications,
     };
 }

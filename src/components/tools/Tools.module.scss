@@ -6,8 +6,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    border: 2px solid #464a4f;
-    background-color: #1e1e1e88;
+    border: 2px solid var(--tool-border);
+    background-color: var(--tool-br);
     border-radius: 50px;
 
     .icon-block {
@@ -22,13 +22,13 @@
         cursor: pointer;
         margin: 8px;
         border-radius: 9999px;
-        border: 1.5px solid #464a4f;
+        border: 1.5px solid var(--tool-icon-border);
         transition: background-color 0.15s linear;
         overflow: hidden;
 
         &:hover {
-            background-color: #ffffff33;
-            color: var(--accent);
+            background-color: var(--tool-icon-hover);
+            color: var(--primary);
         }
     }
 
@@ -66,9 +66,11 @@
 }
 
 .tippy {
-    background-color: #fff;
+    font-family: var(--system-ui);
     width: max-content;
     color: #333;
+    background-color: #fff;
+    border: 1px solid #333;
     padding: 6px 12px;
     font-size: 1.4rem;
     border-radius: 9999px;

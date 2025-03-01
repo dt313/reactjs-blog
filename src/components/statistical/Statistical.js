@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import styles from './Statistical.module.scss';
 import { FaRegComment } from 'react-icons/fa6';
@@ -33,5 +34,16 @@ function Statistical({
         </div>
     );
 }
+
+Statistical.propTypes = {
+    like: PropTypes.number.isRequired,
+    comment: PropTypes.number.isRequired,
+    className: PropTypes.string,
+    around: PropTypes.bool,
+    liked: PropTypes.bool,
+    likedUsers: PropTypes.array,
+    onClickLike: PropTypes.func,
+    onClickComment: PropTypes.func,
+};
 
 export default Statistical;

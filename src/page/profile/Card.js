@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styles from './Profile.module.scss';
@@ -15,6 +16,12 @@ import { PiClockFill } from 'react-icons/pi';
 import Tippy from '@tippyjs/react/headless';
 import setError from '~/helper/setError';
 import calculateTime from '~/helper/calculateTime';
+
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+import { skeletonColors } from '~/config/uiConfig';
+import { tokenUtils } from '~/utils';
+
 const cx = classNames.bind(styles);
 
 function Card({ title, id, slug, tableType, handleDelete = defaultFn, editable, isPublish, publishAt }) {
@@ -26,18 +33,18 @@ function Card({ title, id, slug, tableType, handleDelete = defaultFn, editable, 
     const dispatch = useDispatch();
 
     // For Confirm Box
-    const handleCancle = () => {
+    const handleCancle = useCallback(() => {
         setIsShowConfirm(false);
-    };
+    });
 
-    const handleConfirmOk = () => {
+    const handleConfirmOk = useCallback(() => {
         // delete article
         if (tableType === 'bookmark') {
             removeFromBookmarkedList();
         } else {
             deletePost();
         }
-    };
+    }, [id]);
 
     const removeFromBookmarkedList = () => {
         const data = {
@@ -59,12 +66,12 @@ function Card({ title, id, slug, tableType, handleDelete = defaultFn, editable, 
                     ),
                 );
             } catch (error) {
-                error = setError(error);
+                let err = setError(error);
                 dispatch(
                     addToast(
                         createToast({
                             type: 'error',
-                            content: error.message,
+                            content: err,
                         }),
                     ),
                 );
@@ -95,12 +102,12 @@ function Card({ title, id, slug, tableType, handleDelete = defaultFn, editable, 
                     console.log(result);
                 }
             } catch (error) {
-                error = setError(error);
+                let err = setError(error);
                 dispatch(
                     addToast(
                         createToast({
                             type: 'error',
-                            content: error.message,
+                            content: err,
                         }),
                     ),
                 );
@@ -116,12 +123,12 @@ function Card({ title, id, slug, tableType, handleDelete = defaultFn, editable, 
                 const result = await articleService.publish(id);
                 navigate(`/article/${result.slug}`);
             } catch (error) {
-                error = setError(error);
+                let err = setError(error);
                 dispatch(
                     addToast(
                         createToast({
                             type: 'error',
-                            content: error.message,
+                            content: err,
                         }),
                     ),
                 );
@@ -240,5 +247,34 @@ function Card({ title, id, slug, tableType, handleDelete = defaultFn, editable, 
         </div>
     );
 }
+
+Card.Skeleton = function () {
+    const theme = tokenUtils.getTheme();
+    return (
+        <div className={cx('card')}>
+            <SkeletonTheme
+                baseColor={theme === 'dark' ? skeletonColors[0].base : skeletonColors[1].base}
+                highlightColor={theme === 'dark' ? skeletonColors[0].hl : skeletonColors[1].hl}
+            >
+                <div className={cx('header')}>
+                    <Skeleton height={30} width="90%" />
+                </div>
+
+                <Skeleton width={50} height={10} />
+            </SkeletonTheme>
+        </div>
+    );
+};
+
+Card.propTypes = {
+    title: PropTypes.string.isRequired,
+    id: PropTypes.number.isRequired,
+    slug: PropTypes.string.isRequired,
+    tableType: PropTypes.string.isRequired,
+    handleDelete: PropTypes.func.isRequired,
+    editable: PropTypes.bool.isRequired,
+    isPublish: PropTypes.bool,
+    publishAt: PropTypes.string,
+};
 
 export default Card;

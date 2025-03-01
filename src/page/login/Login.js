@@ -12,6 +12,8 @@ import { authService } from '~/services';
 import { GITHUB_OAUTH_URL, GOOGLE_OAUTH_URL } from '~/contants';
 import { addToast, createToast } from '~/redux/actions/toastAction';
 import tokenUtils from '~/utils/token';
+import setError from '~/helper/setError';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 const cx = classNames.bind(styles);
 
 function Login() {
@@ -24,14 +26,14 @@ function Login() {
         pwd: '',
     });
 
-    const [error, setError] = useState({
+    const [error, setValidError] = useState({
         email: '',
         pwd: '',
     });
 
-    let prePath = useRef(null);
+    const [showPassword, setShowPassword] = useState(false);
 
-    console.log(prePath);
+    let prePath = useRef(null);
 
     useEffect(() => {
         if (searchParams.size > 0) {
@@ -39,12 +41,15 @@ function Login() {
         } else {
             prePath.current = '/';
         }
-        tokenUtils.setRedirectPath(prePath);
+        tokenUtils.setRedirectPath(prePath.current);
     }, []);
+
+    console.log(error);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setError((pre) => ({
+
+        setValidError((pre) => ({
             ...pre,
             [name]: '',
         }));
@@ -59,7 +64,7 @@ function Login() {
 
         const Eemail = validation.init(email).isRequire().isEmail().getResult();
         validation.clear();
-        const Epwd = validation.init(pwd).isRequire().minLength().maxLength().getResult();
+        const Epwd = validation.init(pwd).isRequire().getResult();
         validation.clear();
 
         return [Eemail, Epwd];
@@ -83,18 +88,18 @@ function Login() {
                 console.log(prePath.current);
                 navigate(prePath.current);
             } catch (error) {
-                error = setError(error);
+                let err = setError(error);
                 dispatch(
                     addToast(
                         createToast({
                             type: 'error',
-                            content: error.message,
+                            content: err,
                         }),
                     ),
                 );
             }
         } else {
-            setError({ email: email, pwd: pwd });
+            setValidError({ email: email, pwd: pwd });
         }
     };
 
@@ -102,7 +107,7 @@ function Login() {
         <div className={cx('wrapper')}>
             <div className={cx('container')}>
                 <h3 className={cx('title')}>
-                    Đăng nhập vào <span className={cx('logo')}>question.?</span>
+                    Đăng nhập vào <span className={cx('logo')}>Bagoftech</span>
                 </h3>
 
                 <div className={cx('content')}>
@@ -152,15 +157,24 @@ function Login() {
                     <label htmlFor="pwd" className={cx('login-label')}>
                         Mật khẩu
                     </label>
-                    <input
-                        type="password"
-                        className={cx('login-input')}
-                        name="pwd"
-                        placeholder="Abc12345@"
-                        value={info.pwd}
-                        onChange={(e) => handleChange(e)}
-                        autoComplete="off"
-                    />
+                    <div className={cx('password-field')}>
+                        <input
+                            type={showPassword ? 'text' : 'password'}
+                            className={cx('login-input')}
+                            name="pwd"
+                            placeholder="Abc12345@"
+                            value={info.pwd}
+                            onChange={(e) => handleChange(e)}
+                            autoComplete="off"
+                        />
+                        <button
+                            type="button"
+                            className={cx('toggle-password')}
+                            onClick={() => setShowPassword(!showPassword)}
+                        >
+                            {showPassword ? <FaEyeSlash /> : <FaEye />}
+                        </button>
+                    </div>
                     {error.pwd && <p className={cx('login-error')}>{error?.pwd}</p>}
 
                     <Button secondary className={cx('login-btn')}>
@@ -173,6 +187,12 @@ function Login() {
                     </Button>
                     <Button text className={cx('back')} to={'/register'}>
                         Đăng kí
+                    </Button>
+                </div>
+
+                <div className={cx('footer', 'forgot-password')}>
+                    <Button text className={cx('back')} to={'/forgot-password'}>
+                        Bạn đã quên mật khẩu ?
                     </Button>
                 </div>
             </div>

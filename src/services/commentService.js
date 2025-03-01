@@ -6,8 +6,8 @@ export const getAllCommentByType = async ({ type, id, pageNumber, pageSize }) =>
         const res = await axios.get(`/comments/${type}/${id}?pageNumber=${pageNumber}&&pageSize=${pageSize}`);
         return res?.data;
     } catch (error) {
-        error = setError(error);
-        throw new Error(error?.message || 'Failed to fetch the comment');
+        let err = setError(error);
+        throw new Error(err || 'Failed to fetch the comment');
     }
 };
 
@@ -16,9 +16,9 @@ export const createComment = async ({ commentableId, publisher, commentType, con
         const res = await axios.post(`/comments`, { commentableId, publisher, commentType, content });
         return res?.data;
     } catch (error) {
-        error = setError(error);
+        let err = setError(error);
         console.log(error);
-        throw new Error(error?.message || 'Failed to create comment');
+        throw new Error(err || 'Failed to create comment');
     }
 };
 
@@ -27,7 +27,7 @@ export const deleteComment = async (id) => {
         const res = await axios.delete(`/comments/${id}`);
         return res;
     } catch (error) {
-        error = setError(error);
-        throw new Error(error?.message || 'Failed to delete comment');
+        let err = setError(error);
+        throw new Error(err || 'Failed to delete comment');
     }
 };

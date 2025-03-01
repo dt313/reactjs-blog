@@ -1,12 +1,16 @@
+import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import styles from './TopicInput.module.scss';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 import { IoIosClose } from 'react-icons/io';
+import ValidationOnChange from '~/helper/fieldValidation';
+import { ImPriceTag } from 'react-icons/im';
 const cx = classNames.bind(styles);
 
 function TopicInput({ title, handleDeleteTag, topics = [], setTopics, className }) {
     const [isDuplicate, setIsDuplicate] = useState(false);
     const [input, setInput] = useState('');
+    const [errorMes, setErrorMes] = useState('');
 
     const inputRef = useRef(null);
 
@@ -14,6 +18,7 @@ function TopicInput({ title, handleDeleteTag, topics = [], setTopics, className 
     useEffect(() => {
         const input = inputRef.current;
         const handleKeyDown = (e) => {
+            if (errorMes) return;
             if (e.keyCode === 13 && e.target.value !== '') {
                 const isValid = topics.some((t) => t === e.target.value);
                 if (!isValid) {
@@ -33,16 +38,21 @@ function TopicInput({ title, handleDeleteTag, topics = [], setTopics, className 
                 input.removeEventListener('keydown', handleKeyDown);
             }
         };
-    }, [topics]);
+    }, [topics, errorMes]);
 
     const handleChangeInput = (e) => {
+        const error = ValidationOnChange({
+            value: e.target.value,
+            rules: [ValidationOnChange.maxLength(25)],
+        });
+        setErrorMes(error);
         setInput(e.target.value);
         setIsDuplicate(false);
     };
     return (
         <div className={cx('wrapper', className)}>
             <span className={cx('title')}>{title}</span>
-            <div className={cx('tags-block', isDuplicate && 'dup-error')}>
+            <div className={cx('tags-block', (isDuplicate || errorMes) && 'dup-error')}>
                 <div className={cx('tags')}>
                     {topics?.length > 0 &&
                         topics.map((tag, index) => {
@@ -66,9 +76,16 @@ function TopicInput({ title, handleDeleteTag, topics = [], setTopics, className 
                 </div>
             </div>
 
-            {<p className={cx('error')}>{isDuplicate && 'Bạn đã thêm thẻ này'}</p>}
+            {<p className={cx('error')}>{isDuplicate ? 'Bạn đã thêm thẻ này' : errorMes && errorMes}</p>}
         </div>
     );
 }
 
-export default TopicInput;
+TopicInput.propTypes = {
+    title: PropTypes.string.isRequired,
+    handleDeleteTag: PropTypes.func.isRequired,
+    topics: PropTypes.array.isRequired,
+    setTopics: PropTypes.func.isRequired,
+    className: PropTypes.string,
+};
+export default memo(TopicInput);

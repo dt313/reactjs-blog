@@ -1,8 +1,7 @@
+import PropTypes from 'prop-types';
 import { useRef } from 'react';
 import classNames from 'classnames/bind';
 import styles from './Search.module.scss';
-// import { AiOutlineLoading3Quarters } from 'react-icons/ai';
-// import SearchItem from '~/components/searchItem';
 import { FiSearch } from 'react-icons/fi';
 import { MdClose } from 'react-icons/md';
 import useOutsideClick from '~/hook/useOutsideClick';
@@ -10,7 +9,6 @@ const cx = classNames.bind(styles);
 
 function Search({ value, onChangeInput, onClearInput }) {
     const inputRef = useRef();
-    // const [loading, setLoading] = useState(false);
 
     const handleClickOutside = () => {
         if (boxRef.current) {
@@ -40,23 +38,13 @@ function Search({ value, onChangeInput, onClearInput }) {
                     <MdClose className={cx('icon')} />
                 </span>
             )}
-
-            {/* {value && (
-                <div className={cx('dropbox')} ref={boxRef}>
-                    <h4 className={cx('title')}>Bài viết</h4>
-                    {loading && <AiOutlineLoading3Quarters className={cx('loading')} />}
-                    <div className={cx('results')}>
-                        {results.length > 0 &&
-                            results.map((item, index) => {
-                                return <SearchItem item={item} key={index} />;
-                            })}
-                        {!loading && results.length === 0 ? <p className={cx('no-data')}>Không có kết quả</p> : <></>}
-                    </div>
-                    {results.length > 0 && <p className={cx('seeall')}> See all</p>}
-                </div>
-            )} */}
         </div>
     );
 }
 
+Search.propTypes = {
+    value: PropTypes.string.isRequired,
+    onChangeInput: PropTypes.func.isRequired,
+    onClearInput: PropTypes.func.isRequired,
+};
 export default Search;
