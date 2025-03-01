@@ -122,6 +122,7 @@ export const createSettingMenu = () => {
                                                 ValidationOnChange.isRequired(),
                                                 ValidationOnChange.minWord(2),
                                                 ValidationOnChange.minLetterEachWord(2),
+                                                ValidationOnChange.maxLength(25),
                                             ],
                                         });
                                     },
@@ -146,6 +147,7 @@ export const createSettingMenu = () => {
                                                 ValidationOnChange.isRequired(),
                                                 ValidationOnChange.nonSpecialLetter(),
                                                 ValidationOnChange.minLetter(5),
+                                                ValidationOnChange.maxLength(20),
                                             ],
                                         });
                                     },

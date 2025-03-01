@@ -119,8 +119,6 @@ function Register() {
         return [Eemail, Epwd, Ecfpwd, Eotp];
     };
 
-    console.log(error);
-
     const handleClickGetOpt = async (e) => {
         e.preventDefault();
         const validation = new Validation();

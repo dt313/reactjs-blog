@@ -18,7 +18,6 @@ const notificationReducer = (state = initialState, action) => {
     let newNotifications = [];
     switch (action.type) {
         case ADD_NOTIFICATION:
-            console.log('action', action);
             return {
                 ...state,
                 counnoticationCountter: state.noticationCount + 1,

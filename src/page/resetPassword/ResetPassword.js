@@ -67,7 +67,6 @@ function ResetPassword() {
 
         const [Epwd, Ecfpwd] = validationPassword({ password, cPassword });
 
-        console.log({ Epwd, Ecfpwd });
         if (Epwd === '' && Ecfpwd === '') {
             try {
                 const result = await userService.resetPassword(token, password);

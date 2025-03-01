@@ -37,14 +37,14 @@ function Card({ title, id, slug, tableType, handleDelete = defaultFn, editable, 
         setIsShowConfirm(false);
     });
 
-    const handleConfirmOk = useCallback(() => {
+    const handleConfirmOk = () => {
         // delete article
         if (tableType === 'bookmark') {
             removeFromBookmarkedList();
         } else {
             deletePost();
         }
-    }, [id]);
+    };
 
     const removeFromBookmarkedList = () => {
         const data = {
@@ -99,7 +99,6 @@ function Card({ title, id, slug, tableType, handleDelete = defaultFn, editable, 
                         ),
                     );
                 } else {
-                    console.log(result);
                 }
             } catch (error) {
                 let err = setError(error);

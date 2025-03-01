@@ -18,7 +18,7 @@ export const createUser = async (data) => {
         return res;
     } catch (error) {
         let err = setError(error);
-        console.log(err);
+
         throw new Error(err || 'Failed to register');
     }
 };

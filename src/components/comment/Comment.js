@@ -4,7 +4,7 @@ import styles from './Comment.module.scss';
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import Avatar from '../avatar';
 import { BiChevronDown } from 'react-icons/bi';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import CommentInput from '../commentInput';
 import { SpinnerLoader } from '../loading/Loading';
 import MarkDown from '../markdown';
@@ -61,15 +61,12 @@ function Comment({ contextId, comment, className, level, onDelete = () => {} }) 
         }
     }, [searchParams]);
 
-    const menuList = useMemo(
-        () => [
-            {
-                title: 'Delete',
-                fn: () => onDelete(comment.id),
-            },
-        ],
-        [comment],
-    );
+    const menuList = [
+        {
+            title: 'Delete',
+            fn: () => onDelete(comment.id),
+        },
+    ];
 
     // handle create comment
     const handeComment = useCallback(

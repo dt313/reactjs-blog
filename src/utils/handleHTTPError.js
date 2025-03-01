@@ -25,7 +25,7 @@ const getPath = () => {
 
 const refreshToken = async () => {
     const { token, user } = await authService.refreshToken(tokenUtils.getAccessToken());
-    console.log(token);
+
     if (token && user) {
         tokenUtils.setAccessToken(token);
         tokenUtils.setUser(user);
@@ -40,7 +40,6 @@ export const sendError = (message) => {
 
 export default function handleHTTPError(error) {
     console.log('Http Error :', error);
-
     switch (error.code) {
         case 1001:
         case 1005:

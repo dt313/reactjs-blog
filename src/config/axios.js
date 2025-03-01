@@ -59,7 +59,6 @@ instance.interceptors.response.use(
         // console.log(error);
         if (error.code === 'ERR_NETWORK') {
             tokenUtils.clearToken();
-            console.log(error);
             redirectToNotFoundPage();
             return Promise.reject(sendError('Sorry !! Internal server error'));
         }

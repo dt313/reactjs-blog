@@ -17,7 +17,7 @@ export const createComment = async ({ commentableId, publisher, commentType, con
         return res?.data;
     } catch (error) {
         let err = setError(error);
-        console.log(error);
+
         throw new Error(err || 'Failed to create comment');
     }
 };

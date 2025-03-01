@@ -44,8 +44,6 @@ function Login() {
         tokenUtils.setRedirectPath(prePath.current);
     }, []);
 
-    console.log(error);
-
     const handleChange = (e) => {
         const { name, value } = e.target;
 
@@ -85,7 +83,6 @@ function Login() {
                     }),
                 );
 
-                console.log(prePath.current);
                 navigate(prePath.current);
             } catch (error) {
                 let err = setError(error);
