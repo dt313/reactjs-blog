@@ -1,5 +1,5 @@
 {
-    "name": "question",
+    "name": "bagoftech",
     "version": "0.1.0",
     "private": true,
     "dependencies": {
@@ -40,7 +40,7 @@
         "ws": "^8.18.0"
     },
     "scripts": {
-        "start": "HOST=web-dev.com react-app-rewired start",
+        "start": "react-app-rewired start",
         "build": "react-app-rewired build",
         "test": "react-app-rewired test",
         "eject": "react-app-rewired eject"
@@ -64,6 +64,7 @@
         ]
     },
     "devDependencies": {
+        "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
         "mini-css-extract-plugin": "^2.8.1"
     }
 }

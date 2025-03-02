@@ -15,7 +15,6 @@ import { addToast, createToast } from '~/redux/actions/toastAction';
 import { articleService, bookmarkService, reactionService } from '~/services';
 import { sendNotificationWithCondition } from '~/socket';
 import calculateTime from '~/helper/calculateTime';
-import copyTextToClipboard from '~/helper/copyClipboard';
 import CommentBox from '~/components/commentBox';
 import { notificationType, tableType } from '~/config/types';
 import useTitle from '~/hook/useTitle';

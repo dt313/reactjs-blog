@@ -1,5 +1,4 @@
 import { Client } from '@stomp/stompjs';
-import token from './utils/token';
 
 const stompClient = new Client({
     brokerURL: 'ws://localhost:8080/api/v1/notification',
