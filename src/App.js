@@ -103,7 +103,8 @@ function App() {
                     }, 5000);
                 });
             };
-            connect();
+
+            connect(userId);
             fetchNotificationAPI();
         } else {
             disconnect();

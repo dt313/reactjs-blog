@@ -4,9 +4,6 @@ import token from './utils/token';
 const stompClient = new Client({
     brokerURL: 'ws://localhost:8080/api/v1/notification',
     reconnectDelay: 5000, // 자동 재 연결
-    connectHeaders: {
-        userId: token.getUserId() || null,
-    },
 
     onStompError: (frame) => {
         console.error('Broker reported error: ' + frame.headers['message']);
@@ -26,9 +23,16 @@ const stompClient = new Client({
 //     });
 // };
 
-export const connect = () => {
+export const connect = (userId) => {
     // connect to server
+    console.log('connect WS');
+
     try {
+        stompClient.configure({
+            connectHeaders: {
+                userId: userId,
+            },
+        });
         stompClient.activate();
     } catch (err) {
         console.log(err);
