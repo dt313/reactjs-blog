@@ -13,7 +13,7 @@ function OAuth2Redirect() {
 
     const fetchInfo = async () => {
         try {
-            const result = await axios.get('http://localhost:8080/api/v1/users/me', {
+            const result = await axios.get(`${process.env.REACT_APP_API_URL}/users/me`, {
                 headers: {
                     Authorization: `Bearer ${searchParams.get('accessToken')}`, // Thay YOUR_TOKEN_HERE bằng token thực tế của bạn
                 },
