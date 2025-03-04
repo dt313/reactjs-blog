@@ -1,7 +1,7 @@
 import { Client } from '@stomp/stompjs';
 
 const stompClient = new Client({
-    brokerURL: `ws://${process.env.REACT_APP_API_URL_ORIGIN}/api/v1/notification`,
+    brokerURL: `wss://${process.env.REACT_APP_API_URL_ORIGIN}/api/v1/notification`,
     reconnectDelay: 5000, // 자동 재 연결
 
     onStompError: (frame) => {

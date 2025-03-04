@@ -92,3 +92,9 @@
         background-color: var(--close-btn-hover);
     }
 }
+
+@media (max-width: 768px) {
+    .wrapper {
+        padding: 0 32px 144px 0;
+    }
+}
