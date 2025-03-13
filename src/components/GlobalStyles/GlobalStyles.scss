@@ -71,6 +71,8 @@
     --scrollbar-thumb-hover: #555;
 
     --spinner-loading-br: conic-gradient(#0000 10%, #fff) content-box;
+    --ai-loading-br: linear-gradient(135deg, #ff8e3a, #ff8eec, #ffb4b1);
+    --ai-loading-br-before: linear-gradient(45deg, #ff8e3a, #ff8eec, #ffb4b1, #86a8e7, #7f7fd5);
 }
 
 [data-theme='light'] {
@@ -116,6 +118,9 @@
     --scrollbar-thumb: #7f7f7f;
     --scrollbar-thumb-hover: #555;
     --spinner-loading-br: conic-gradient(#0000 10%, #000) content-box;
+
+    --ai-loading-br: linear-gradient(135deg, #e08a84, #ff80a1, #f4aebf);
+    --ai-loading-br-before: linear-gradient(45deg, #e08a84, #ff80a1, #f4aebf, #84c2e6, #6a89e6);
 }
 
 [data-primary-color='accent'] {

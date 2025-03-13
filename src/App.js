@@ -31,6 +31,8 @@ import setError from '~/helper/setError';
 const cx = classNames.bind(styles);
 
 function App() {
+    console.log('React Enviroment : ', process.env.REACT_APP_ENV);
+
     const dispatch = useDispatch();
     const [hasUnreadedNotification, setHasUnreadedNotification] = useState(false);
     const [isRing, setIsRing] = useState(false);

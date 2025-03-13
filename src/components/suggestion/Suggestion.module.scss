@@ -72,6 +72,7 @@
     border-radius: 4px;
     background-color: var(--model-box-br);
     position: relative;
+    overflow: hidden;
 }
 
 .image-fake::before {

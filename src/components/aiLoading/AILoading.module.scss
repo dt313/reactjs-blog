@@ -1,0 +1,61 @@
+.loader {
+    width: 200px;
+    height: 200px;
+    background: var(--ai-loading-br);
+    position: relative;
+    animation: morph 4s infinite ease-in-out, spin 20s infinite linear;
+    border-radius: 50%; /* Thêm border-radius cho loader để nó có hình tròn */
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg); /* Bắt đầu từ 0 độ */
+    }
+    100% {
+        transform: rotate(360deg); /* Quay một vòng đầy đủ */
+    }
+}
+
+.loader::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    background: var(--ai-loading-br-before);
+    border-radius: inherit;
+    filter: blur(12px);
+    animation: pulse 3s infinite ease-in-out;
+}
+
+@keyframes morph {
+    0%,
+    100% {
+        border-radius: 87% 48% 52% 80% / 72% 26% 61% 40%;
+    }
+    25% {
+        border-radius: 82% 48% 52% 91% / 72% 100% 59% 93%;
+    }
+    50% {
+        border-radius: 82% 87% 52% 91% / 72% 55% 59% 93%;
+    }
+    75% {
+        border-radius: 65% 55% 65% 45% / 60% 55% 60% 70%;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

@@ -12,7 +12,7 @@ import { MdClose } from 'react-icons/md';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToast, createToast } from '~/redux/actions/toastAction';
-import { articleService, bookmarkService, reactionService } from '~/services';
+import { aiService, articleService, bookmarkService, reactionService } from '~/services';
 import { sendNotificationWithCondition } from '~/socket';
 import calculateTime from '~/helper/calculateTime';
 import CommentBox from '~/components/commentBox';
@@ -22,6 +22,8 @@ import { open } from '~/redux/actions/shareBoxAction';
 import requireAuthFn from '~/helper/requireAuthFn';
 import isConfictAuthor from '~/helper/isConflictAuthor';
 import { SpinnerLoader } from '~/components/loading/Loading';
+import images from '~/assets/images';
+import AILoading from '~/components/aiLoading';
 
 const cx = classNames.bind(styles);
 
@@ -37,6 +39,8 @@ function Detail() {
     const [reactions, setReactions] = useState([]);
     const [countOfComments, setCountOfComment] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
+    const [aiLoading, setAILoading] = useState(false);
+    const [summarizedText, setSummarizedText] = useState('');
 
     useTitle(article?.title || '');
     const navigate = useNavigate();
@@ -151,6 +155,26 @@ function Detail() {
         );
     }, []);
 
+    const handleClickAI = async () => {
+        try {
+            setAILoading(true);
+            const result = await aiService.summarize(article?.content);
+            setSummarizedText(result);
+        } catch (error) {
+            let err = setError(error);
+            dispatch(
+                addToast(
+                    createToast({
+                        type: 'error',
+                        content: err,
+                    }),
+                ),
+            );
+        } finally {
+            setAILoading(false);
+        }
+    };
+
     const handleClickCommentButton = useCallback(() => {
         setIsShowCommentsBox(!isShowCommentsBox);
     });
@@ -248,6 +272,7 @@ function Detail() {
                         }
                         onClickShare={handleClickShare}
                         onClickLink={handleClickLink}
+                        onClickAI={handleClickAI}
                         reactionType={reactionType}
                         copyText={window.location.href}
                     />
@@ -266,8 +291,16 @@ function Detail() {
                             onBookmark={handleBookmark}
                         />
                     </div>
+
                     <div>
-                        <MarkDown className={cx('preview')} text={article?.content} />
+                        {aiLoading ? (
+                            <div className={cx('ai-loading')}>
+                                {/* <img src={images.aiLoading} className={cx('ai-icon')}></img> */}
+                                <AILoading />
+                            </div>
+                        ) : (
+                            <MarkDown className={cx('preview')} text={summarizedText || article?.content} />
+                        )}
                     </div>
                     <div className={cx('statistical')}>
                         <Statistical

@@ -7,6 +7,7 @@ import * as bookmarkService from './bookmarkService';
 import * as notificationService from './notificationService';
 import * as uploadService from './uploadService';
 import * as mailService from './mailService';
+import * as aiService from './aiService';
 
 export {
     authService,
@@ -18,4 +19,5 @@ export {
     notificationService,
     uploadService,
     mailService,
+    aiService,
 };

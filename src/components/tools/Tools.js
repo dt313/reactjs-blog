@@ -9,6 +9,8 @@ import getReactionIcon from '~/helper/getReactionIcon';
 import { useCallback, useEffect, useState, memo } from 'react';
 import { useSelector } from 'react-redux';
 import CopyToClipboard from 'react-copy-to-clipboard';
+import images from '~/assets/images';
+import AILoading from '../aiLoading';
 
 const cx = classNames.bind(styles);
 const defaultFn = () => {};
@@ -18,6 +20,7 @@ function Tools({
     onClickComment = defaultFn,
     onClickShare = defaultFn,
     onClickLink = defaultFn,
+    onClickAI = defaultFn,
     reactionType = 'NULL',
     copyText,
 }) {
@@ -121,6 +124,18 @@ function Tools({
                     </CopyToClipboard>
                 </div>
             </Tippy>
+            <Tippy
+                placement={placement}
+                render={(attrs) => (
+                    <div className={cx('box')} tabIndex="-1" {...attrs}>
+                        <span className={cx('tippy')}>Tóm tắt bài viết</span>
+                    </div>
+                )}
+            >
+                <div className={cx('icon-block', 'ai-block')} onClick={onClickAI}>
+                    <AILoading size="30" />
+                </div>
+            </Tippy>
         </div>
     );
 }
@@ -131,6 +146,7 @@ Tools.propTypes = {
     onClickComment: PropTypes.func.isRequired,
     onClickShare: PropTypes.func.isRequired,
     onClickLink: PropTypes.func.isRequired,
+    onClickAI: PropTypes.func.isRequired,
     reactionType: PropTypes.string,
     copyText: PropTypes.string,
 };
