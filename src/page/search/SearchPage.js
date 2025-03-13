@@ -159,7 +159,7 @@ function SearchPage() {
         <div className={cx('wrapper')}>
             <div className={cx('content')}>
                 <div className={cx('header')}>
-                    <h2 className={cx('title')}>Tìm kiếm câu bài viết hữu ích</h2>
+                    <h2 className={cx('title')}>Tìm kiếm bài viết hữu ích</h2>
                     <div className={cx('search')}>
                         <Search
                             value={searchValue}
