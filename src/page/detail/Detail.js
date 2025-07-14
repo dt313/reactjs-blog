@@ -22,8 +22,7 @@ import { open } from '~/redux/actions/shareBoxAction';
 import requireAuthFn from '~/helper/requireAuthFn';
 import isConfictAuthor from '~/helper/isConflictAuthor';
 import { SpinnerLoader } from '~/components/loading/Loading';
-import images from '~/assets/images';
-import AILoading from '~/components/aiLoading';
+import Orb from '~/components/ogb';
 
 const cx = classNames.bind(styles);
 
@@ -296,7 +295,7 @@ function Detail() {
                         {aiLoading ? (
                             <div className={cx('ai-loading')}>
                                 {/* <img src={images.aiLoading} className={cx('ai-icon')}></img> */}
-                                <AILoading />
+                                <Orb hoverIntensity={0.15} rotateOnHover={true} hue={0} forceHoverState={true} />
                             </div>
                         ) : (
                             <MarkDown className={cx('preview')} text={summarizedText || article?.content} />

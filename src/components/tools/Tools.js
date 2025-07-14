@@ -9,8 +9,7 @@ import getReactionIcon from '~/helper/getReactionIcon';
 import { useCallback, useEffect, useState, memo } from 'react';
 import { useSelector } from 'react-redux';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import images from '~/assets/images';
-import AILoading from '../aiLoading';
+import Orb from '../ogb';
 
 const cx = classNames.bind(styles);
 const defaultFn = () => {};
@@ -133,7 +132,7 @@ function Tools({
                 )}
             >
                 <div className={cx('icon-block', 'ai-block')} onClick={onClickAI}>
-                    <AILoading size="30" />
+                    <Orb hoverIntensity={0.15} rotateOnHover={true} hue={0} forceHoverState={false} />
                 </div>
             </Tippy>
         </div>

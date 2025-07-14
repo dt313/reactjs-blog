@@ -36,11 +36,11 @@
 
     .ai-block {
         padding: 0;
-        background-color: #33333399;
+        border: 1.5px solid transparent;
     }
 
     .ai-block:hover {
-        background-color: #33333377;
+        background-color: transparent;
     }
 
     .ai-icon {

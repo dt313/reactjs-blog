@@ -1,2 +1,0 @@
-// be: image forder
-// validation

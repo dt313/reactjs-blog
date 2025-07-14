@@ -1,70 +1,191 @@
-# Getting Started with Create React App
+<br />
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<div align="center">
+  <a href="https://github.com/dt313/nextjs-retro-chat-app.git">
+    <img src="./preview/logo.svg" alt="Logo" width="80" height="80">
+  </a>
 
-## Available Scripts
+<h3 align="center">Bagoftech</h3>
 
-In the project directory, you can run:
+  <p align="center">
+    <strong>BagOfTech</strong> is a modern blog platform focused on tech content.  
+    It supports user authentication, post scheduling, comments, reactions, real-time notifications, and more — built with <strong>Next.js</strong>, <strong>Spring Boot</strong>, and <strong>WebSocket</strong>.
+    <br />
+    <br />
+    <a href="https://bagoftech.vercel.app/">View Demo</a>
+  </p>
+</div>
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🖼️ Screenshots
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+![UI](./preview/ui.png)
+![Blog-UI](./preview/ui2.png)
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🚀 Features
 
-### `npm run build`
+-   ✅ Sign in / Sign up with **Google** & **GitHub**
+-   ✅ Create, edit, and schedule blog posts
+-   ✅ Markdown editor with preview
+-   ✅ Comments & emoji reactions
+-   ✅ Real-time notifications
+-   ✅ Forgot password with email recovery
+-   ✅ OTP verification via email
+-   ✅ Light, Dark Theme - Primary color setting
+-   ✅ Responsive UI for both mobile and desktop
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🧑‍💻 Tech Stack
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 🖥️ Frontend
 
-### `npm run eject`
+-   [Next.js](https://nextjs.org/)
+-   React 18
+-   Redux Toolkit
+-   Axios
+-   WebSocket
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 🔧 Backend
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+-   Spring Boot (Java)
+-   Spring Security + JWT
+-   Spring Data JPA + PostgreSQL
+-   WebSocket (STOMP)
+-   Java Mail Sender (OTP + Password Reset)
+-   Redis
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 📦 Getting Started
 
-## Learn More
+### ⚙️ 1. Clone the repository
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+#### Front end
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+git clone https://github.com/dt313/reactjs-blog.git
+cd reactjs-blog
+```
 
-### Code Splitting
+```bash
+npm install
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+**ENV SAMPLE**
 
-### Analyzing the Bundle Size
+```bash
+REACT_APP_SOCKET="ws"
+REACT_APP_API_URL="http://localhost:8080/api/v1"
+REACT_APP_API_URL_BASE="http://localhost:8080"
+REACT_APP_API_URL_ORIGIN="localhost:8080"
+REACT_APP_ENV=local
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+**RUN**
 
-### Making a Progressive Web App
+```bash
+npm run dev
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+#### Back end
 
-### Advanced Configuration
+```bash
+git clone https://github.com/dt313/spring-blog.git
+cd spring-blog
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+```bash
+./mvnw clean install
+```
 
-### Deployment
+**ENV SAMPLE**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```yml
+server:
+    port: 8080
+    domain: ${LOCAL_SERVER_DOMAIN}
+client:
+    domain: ${LOCAL_CLIENT_DOMAIN}
+spring:
+    ai:
+        ollama:
+            base-url: http://127.0.0.1:11434/api/chat
+            chat:
+                options:
+                    model: llama3.2
 
-### `npm run build` fails to minify
+    data:
+        redis:
+            host: ${LOCAL_REDIS_HOST}
+            port: 6379
+    web:
+        resources:
+            static-locations: file:/uploads/images/
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+    mail:
+        host: 'smtp.gmail.com'
+        port: 587
+        username: ${LOCAL_GMAIL_USER}
+        password: ${LOCAL_GMAIL_PW}
+        properties:
+            mail:
+                smtp:
+                    auth: true
+                    starttls:
+                        enable: true
+
+    application:
+        name: 'blog-local-api'
+
+    security:
+        oauth2:
+            client:
+                registration:
+                    google:
+                        client-id: ${LOCAL_GG_ID}
+                        client-secret: ${LOCAL_GG_SECRET}
+                        redirect-uri: ${LOCAL_SERVER_ORIGIN}/oauth2/callback/google
+                        scope:
+                            - profile
+                            - email
+                    github:
+                        clientId: ${LOCAL_GH_ID}
+                        clientSecret: ${GH_LOCAL_SECRET}
+                        redirect-uri: ${LOCAL_SERVER_ORIGIN}/oauth2/callback/github"
+                    facebook:
+                        clientId: ${LOCAL_FB_ID}
+                        clientSecret: ${FB_SECRET}
+                        scope:
+                            - profile
+                        redirect- uri: ${LOCAL_SERVER_ORIGIN}/oauth2/code/facebook"
+
+    datasource:
+        url: jdbc:${LOCAL_PG_URL}
+        username: ${LOCAL_PG_USER}
+        password: ${LOCAL_PG_PW}
+        hikari:
+            auto-commit: false
+
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+
+jwt:
+    signerKey: ${LOCAL_SIGNER_KEY}
+    valid-duration: 3600
+    refreshable-duration: 86400
+    reset-password-key: ${LOCAL_REFRESH_KEY}
+    reset-password-duration: 300
+```
+
+**RUN**
+
+```bash
+./mvnw spring-boot:run
+
+```
